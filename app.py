@@ -8,6 +8,11 @@ from pymessenger import Bot
 from datetime import datetime as dt
 from PIL import Image
 from bson.objectid import ObjectId
+import boto3
+from botocore.client import Config
+import numpy as np
+import matplotlib.pyplot as plt
+import io
 
 try:
     import apiai
@@ -18,6 +23,11 @@ except ImportError:
     import apiai
 
 app = Flask(__name__)
+
+
+ACCESS_KEY_ID = 'AKIAJIBK3OJE3A4TLWHA'
+ACCESS_SECRET_KEY = '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'
+BUCKET_NAME = 'tonibot-bucket'
 
 # Client Access Token for accessing our API AI Bot TODO: CHANGE THIS
 CLIENT_ACCESS_TOKEN = '668999a33db140fa8fe2a7abcc79c77b'
@@ -72,11 +82,10 @@ def handle_message():
     res = processRequest(data)
 
     res = json.dumps(res, indent=4, cls=JSONEncoder)
-    # print(res)
+    print(res)
     r = make_response(res)
     r.headers['Content-Type'] = 'application/json'
     print("Before final return")
-    print(r)
     return r
 
     
@@ -128,6 +137,46 @@ def itemSelected(app):
 
 def showWelcomeIntent(resp):
     print ("Inside show welcome intent")
+
+
+
+    '''
+    Inserting a chart
+    '''
+    objects = ('DD', 'Ind', 'LO', 'GE', 'UK')
+
+    incomes = [1000, 2300, 3000, 111, 1456]
+
+    y_pos = np.arange(len(objects))
+
+    plt.bar(y_pos, incomes, align='center')
+    plt.xticks(y_pos, objects)
+    plt.ylabel('Income')
+    plt.xlabel('Country')
+    plt.title('Average income by country')
+
+    #fig = plt.figure()
+    #print(fig)
+
+    #data = open('incomes_country.png', 'rb')
+    img_data = io.BytesIO()
+    plt.savefig(img_data, format='png')
+    img_data.seek(0)
+
+    s3 = boto3.resource(
+        's3',
+        aws_access_key_id=ACCESS_KEY_ID,
+        aws_secret_access_key=ACCESS_SECRET_KEY,
+        config=Config(signature_version='s3v4')
+        )
+
+
+    s3.Bucket(BUCKET_NAME).put_object(Key='incomes3.png', Body=img_data, ContentType='image/png')
+
+    print("Done")
+
+
+
 
     return createCardResponse(["Hi, I am Dr. Dashboard - a sales tracker. The suggestions below are some of the things I can do! At any time if you want to leave the application say Bye Dr. Dashboard! What can I do for you?"], 
         ["Show digital employees", "Bye doctor dashboard"], 
