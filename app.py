@@ -27,9 +27,9 @@ except ImportError:
 app = Flask(__name__)
 
 
-ACCESS_KEY_ID = 'AKIAJIBK3OJE3A4TLWHA'
-ACCESS_SECRET_KEY = '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'
-BUCKET_NAME = 'tonibot-bucket'
+ACCESS_KEY_ID = ''
+ACCESS_SECRET_KEY = ''
+BUCKET_NAME = ''
 
 # Client Access Token for accessing our API AI Bot TODO: CHANGE THIS
 CLIENT_ACCESS_TOKEN = '668999a33db140fa8fe2a7abcc79c77b'
