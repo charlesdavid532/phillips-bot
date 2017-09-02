@@ -14,8 +14,9 @@ MarkupSafe==1.0
 numpy==1.13.1
 post==0.0.13
 public==0.0.38
+bson==0.4.8
 pymessenger==0.0.7.0
-pymongo==3.4.0
+pymongo==3.5.1
 pytz==2017.2
 query-string==0.0.12
 request==0.0.13
