@@ -76,6 +76,7 @@ def handle_message():
     r = make_response(res)
     r.headers['Content-Type'] = 'application/json'
     print("Before final return")
+    print(r)
     return r
 
     
