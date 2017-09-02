@@ -1,0 +1,7 @@
+{
+  "name": "phillipsBot:phillips-bot",
+  "description": "A bot called Dr. Dashboard designed for voice enabled financial reporting",
+  "repository": "https://github.com/charlesdavid532/phillips-bot",
+  "logo": "https://node-js-sample.herokuapp.com/node.png",
+  "keywords": ["node", "express", "static"]
+}
