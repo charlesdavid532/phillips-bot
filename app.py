@@ -181,9 +181,7 @@ def showWelcomeIntent(resp):
     print("Done")
     '''
 
-    '''
-    Q1 First query
-    '''
+    
 
     prodData = mongo.db.products
     salesData = mongo.db.sales
@@ -200,8 +198,10 @@ def showWelcomeIntent(resp):
         print("pId")
         print(pId)
 
-        
-
+    '''
+    Q1 First query Sales for Fan on September 1, 2017 for Chicago
+    '''    
+        '''
         salesAmountCur = salesData.find({
             "date":"2017-09-01",
             "city":"Chicago",
@@ -215,6 +215,25 @@ def showWelcomeIntent(resp):
 
         print("saless revenue")
         print(salesAmount)
+        '''
+    '''
+    Q1 Second query Sales for Fan on Q3 (1/7/2017 - 30/9/2017) for Chicago
+    ''' 
+
+        salesAmountCur = salesData.find({
+            "date": {$gt: ISODate("2017-07-01T00:00:00.000Z"), $lt: ISODate("2017-09-30T00:00:00.000Z")},
+            "city":"Chicago",
+            "pId":"P3"
+            }, {
+            "salesRev": 1
+            })
+
+        for s in salesAmountCur:
+            salesAmount = s["salesRev"]
+
+        print("saless revenue")
+        print(salesAmount)
+
 
     except Exception:
         print("Could not query database")
