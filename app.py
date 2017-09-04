@@ -10,6 +10,7 @@ from PIL import Image
 from bson.objectid import ObjectId
 import boto3
 from botocore.client import Config
+from boto.s3.connection import S3Connection
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -29,7 +30,7 @@ app = Flask(__name__)
 
 ACCESS_KEY_ID = ''
 ACCESS_SECRET_KEY = ''
-BUCKET_NAME = ''
+BUCKET_NAME = 'tonibot-bucket'
 
 # Client Access Token for accessing our API AI Bot TODO: CHANGE THIS
 CLIENT_ACCESS_TOKEN = '668999a33db140fa8fe2a7abcc79c77b'
@@ -165,15 +166,18 @@ def showWelcomeIntent(resp):
     plt.savefig(img_data, format='png')
     img_data.seek(0)
 
+    '''
     s3 = boto3.resource(
         's3',
         aws_access_key_id=ACCESS_KEY_ID,
         aws_secret_access_key=ACCESS_SECRET_KEY,
         config=Config(signature_version='s3v4')
         )
+    '''
+    s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
 
 
-    s3.Bucket(BUCKET_NAME).put_object(Key='incomes4.png', Body=img_data, ContentType='image/png')
+    s3.Bucket(BUCKET_NAME).put_object(Key='incomes7.png', Body=img_data, ContentType='image/png')
 
     print("Done")
 
