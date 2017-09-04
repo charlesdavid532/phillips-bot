@@ -200,7 +200,15 @@ def showWelcomeIntent(resp):
         print("pId")
         print(pId)
 
-        salesAmountCur = salesData.findOne({
+        
+
+    except Exception:
+        print("Could not query database")
+
+
+
+    try: 
+        salesAmountCur = salesData.find({
             "date":"2017-09-01",
             "city":"Chicago",
             "pId":"P1"
