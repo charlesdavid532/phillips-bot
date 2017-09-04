@@ -184,7 +184,8 @@ def showWelcomeIntent(resp):
     
 
     prodData = mongo.db.products
-    salesData = mongo.db.sales
+    #salesData = mongo.db.sales
+    salesData = mongo.db.sales1
     try: 
         pIdCur = prodData.find({
             "pName":"Fan"
