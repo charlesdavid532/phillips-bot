@@ -187,7 +187,7 @@ def showWelcomeIntent(resp):
     return createCardResponse(["Hi, I am Dr. Dashboard - a sales tracker. The suggestions below are some of the things I can do! At any time if you want to leave the application say Bye Dr. Dashboard! What can I do for you?"], 
         ["Show digital employees", "Bye doctor dashboard"], 
         "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
-        "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/incomes4.png", "Default accessibility text", [], [], True)
+        "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/incomes7.png", "Default accessibility text", [], [], True)
 
 
 def closeApplication(req):
