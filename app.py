@@ -182,7 +182,7 @@ def showWelcomeIntent(resp):
     '''
 
     '''
-    Q1
+    Q1 First query
     '''
 
     prodData = mongo.db.products
