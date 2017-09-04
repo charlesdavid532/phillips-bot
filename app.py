@@ -208,7 +208,7 @@ def showWelcomeIntent(resp):
 
 
     try: 
-        salesAmountCur = salesData.find({
+        salesAmountCur = salesData.findOne({
             "date":"2017-09-01",
             "city":"Chicago",
             "pId":pId
