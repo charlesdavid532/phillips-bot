@@ -217,7 +217,7 @@ def showWelcomeIntent(resp):
         print(salesAmount)
         '''
     '''
-    Q1 Second query Sales for Fan on Q3 (1/7/2017 - 30/9/2017) for Chicago
+    Q2 Second query Sales for Fan on Q3 (1/7/2017 - 30/9/2017) for Chicago
     ''' 
 
         salesAmountCur = salesData.find({
