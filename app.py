@@ -211,7 +211,7 @@ def showWelcomeIntent(resp):
         salesAmountCur = salesData.find({
             "date":"2017-09-01",
             "city":"Chicago",
-            "pId":"P1"
+            "pId":pId
             }, {
             "salesRev": 1
             })
