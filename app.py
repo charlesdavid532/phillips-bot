@@ -221,7 +221,7 @@ def showWelcomeIntent(resp):
         ''' 
 
         salesAmountCur = salesData.find({
-            "date": {$gt: ISODate("2017-07-01T00:00:00.000Z"), $lt: ISODate("2017-09-30T00:00:00.000Z")},
+            "date": {'$gt': ISODate("2017-07-01T00:00:00.000Z"), '$lt': ISODate("2017-09-30T00:00:00.000Z")},
             "city":"Chicago",
             "pId":"P3"
             }, {
