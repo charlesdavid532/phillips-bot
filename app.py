@@ -202,13 +202,7 @@ def showWelcomeIntent(resp):
 
         
 
-    except Exception:
-        print("Could not query database")
-
-
-
-    try: 
-        salesAmountCur = salesData.findOne({
+        salesAmountCur = salesData.find({
             "date":"2017-09-01",
             "city":"Chicago",
             "pId":pId
