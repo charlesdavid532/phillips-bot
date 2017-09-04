@@ -198,9 +198,9 @@ def showWelcomeIntent(resp):
         print("pId")
         print(pId)
 
-    '''
-    Q1 First query Sales for Fan on September 1, 2017 for Chicago
-    '''    
+        '''
+        Q1 First query Sales for Fan on September 1, 2017 for Chicago
+        '''    
         '''
         salesAmountCur = salesData.find({
             "date":"2017-09-01",
@@ -216,9 +216,9 @@ def showWelcomeIntent(resp):
         print("saless revenue")
         print(salesAmount)
         '''
-    '''
-    Q2 Second query Sales for Fan on Q3 (1/7/2017 - 30/9/2017) for Chicago
-    ''' 
+        '''
+        Q2 Second query Sales for Fan on Q3 (1/7/2017 - 30/9/2017) for Chicago
+        ''' 
 
         salesAmountCur = salesData.find({
             "date": {$gt: ISODate("2017-07-01T00:00:00.000Z"), $lt: ISODate("2017-09-30T00:00:00.000Z")},
