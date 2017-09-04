@@ -10,7 +10,6 @@ from PIL import Image
 from bson.objectid import ObjectId
 import boto3
 from botocore.client import Config
-from boto.s3.connection import S3Connection
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -166,16 +165,17 @@ def showWelcomeIntent(resp):
     plt.savefig(img_data, format='png')
     img_data.seek(0)
 
-    '''
+    
     s3 = boto3.resource(
         's3',
-        aws_access_key_id=ACCESS_KEY_ID,
-        aws_secret_access_key=ACCESS_SECRET_KEY,
+        aws_access_key_id=os.environ['S3_KEY'],
+        aws_secret_access_key=os.environ['S3_SECRET'],
         config=Config(signature_version='s3v4')
         )
+    
     '''
     s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
-
+    '''
 
     s3.Bucket(BUCKET_NAME).put_object(Key='incomes7.png', Body=img_data, ContentType='image/png')
 
