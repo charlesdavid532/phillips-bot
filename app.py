@@ -187,29 +187,29 @@ def showWelcomeIntent(resp):
 
     prodData = mongo.db.products
     salesData = mongo.db.sales
-        try: 
-            pId = prodData.find({
-                "pName":"Fan"
-                },{
-                "pId": 1
-                })
+    try: 
+        pId = prodData.find({
+            "pName":"Fan"
+            },{
+            "pId": 1
+            })
 
-            print("pId")
-            print(pId)
+        print("pId")
+        print(pId)
 
-            salesAmount = salesData.find({
-                "date":"2017-09-01",
-                "city":"Chicago",
-                "pId":pId
-                }, {
-                "salesRev": 1
-                })
+        salesAmount = salesData.find({
+            "date":"2017-09-01",
+            "city":"Chicago",
+            "pId":pId
+            }, {
+            "salesRev": 1
+            })
 
-            print("saless revenue")
-            print(salesAmount)
+        print("saless revenue")
+        print(salesAmount)
 
-        except Exception:
-            print("Could not query database")
+    except Exception:
+        print("Could not query database")
 
     return createCardResponse(["Hi, I am Dr. Dashboard - a sales tracker. The suggestions below are some of the things I can do! At any time if you want to leave the application say Bye Dr. Dashboard! What can I do for you?"], 
         ["Show digital employees", "Bye doctor dashboard"], 
