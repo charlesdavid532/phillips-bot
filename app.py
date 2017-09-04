@@ -145,6 +145,7 @@ def showWelcomeIntent(resp):
     '''
     Inserting a chart
     '''
+    '''
     objects = ('DD', 'Ind', 'LO', 'GE', 'UK')
 
     incomes = [1000, 2300, 3000, 111, 1456]
@@ -173,16 +174,42 @@ def showWelcomeIntent(resp):
         config=Config(signature_version='s3v4')
         )
     
-    '''
-    s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
-    '''
+
 
     s3.Bucket(BUCKET_NAME).put_object(Key='incomes7.png', Body=img_data, ContentType='image/png')
 
     print("Done")
+    '''
 
+    '''
+    Q1
+    '''
 
+    prodData = mongo.db.products
+    salesData = mongo.db.sales
+        try: 
+            pId = prodData.find({
+                "pName":"Fan"
+                },{
+                "pId": 1
+                })
 
+            print("pId")
+            print(pId)
+
+            salesAmount = salesData.find({
+                "date":"2017-09-01",
+                "city":"Chicago",
+                "pId":pId
+                }, {
+                "salesRev": 1
+                })
+
+            print("saless revenue")
+            print(salesAmount)
+
+        except Exception:
+            print("Could not query database")
 
     return createCardResponse(["Hi, I am Dr. Dashboard - a sales tracker. The suggestions below are some of the things I can do! At any time if you want to leave the application say Bye Dr. Dashboard! What can I do for you?"], 
         ["Show digital employees", "Bye doctor dashboard"], 
