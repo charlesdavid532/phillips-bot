@@ -203,14 +203,14 @@ def showWelcomeIntent(resp):
         salesAmountCur = salesData.findOne({
             "date":"2017-09-01",
             "city":"Chicago",
-            "pId":pId
+            "pId":"P1"
             }, {
             "salesRev": 1
             })
 
         for s in salesAmountCur:
             salesAmount = s["salesRev"]
-        
+
         print("saless revenue")
         print(salesAmount)
 
