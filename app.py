@@ -188,23 +188,29 @@ def showWelcomeIntent(resp):
     prodData = mongo.db.products
     salesData = mongo.db.sales
     try: 
-        pId = prodData.find({
+        pIdCur = prodData.find({
             "pName":"Fan"
             },{
             "pId": 1
-            }).toArray()
+            })
+
+        for s in pIdCur:
+            pId = s["pId"]
 
         print("pId")
         print(pId)
 
-        salesAmount = salesData.findOne({
+        salesAmountCur = salesData.findOne({
             "date":"2017-09-01",
             "city":"Chicago",
-            "pId":pId[0]["pId"]
+            "pId":pId
             }, {
             "salesRev": 1
             })
 
+        for s in salesAmountCur:
+            salesAmount = s["salesRev"]
+        
         print("saless revenue")
         print(salesAmount)
 
