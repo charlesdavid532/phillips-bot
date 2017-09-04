@@ -192,15 +192,15 @@ def showWelcomeIntent(resp):
             "pName":"Fan"
             },{
             "pId": 1
-            })
+            }).toArray()
 
         print("pId")
         print(pId)
 
-        salesAmount = salesData.find({
+        salesAmount = salesData.findOne({
             "date":"2017-09-01",
             "city":"Chicago",
-            "pId":pId
+            "pId":pId[0]["pId"]
             }, {
             "salesRev": 1
             })
