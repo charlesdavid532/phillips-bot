@@ -189,7 +189,7 @@ def showWelcomeIntent(resp):
     salesData = mongo.db.sales1
     try:
     '''
-        '''
+    '''
         pIdCur = prodData.find({
             "pName":"Fan"
             },{
@@ -201,11 +201,11 @@ def showWelcomeIntent(resp):
 
         print("pId")
         print(pId)
-        '''
-        '''
+    '''
+    '''
         Q1 First query Sales for Fan on September 1, 2017 for Chicago
-        '''    
-        '''
+    '''    
+    '''
         salesAmountCur = salesData.find({
             "date":"2017-09-01",
             "city":"Chicago",
@@ -219,11 +219,11 @@ def showWelcomeIntent(resp):
 
         print("saless revenue")
         print(salesAmount)
-        '''
-        '''
+    '''
+    '''
         Q2 Second query Sales for Fan on Q3 (1/7/2017 - 30/9/2017) for Chicago
-        ''' 
-        '''
+    ''' 
+    '''
         salesAmountCur = salesData.find({
             "date": {'$gt': datetime(2017,7,1), '$lt': datetime(2017,9,30)},
             "city":"Chicago",
@@ -237,7 +237,7 @@ def showWelcomeIntent(resp):
 
         print("saless revenue")
         print(salesAmount)
-        '''
+    '''
 
        
     '''
