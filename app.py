@@ -335,10 +335,12 @@ def parseDate(date):
     
     return {"startDate": date, "endDate": ""}
 
-
+'''
+Returns an array of cities (even if it is a single city)
+'''
 def parseUserRegion(parameters):
     if parameters.get('sys.geo-city-us') != None:
-        return parameters.get('sys.geo-city-us')
+        return [parameters.get('sys.geo-city-us')]
     elif parameters.get('sys.geo-state-us') != None:
         return parseState(parameters.get('sys.geo-state-us'))
     elif parameters.get('region') != None:
@@ -354,6 +356,7 @@ def parseState(state):
     print ("This function should return a list of us cities linked to this state")
 
     stateData = mongo.db.states
+    cities = []
     try:
         stateCur = stateData.find({            
             "state":state
@@ -362,7 +365,7 @@ def parseState(state):
             })
 
         for s in stateCur:
-            cities = s["city"]
+            cities.append(s["city"])
 
         return cities
 
@@ -391,6 +394,7 @@ def parseRegion(region):
 
 
     regionData = mongo.db.region
+    cities = []
     try:
         regionCur = regionData.find({            
             "region":region
@@ -399,7 +403,7 @@ def parseRegion(region):
             })
 
         for r in regionCur:
-            cities = r["city"]
+            cities.append(r["city"])
 
         return cities
 
