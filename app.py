@@ -140,7 +140,7 @@ def itemSelected(app):
 def showWelcomeIntent(resp):
     print ("Inside show welcome intent")
 
-    getSalesAmount(parseDate("2017-08-31"),"Chicago","P1")
+    getSalesAmount(parseDate("2017-08-31"),["Chicago"],"P1")
 
 
     '''
