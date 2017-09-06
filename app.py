@@ -333,7 +333,7 @@ def parseDateRange(datePeriod):
 def parseDate(date):
     print("Inside Parse for Date")
     
-    return {"startDate": startDate, "endDate": ""}
+    return {"startDate": date, "endDate": ""}
 
 
 def parseUserRegion(parameters):
