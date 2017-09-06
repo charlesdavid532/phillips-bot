@@ -140,6 +140,7 @@ def itemSelected(app):
 def showWelcomeIntent(resp):
     print ("Inside show welcome intent")
 
+    getSalesAmount(parseDate("2017-08-31"),"Chicago","P1")
 
 
     '''
@@ -182,11 +183,13 @@ def showWelcomeIntent(resp):
     '''
 
     
-
+    '''
     prodData = mongo.db.products
     #salesData = mongo.db.sales
     salesData = mongo.db.sales1
-    try: 
+    try:
+    '''
+        '''
         pIdCur = prodData.find({
             "pName":"Fan"
             },{
@@ -198,7 +201,7 @@ def showWelcomeIntent(resp):
 
         print("pId")
         print(pId)
-
+        '''
         '''
         Q1 First query Sales for Fan on September 1, 2017 for Chicago
         '''    
@@ -220,7 +223,7 @@ def showWelcomeIntent(resp):
         '''
         Q2 Second query Sales for Fan on Q3 (1/7/2017 - 30/9/2017) for Chicago
         ''' 
-
+        '''
         salesAmountCur = salesData.find({
             "date": {'$gt': datetime(2017,7,1), '$lt': datetime(2017,9,30)},
             "city":"Chicago",
@@ -234,15 +237,235 @@ def showWelcomeIntent(resp):
 
         print("saless revenue")
         print(salesAmount)
+        '''
 
-
+       
+    '''
     except Exception:
         print("Could not query database")
+    '''
+
 
     return createCardResponse(["Hi, I am Dr. Dashboard - a sales tracker. The suggestions below are some of the things I can do! At any time if you want to leave the application say Bye Dr. Dashboard! What can I do for you?"], 
         ["Show digital employees", "Bye doctor dashboard"], 
         "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
         "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/incomes7.png", "Default accessibility text", [], [], True)
+
+
+'''
+This function is a controller function which parses the parameters and then returns the sales amount
+'''
+def parseUserParametersGetSalesAmount(userParameters):
+
+    cities = parseUserRegion(userParameters)
+    product = parseUserProduct(userParameters)
+    period = parseUserPeriod(userParameters.get('period'))
+
+    return getSalesAmount(period, cities, product)
+'''
+This function returns the sales for the specified productId, cities, period
+TODO: Change query into an aggregation function of mongo db in order to expedite the process & lift load from python
+'''
+def getSalesAmount(period, cities, productId):
+    print ("In get sales amount")
+
+
+    salesRev = 0
+    salesData = mongo.db.sales1
+    startDate = period["startDate"]
+    endDate = period["endDate"]
+    '''
+    If it is a single date else it is a range
+    '''
+    if endDate == "":
+        try: 
+            for s in salesData.find({'pId': productId, 'city': {'$in':cities},'date': startDate}):
+                print("The sales revenue is:"+s['salesRev'])
+                salesRev = salesRev + int(s['salesRev'])
+            
+            print("The cumulative sales revenue is:" + str(salesRev))
+            return str(salesRev)
+            
+        except Exception:
+            print("Could not query database")
+            return ''
+    else:
+        try: 
+            for s in salesData.find({'pId': productId, 'city': {'$in':cities}}):
+                print ("The date is:" + s['date'])
+                if (dt.strptime(s['date'], "%Y-%m-%d") >= dt.strptime(startDate, "%Y-%m-%d")) and (dt.strptime(s['date'], "%Y-%m-%d") <= dt.strptime(endDate, "%Y-%m-%d")):
+                    print ("Inside if")
+                    print("The sales revenue is:"+s['salesRev'])
+                    salesRev = salesRev + int(s['salesRev'])
+            
+            print("The cumulative sales revenue is:" + str(salesRev))
+            return str(salesRev)
+        except Exception:
+            print("Could not query database")
+            return ''
+
+
+
+
+
+
+
+def parseUserPeriod(period):
+    '''print ("Period at index 0 is:" + period[0])'''
+    '''print ("trying to get date at index 0" + period[0].get('date'))'''
+    if period.get('date') != None:
+        return parseDate(period.get('date'))
+    elif period.get('date-period') != None:
+        return parseDateRange(period.get('date-period'))
+    else:
+        return {"startDate": "", "endDate": ""}
+                                     
+def parseDateRange(datePeriod):
+    print("Inside Parse for Date Period")
+    startDate = datePeriod.split('/')[0]
+    print ("The start date is:" + startDate)
+    endDate = datePeriod.split('/')[1]
+    print ("The end date is:" + endDate)
+    
+    return {"startDate": startDate, "endDate": endDate}
+    
+
+def parseDate(date):
+    print("Inside Parse for Date")
+    
+    return {"startDate": startDate, "endDate": ""}
+
+
+def parseUserRegion(parameters):
+    if parameters.get('sys.geo-city-us') != None:
+        return parameters.get('sys.geo-city-us')
+    elif parameters.get('sys.geo-state-us') != None:
+        return parseState(parameters.get('sys.geo-state-us'))
+    elif parameters.get('region') != None:
+        return parseRegion(parameters.get('region'))
+    else:
+        return getDefaultRegion()
+
+
+'''
+TODO:: Fill with dummy data currently
+'''
+def parseState(state):
+    print ("This function should return a list of us cities linked to this state")
+
+    stateData = mongo.db.states
+    try:
+        stateCur = stateData.find({            
+            "state":state
+            }, {
+            "city": 1
+            })
+
+        for s in stateCur:
+            cities = s["city"]
+
+        return cities
+
+    except Exception:
+        print("Could not query database")
+
+
+
+
+
+def parseRegion(region):
+    print ("This function should return a list of us cities linked to this region")
+
+    regionNotation = ""
+
+    if region == "North East":
+        regionNotation = "NE"
+    elif region == "North West":
+        regionNotation = "NW"
+    elif region == "South East":
+        region = "SE"
+    elif region == "South West":
+        region = "SW"
+    else:
+        region = ""
+
+
+    regionData = mongo.db.region
+    try:
+        regionCur = regionData.find({            
+            "region":region
+            }, {
+            "city": 1
+            })
+
+        for r in regionCur:
+            cities = r["city"]
+
+        return cities
+
+    except Exception:
+        print("Could not query database")
+
+
+
+
+
+
+def getDefaultRegion():
+    print ("This function should return a list of us cities linked to the default region")
+    return parseRegion("North East")
+
+
+def getAllRegions():
+    print ("This function should return a list of us cities in the database")
+
+
+def getAllStates():
+    print ("This function should return a list of us states in the database")
+
+
+def getAllCities():
+    print ("This function should return a list of us cities in the database")
+
+
+def parseUserProduct(parameters):
+    if parameters.get('product') != None:
+        return getPIdFromPName(parameters.get('product'))
+    else:
+        return getDefaultProduct()
+
+def getDefaultProduct():
+    print ("This function should return a list a single default product or a list of products")
+    return getPIdFromPName("Fan")
+
+def getAllProducts():
+    print ("This function should return a list of all products in the database")
+
+
+def getPIdFromPName(pName):
+    print ("This function should return a product id from a product name")
+
+
+    prodData = mongo.db.products
+    try:
+        prodCur = prodData.find({            
+            "pName":pName
+            }, {
+            "pId": 1
+            })
+
+        for p in prodCur:
+            pId = p["pId"]
+
+        return pId
+
+    except Exception:
+        print("Could not query database")
+
+
+
+
+
 
 
 def closeApplication(req):
