@@ -378,7 +378,7 @@ def parseState(state):
 
 def parseRegion(region):
     print ("This function should return a list of us cities linked to this region")
-    
+
     regionNotation = ""
 
     if region == "North East":
@@ -406,7 +406,8 @@ def parseRegion(region):
             cities.append(r["city"])
             print("The city is:"+ r["city"])
 
-        print("the list of cities is:"+ cities)
+        print("the list of cities is:"+ cities[0])
+        print("the list of cities is:"+ cities[1])
         return cities
 
     except Exception:
