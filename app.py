@@ -378,7 +378,7 @@ def parseState(state):
 
 def parseRegion(region):
     print ("This function should return a list of us cities linked to this region")
-
+    
     regionNotation = ""
 
     if region == "North East":
@@ -386,9 +386,9 @@ def parseRegion(region):
     elif region == "North West":
         regionNotation = "NW"
     elif region == "South East":
-        region = "SE"
+        regionNotation = "SE"
     elif region == "South West":
-        region = "SW"
+        regionNotation = "SW"
     else:
         region = ""
 
@@ -397,7 +397,7 @@ def parseRegion(region):
     cities = []
     try:
         regionCur = regionData.find({            
-            "region":region
+            "region":regionNotation
             }, {
             "city": 1
             })
