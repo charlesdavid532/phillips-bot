@@ -404,7 +404,9 @@ def parseRegion(region):
 
         for r in regionCur:
             cities.append(r["city"])
+            print("The city is:"+ r["city"])
 
+        print("the list of cities is:"+ cities)
         return cities
 
     except Exception:
