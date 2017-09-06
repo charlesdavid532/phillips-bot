@@ -140,7 +140,7 @@ def itemSelected(app):
 def showWelcomeIntent(resp):
     print ("Inside show welcome intent")
 
-    getSalesAmount(parseDateRange("2017-08-31/2017-09-01"),parseRegion("North East"),"P1")
+    getSalesAmount(parseDateRange("2017-08-31/2017-09-01"),parseRegion("North East"),getDefaultProduct())
 
 
     '''
@@ -406,8 +406,8 @@ def parseRegion(region):
             cities.append(r["city"])
             print("The city is:"+ r["city"])
 
-        print("the list of cities is:"+ cities[0])
-        print("the list of cities is:"+ cities[1])
+        #print("the list of cities is:"+ cities[0])
+        #print("the list of cities is:"+ cities[1])
         return cities
 
     except Exception:
