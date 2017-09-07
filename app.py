@@ -512,7 +512,7 @@ def getStrDefaultRegion():
     return "North East"
 
 def getStrDefaultStartDate():
-    return dt.strptime("2017/01/01", "%Y-%m-%d")
+    return dt.strptime("2017-01-01", "%Y-%m-%d")
 
 def getStrDefaultEndDate():
     return dt.today().strftime('%Y-%m-%d')
