@@ -271,6 +271,7 @@ def getSalesAmount(period, cities, productId):
     print ("In get sales amount")
     print ("The start date is:" + str(period["startDate"]))
     print ("The end date is:" + str(period["endDate"]))
+    print ("the first city is:" + cities[0])
     print ("The product id is:" + productId)
 
     salesRev = 0
@@ -286,7 +287,7 @@ def getSalesAmount(period, cities, productId):
                 print("The sales revenue is:"+s['salesRev'])
                 salesRev = salesRev + int(s['salesRev'])
             
-            print("The cumulative sales revenue is:" + str(salesRev))
+            print("The cumulative sales revenue for date is:" + str(salesRev))
             #return "The cumulative sales revenue is:" + str(salesRev)
             return salesRev
             
@@ -302,7 +303,7 @@ def getSalesAmount(period, cities, productId):
                     print("The sales revenue is:"+s['salesRev'])
                     salesRev = salesRev + int(s['salesRev'])
             
-            print("The cumulative sales revenue is:" + str(salesRev))
+            print("The cumulative sales revenue for date range is:" + str(salesRev))
             #return "The cumulative sales revenue is:" + str(salesRev)
             return salesRev
 
