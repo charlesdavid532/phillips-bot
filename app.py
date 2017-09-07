@@ -453,6 +453,7 @@ def parseState(state):
             })
 
         for s in stateCur:
+            print ("inside parse state the city is:" + s["city"])
             cities.append(s["city"])
 
         return cities
