@@ -338,13 +338,13 @@ def parseDate(date):
 Returns an array of cities (even if it is a single city)
 '''
 def parseUserRegion(parameters):
-    if parameters.get('geo-city-us') != None:
+    if parameters.get('geo-city-us') != None and parameters.get('geo-city-us') != "":
         return [parameters.get('geo-city-us')]
-    elif parameters.get('geo-city') != None:
+    elif parameters.get('geo-city') != None and parameters.get('geo-city') != "":
         return [parameters.get('geo-city')]
-    elif parameters.get('geo-state-us') != None:
+    elif parameters.get('geo-state-us') != None and parameters.get('geo-state-us') != "":
         return parseState(parameters.get('geo-state-us'))
-    elif parameters.get('region') != None:
+    elif parameters.get('region') != None and parameters.get('region') != "":
         return parseRegion(parameters.get('region'))
     else:
         return getDefaultRegion()
@@ -437,7 +437,7 @@ def getAllCities():
 
 
 def parseUserProduct(parameters):
-    if parameters.get('product') != None:
+    if parameters.get('product') != None and parameters.get('product') != "":
         return getPIdFromPName(parameters.get('product'))
     else:
         return getDefaultProduct()
