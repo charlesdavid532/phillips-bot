@@ -271,7 +271,6 @@ def getSalesAmount(period, cities, productId):
     print ("In get sales amount")
     print ("The start date is:" + str(period["startDate"]))
     print ("The end date is:" + str(period["endDate"]))
-    print ("The cities are:" + cities[0] + ", " + cities[1])
     print ("The product id is:" + productId)
 
     salesRev = 0
@@ -334,7 +333,7 @@ def generateResponseForSales(userParameters, period, salesRev):
     resStr += " " + generateResponseForPeriod(userParameters, period)
 
     #Adding the amount
-    resStr += "is: " + str(salesRev)
+    resStr += " is: " + str(salesRev)
 
     return resStr
 
