@@ -269,8 +269,8 @@ TODO: Change query into an aggregation function of mongo db in order to expedite
 '''
 def getSalesAmount(period, cities, productId):
     print ("In get sales amount")
-    print ("The start date is:" + period["startDate"])
-    print ("The end date is:" + period["endDate"])
+    print ("The start date is:" + str(period["startDate"]))
+    print ("The end date is:" + str(period["endDate"]))
     print ("The cities are:" + cities[0] + ", " + cities[1])
     print ("The product id is:" + productId)
 
