@@ -96,8 +96,7 @@ def handle_message():
 def processRequest(req):
     print('hi')
     if req.get("result").get("action") == "sales.statistics":
-        myCustomResult = getParameters(req)
-        res = makeWebhookResult(myCustomResult)
+        res = makeWebhookResult(parseUserParametersGetSalesAmount(req.get("result").get('parameters')))
     elif req.get("result").get("action") == "welcome.intent":
         res = showWelcomeIntent(req)
     elif req.get("result").get("action") == "showAllUsers":
@@ -129,7 +128,7 @@ def makeWebhookResult(data):
         "displayText": speech,
         # "data": data,
         # "contextOut": [],
-        "source": "DDAsisstant"
+        "source": "phillips-bot"
     }
     
 def itemSelected(app):
@@ -140,7 +139,7 @@ def itemSelected(app):
 def showWelcomeIntent(resp):
     print ("Inside show welcome intent")
 
-    getSalesAmount(parseDateRange("2017-08-31/2017-09-01"),parseRegion("North East"),getDefaultProduct())
+    #getSalesAmount(parseDateRange("2017-08-31/2017-09-01"),parseRegion("North East"),getDefaultProduct())
 
 
     '''
@@ -284,7 +283,7 @@ def getSalesAmount(period, cities, productId):
                 salesRev = salesRev + int(s['salesRev'])
             
             print("The cumulative sales revenue is:" + str(salesRev))
-            return str(salesRev)
+            return "The cumulative sales revenue is:" + str(salesRev)
             
         except Exception:
             print("Could not query database")
@@ -299,7 +298,7 @@ def getSalesAmount(period, cities, productId):
                     salesRev = salesRev + int(s['salesRev'])
             
             print("The cumulative sales revenue is:" + str(salesRev))
-            return str(salesRev)
+            return "The cumulative sales revenue is:" + str(salesRev)
         except Exception:
             print("Could not query database")
             return ''
@@ -341,6 +340,8 @@ Returns an array of cities (even if it is a single city)
 def parseUserRegion(parameters):
     if parameters.get('sys.geo-city-us') != None:
         return [parameters.get('sys.geo-city-us')]
+    elif parameters.get('sys.geo-city') != None:
+        return [parameters.get('sys.geo-city')]
     elif parameters.get('sys.geo-state-us') != None:
         return parseState(parameters.get('sys.geo-state-us'))
     elif parameters.get('region') != None:
