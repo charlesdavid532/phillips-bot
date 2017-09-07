@@ -376,8 +376,9 @@ def generateResponseForPeriod(parameters, period):
     endDate = period["endDate"]
     userPeriod = parameters.get('period')
 
-
-    if userPeriod.get('date') != None:
+    if userPeriod == "":
+        resStr += "in the duration between " + getStrDefaultStartDate() + " and " + getStrDefaultEndDate()
+    elif userPeriod.get('date') != None:
         resStr += "on " + startDate
     elif userPeriod.get('date-period') != None:
         resStr += "in the duration between " + startDate + " and " + endDate
@@ -391,12 +392,15 @@ def generateResponseForPeriod(parameters, period):
 def parseUserPeriod(period):
     '''print ("Period at index 0 is:" + period[0])'''
     '''print ("trying to get date at index 0" + period[0].get('date'))'''
-    if period.get('date') != None:
+    if period == "":
+        return {"startDate": getStrDefaultStartDate(), "endDate": getStrDefaultEndDate()}
+    elif period.get('date') != None:
         return parseDate(period.get('date'))
     elif period.get('date-period') != None:
         return parseDateRange(period.get('date-period'))
     else:
-        # TODO: Include default date
+        # TODO: Include default date (This case should never arise)
+        print ("Warning error condition reached in parse user period")
         return {"startDate": getStrDefaultStartDate(), "endDate": getStrDefaultEndDate()}
                                      
 def parseDateRange(datePeriod):
