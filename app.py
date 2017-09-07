@@ -260,7 +260,9 @@ def parseUserParametersGetSalesAmount(userParameters):
     product = parseUserProduct(userParameters)
     period = parseUserPeriod(userParameters.get('period'))
 
-    return getSalesAmount(period, cities, product)
+    salesRev = getSalesAmount(period, cities, product)
+
+    return generateResponseForSales(userParameters, period, salesRev)
 '''
 This function returns the sales for the specified productId, cities, period
 TODO: Change query into an aggregation function of mongo db in order to expedite the process & lift load from python
@@ -283,7 +285,8 @@ def getSalesAmount(period, cities, productId):
                 salesRev = salesRev + int(s['salesRev'])
             
             print("The cumulative sales revenue is:" + str(salesRev))
-            return "The cumulative sales revenue is:" + str(salesRev)
+            #return "The cumulative sales revenue is:" + str(salesRev)
+            return salesRev
             
         except Exception:
             print("Could not query database")
@@ -298,16 +301,92 @@ def getSalesAmount(period, cities, productId):
                     salesRev = salesRev + int(s['salesRev'])
             
             print("The cumulative sales revenue is:" + str(salesRev))
-            return "The cumulative sales revenue is:" + str(salesRev)
+            #return "The cumulative sales revenue is:" + str(salesRev)
+            return salesRev
+
         except Exception:
             print("Could not query database")
             return ''
 
 
+'''
+Returns a string which will be sent as response to the user when he/she queries for sales data
+
+'''
+def generateResponseForSales(userParameters, period, salesRev):
+    
+    if salesRev == "":
+        return "There was an error while querying the data and it returned null sales revenue"
+
+    resStr = "The sales revenue of "
+    
+    #Here there should be product
+    resStr += generateResponseForProduct(userParameters)
 
 
+    #Here there should be region
+    resStr += " for " + generateResponseForRegion(userParameters)
+
+    #Here there should be date/period
+    resStr += " " + generateResponseForPeriod(userParameters, period)
+
+    #Adding the amount
+    resStr += "is: " + str(salesRev)
+
+    return resStr
 
 
+'''
+Returns either the requested product name or the default product name
+'''
+def generateResponseForProduct(parameters):
+    resStr = ""
+
+    if parameters.get('product') != None and parameters.get('product') != "":
+        resStr += parameters.get('product')
+    else:
+        resStr += getStrDefaultProduct()
+
+    return resStr
+
+
+'''
+Should return either the city or the state or the region or the default that the user has requested
+'''
+def generateResponseForRegion(parameters):
+    resStr = ""
+
+    if parameters.get('geo-city-us') != None and parameters.get('geo-city-us') != "":
+        resStr = parameters.get('geo-city-us')
+    elif parameters.get('geo-city') != None and parameters.get('geo-city') != "":
+        resStr = parameters.get('geo-city')
+    elif parameters.get('geo-state-us') != None and parameters.get('geo-state-us') != "":
+        resStr = parameters.get('geo-state-us')
+    elif parameters.get('region') != None and parameters.get('region') != "":
+        resStr = parameters.get('region')
+    else:
+        resStr = getStrDefaultRegion()
+
+    return resStr
+
+
+def generateResponseForPeriod(parameters, period):
+    resStr = ""
+    startDate = period["startDate"]
+    endDate = period["endDate"]
+    userPeriod = parameters.get('period')
+
+
+    if userPeriod.get('date') != None:
+        resStr += "on " + startDate
+    elif userPeriod.get('date-period') != None:
+        resStr += "in the duration between " + startDate + " and " + endDate
+    else:
+        # TODO: Include default date
+        resStr += "in the duration between " + getStrDefaultStartDate() + " and " + getStrDefaultEndDate()
+
+    return resStr
+    
 
 def parseUserPeriod(period):
     '''print ("Period at index 0 is:" + period[0])'''
@@ -317,7 +396,8 @@ def parseUserPeriod(period):
     elif period.get('date-period') != None:
         return parseDateRange(period.get('date-period'))
     else:
-        return {"startDate": "", "endDate": ""}
+        # TODO: Include default date
+        return {"startDate": getStrDefaultStartDate(), "endDate": getStrDefaultEndDate()}
                                      
 def parseDateRange(datePeriod):
     print("Inside Parse for Date Period")
@@ -421,8 +501,20 @@ def parseRegion(region):
 
 def getDefaultRegion():
     print ("This function should return a list of us cities linked to the default region")
-    return parseRegion("North East")
+    return parseRegion(getStrDefaultRegion())
 
+
+def getStrDefaultRegion():
+    return "North East"
+
+def getStrDefaultStartDate():
+    return dt.strptime("2017/01/01", "%Y-%m-%d")
+
+def getStrDefaultEndDate():
+    return dt.today().strftime('%Y-%m-%d')
+
+def getStrDefaultProduct():
+    return "Fan"
 
 def getAllRegions():
     print ("This function should return a list of us cities in the database")
@@ -444,7 +536,7 @@ def parseUserProduct(parameters):
 
 def getDefaultProduct():
     print ("This function should return a list a single default product or a list of products")
-    return getPIdFromPName("Fan")
+    return getPIdFromPName(getStrDefaultProduct())
 
 def getAllProducts():
     print ("This function should return a list of all products in the database")
