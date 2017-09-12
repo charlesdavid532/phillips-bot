@@ -359,11 +359,11 @@ Should return either the city or the state or the region or the default that the
 def generateResponseForRegion(parameters):
     resStr = ""
 
-    if parameters.get('geo-city-us') != None and parameters.get('geo-city-us') != "":
+    if parameters.get('geo-city-us') != None and parameters.get('geo-city-us') != "" and parameters.get('geo-city-us') != []:
         resStr = parameters.get('geo-city-us')
-    elif parameters.get('geo-city') != None and parameters.get('geo-city') != "":
+    elif parameters.get('geo-city') != None and parameters.get('geo-city') != "" and parameters.get('geo-city') != []:
         resStr = parameters.get('geo-city')
-    elif parameters.get('geo-state-us') != None and parameters.get('geo-state-us') != "":
+    elif parameters.get('geo-state-us') != None and parameters.get('geo-state-us') != "" and parameters.get('geo-state-us') != []:
         resStr = parameters.get('geo-state-us')
     elif parameters.get('region') != None and parameters.get('region') != "":
         resStr = parameters.get('region')
