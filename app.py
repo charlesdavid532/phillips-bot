@@ -425,11 +425,11 @@ def parseDate(date):
 Returns an array of cities (even if it is a single city)
 '''
 def parseUserRegion(parameters):
-    if parameters.get('geo-city-us') != None and parameters.get('geo-city-us') != "":
+    if parameters.get('geo-city-us') != None and parameters.get('geo-city-us') != "" and parameters.get('geo-city-us') != []:
         return [parameters.get('geo-city-us')]
-    elif parameters.get('geo-city') != None and parameters.get('geo-city') != "":
+    elif parameters.get('geo-city') != None and parameters.get('geo-city') != "" and parameters.get('geo-city') != []:
         return [parameters.get('geo-city')]
-    elif parameters.get('geo-state-us') != None and parameters.get('geo-state-us') != "":
+    elif parameters.get('geo-state-us') != None and parameters.get('geo-state-us') != "" and parameters.get('geo-state-us') != []:
         return parseState(parameters.get('geo-state-us'))
     elif parameters.get('region') != None and parameters.get('region') != "":
         return parseRegion(parameters.get('region'))
