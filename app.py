@@ -533,13 +533,13 @@ def generateContextResponseForPeriod(parameters, contextParameters, period):
 
     if userPeriod == "" and contextPeriod == "":
         resStr += "in the duration between " + getStrDefaultStartDate() + " and " + getStrDefaultEndDate()
-    elif userPeriod.get('date') != None:
+    elif userPeriod != "" and userPeriod.get('date') != None:
         resStr += "on " + startDate
-    elif contextPeriod.get('date') != None:
-        resStr += "on " + startDate
-    elif userPeriod.get('date-period') != None:
+    elif userPeriod != "" and userPeriod.get('date-period') != None:
         resStr += "in the duration between " + startDate + " and " + endDate
-    elif contextPeriod.get('date-period') != None:
+    elif contextPeriod != "" and contextPeriod.get('date') != None:
+        resStr += "on " + startDate    
+    elif contextPeriod != "" and contextPeriod.get('date-period') != None:
         resStr += "in the duration between " + startDate + " and " + endDate
     else:
         # TODO: Include default date
@@ -572,28 +572,28 @@ def parseContextUserPeriod(period, contextPeriod):
     '''print ("trying to get date at index 0" + period[0].get('date'))'''
     if period == "" and contextPeriod == "":
         return {"startDate": getStrDefaultStartDate(), "endDate": getStrDefaultEndDate(), "context-period": ""}
-    elif period.get('date') != None and period.get('date') != "":        
+    elif period != "" and period.get('date') != None and period.get('date') != "":        
         parsedDate = parseDate(period.get('date'))
         parseDate["context-period"] = {}
         parsedContextPeriod = parseDate["context-period"]
         parsedContextPeriod["date"] = period.get('date')
         parsedContextPeriod["date-period"] = "" 
         return parsedDate
-    elif period.get('date-period') != None and period.get('date-period') != "":
+    elif period != "" and period.get('date-period') != None and period.get('date-period') != "":
         parsedDateRange = parseDateRange(period.get('date-period'))
         parsedDateRange["context-period"] = {}
         parsedContextPeriod = parsedDateRange["context-period"]
         parsedContextPeriod["date"] = ""
         parsedContextPeriod["date-period"] = period.get('date-period')
         return parsedDateRange
-    elif contextPeriod.get('date') != None and contextPeriod.get('date') != "":
+    elif contextPeriod != "" and contextPeriod.get('date') != None and contextPeriod.get('date') != "":
         parsedDate = parseDate(contextPeriod.get('date'))
         parseDate["context-period"] = {}
         parsedContextPeriod = parseDate["context-period"]
         parsedContextPeriod["date"] = contextPeriod.get('date')
         parsedContextPeriod["date-period"] = "" 
         return parsedDate   
-    elif contextPeriod.get('date-period') != None and contextPeriod.get('date-period') != "":
+    elif contextPeriod != "" and contextPeriod.get('date-period') != None and contextPeriod.get('date-period') != "":
         parsedDateRange = parseDateRange(contextPeriod.get('date-period'))
         parsedDateRange["context-period"] = {}
         parsedContextPeriod = parsedDateRange["context-period"]
