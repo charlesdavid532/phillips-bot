@@ -574,8 +574,8 @@ def parseContextUserPeriod(period, contextPeriod):
         return {"startDate": getStrDefaultStartDate(), "endDate": getStrDefaultEndDate(), "context-period": ""}
     elif period != None and period != "" and period.get('date') != None and period.get('date') != "":        
         parsedDate = parseDate(period.get('date'))
-        parseDate["context-period"] = {}
-        parsedContextPeriod = parseDate["context-period"]
+        parsedDate["context-period"] = {}
+        parsedContextPeriod = parsedDate["context-period"]
         parsedContextPeriod["date"] = period.get('date')
         parsedContextPeriod["date-period"] = "" 
         return parsedDate
@@ -588,8 +588,8 @@ def parseContextUserPeriod(period, contextPeriod):
         return parsedDateRange
     elif contextPeriod != None and contextPeriod != "" and contextPeriod.get('date') != None and contextPeriod.get('date') != "":
         parsedDate = parseDate(contextPeriod.get('date'))
-        parseDate["context-period"] = {}
-        parsedContextPeriod = parseDate["context-period"]
+        parsedDate["context-period"] = {}
+        parsedContextPeriod = parsedDate["context-period"]
         parsedContextPeriod["date"] = contextPeriod.get('date')
         parsedContextPeriod["date-period"] = "" 
         return parsedDate   
