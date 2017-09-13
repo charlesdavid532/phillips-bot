@@ -287,7 +287,7 @@ def parseContextUserParametersGetSalesAmount(result):
 
     cities = parseContextUserRegion(userParameters, detailedSalesParameters)
     product = parseContextUserProduct(userParameters, detailedSalesParameters)
-    period = parseContextUserPeriod(userParameters.get('period'), detailedSalesParameters.get('period'))
+    period = parseContextUserPeriod(userParameters.get('period'), detailedSalesParameters.get('context-period'))
 
     salesRev = getSalesAmount(period, cities["cities"], product["product"])
 
@@ -458,8 +458,8 @@ def generateContextResponseForProduct(parameters, contextParameters):
 
     if parameters.get('product') != None and parameters.get('product') != "":
         resStr += parameters.get('product')
-    elif contextParameters.get('product') != None and contextParameters.get('product') != "":
-        resStr += contextParameters.get('product')
+    elif contextParameters.get('context-product') != None and contextParameters.get('context-product') != "":
+        resStr += contextParameters.get('context-product')
     else:
         resStr += getStrDefaultProduct()
 
@@ -487,20 +487,18 @@ def generateContextResponseForRegion(parameters, contextParameters):
 
     if parameters.get('geo-city-us') != None and parameters.get('geo-city-us') != "" and parameters.get('geo-city-us') != []:
         resStr = parameters.get('geo-city-us')
-    elif contextParameters.get('geo-city-us') != None and contextParameters.get('geo-city-us') != "" and contextParameters.get('geo-city-us') != []:
-        resStr = contextParameters.get('geo-city-us')
     elif parameters.get('geo-city') != None and parameters.get('geo-city') != "" and parameters.get('geo-city') != []:
         resStr = parameters.get('geo-city')
-    elif contextParameters.get('geo-city') != None and contextParameters.get('geo-city') != "" and contextParameters.get('geo-city') != []:
-        resStr = contextParameters.get('geo-city')
     elif parameters.get('geo-state-us') != None and parameters.get('geo-state-us') != "" and parameters.get('geo-state-us') != []:
         resStr = parameters.get('geo-state-us')
-    elif contextParameters.get('geo-state-us') != None and contextParameters.get('geo-state-us') != "" and contextParameters.get('geo-state-us') != []:
-        resStr = contextParameters.get('geo-state-us')
     elif parameters.get('region') != None and parameters.get('region') != "":
         resStr = parameters.get('region')
-    elif contextParameters.get('region') != None and contextParameters.get('region') != "":
-        resStr = contextParameters.get('region')
+    elif contextParameters.get('context-geo-city-us') != None and contextParameters.get('context-geo-city-us') != "" and contextParameters.get('context-geo-city-us') != []:
+        resStr = contextParameters.get('context-geo-city-us') 
+    elif contextParameters.get('context-geo-state-us') != None and contextParameters.get('context-geo-state-us') != "" and contextParameters.get('context-geo-state-us') != []:
+        resStr = contextParameters.get('context-geo-state-us')    
+    elif contextParameters.get('context-region') != None and contextParameters.get('context-region') != "":
+        resStr = contextParameters.get('context-region')
     else:
         resStr = getStrDefaultRegion()
 
@@ -531,7 +529,7 @@ def generateContextResponseForPeriod(parameters, contextParameters, period):
     startDate = period["startDate"]
     endDate = period["endDate"]
     userPeriod = parameters.get('period')
-    contextPeriod = contextParameters.get('period')
+    contextPeriod = contextParameters.get('context-period')
 
     if userPeriod == "" and contextPeriod == "":
         resStr += "in the duration between " + getStrDefaultStartDate() + " and " + getStrDefaultEndDate()
@@ -660,14 +658,12 @@ def parseContextUserRegion(parameters, contextParameters):
         return {'cities':parseState(parameters.get('geo-state-us')),'context-geo-city-us': '','context-geo-state-us': parameters.get('geo-state-us'),'context-region': ''}
     elif parameters.get('region') != None and parameters.get('region') != "":
         return {'cities':parseRegion(parameters.get('region')),'context-geo-city-us': '','context-geo-state-us': '','context-region': parameters.get('region')}
-    elif contextParameters.get('geo-city-us') != None and contextParameters.get('geo-city-us') != "" and contextParameters.get('geo-city-us') != []:
-        return {'cities':[contextParameters.get('geo-city-us')],'context-geo-city-us': contextParameters.get('geo-city-us'),'context-geo-state-us': '','context-region': ''}  
-    elif contextParameters.get('geo-city') != None and contextParameters.get('geo-city') != "" and contextParameters.get('geo-city') != []:
-        return {'cities':[contextParameters.get('geo-city')],'context-geo-city-us': contextParameters.get('geo-city'),'context-geo-state-us': '','context-region': ''}    
-    elif contextParameters.get('geo-state-us') != None and contextParameters.get('geo-state-us') != "" and contextParameters.get('geo-state-us') != []:
-        return {'cities':parseState(contextParameters.get('geo-state-us')),'context-geo-city-us': '','context-geo-state-us': contextParameters.get('geo-state-us'),'context-region': ''}
-    elif contextParameters.get('region') != None and contextParameters.get('region') != "":
-        return {'cities':parseRegion(contextParameters.get('region')),'context-geo-city-us': '','context-geo-state-us': '','context-region': contextParameters.get('region')}
+    elif contextParameters.get('context-geo-city-us') != None and contextParameters.get('context-geo-city-us') != "" and contextParameters.get('context-geo-city-us') != []:
+        return {'cities':[contextParameters.get('context-geo-city-us')],'context-geo-city-us': contextParameters.get('context-geo-city-us'),'context-geo-state-us': '','context-region': ''}  
+    elif contextParameters.get('context-geo-state-us') != None and contextParameters.get('context-geo-state-us') != "" and contextParameters.get('context-geo-state-us') != []:
+        return {'cities':parseState(contextParameters.get('context-geo-state-us')),'context-geo-city-us': '','context-geo-state-us': contextParameters.get('context-geo-state-us'),'context-region': ''}
+    elif contextParameters.get('context-region') != None and contextParameters.get('context-region') != "":
+        return {'cities':parseRegion(contextParameters.get('context-region')),'context-geo-city-us': '','context-geo-state-us': '','context-region': contextParameters.get('context-region')}
     else:
         return {'cities':getDefaultRegion(),'context-geo-city-us': '','context-geo-state-us': '','context-region': ''}
 
@@ -789,8 +785,8 @@ def getAllCities():
 def parseContextUserProduct(parameters, contextParameters):
     if parameters.get('product') != None and parameters.get('product') != "":
         return {'product': getPIdFromPName(parameters.get('product')), 'context-product': parameters.get('product')}
-    elif contextParameters.get('product') != None and contextParameters.get('product') != "":
-        return {'product': getPIdFromPName(contextParameters.get('product')), 'context-product': contextParameters.get('product')}
+    elif contextParameters.get('context-product') != None and contextParameters.get('context-product') != "":
+        return {'product': getPIdFromPName(contextParameters.get('context-product')), 'context-product': contextParameters.get('context-product')}
     else:
         return {'product': getDefaultProduct(), 'context-product': ''}
 
