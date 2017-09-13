@@ -533,13 +533,13 @@ def generateContextResponseForPeriod(parameters, contextParameters, period):
 
     if userPeriod == "" and contextPeriod == "":
         resStr += "in the duration between " + getStrDefaultStartDate() + " and " + getStrDefaultEndDate()
-    elif userPeriod != None and userPeriod != "" and userPeriod.get('date') != None:
+    elif userPeriod != None and userPeriod != "" and userPeriod.get('date') != None and userPeriod.get('date') != "":
         resStr += "on " + startDate
-    elif userPeriod != None and userPeriod != "" and userPeriod.get('date-period') != None:
+    elif userPeriod != None and userPeriod != "" and userPeriod.get('date-period') != None and userPeriod.get('date-period') != "":
         resStr += "in the duration between " + startDate + " and " + endDate
-    elif contextPeriod != None and contextPeriod != "" and contextPeriod.get('date') != None:
+    elif contextPeriod != None and contextPeriod != "" and contextPeriod.get('date') != None and contextPeriod.get('date') != "":
         resStr += "on " + startDate    
-    elif contextPeriod != None and contextPeriod != "" and contextPeriod.get('date-period') != None:
+    elif contextPeriod != None and contextPeriod != "" and contextPeriod.get('date-period') != None and contextPeriod.get('date-period') != "":
         resStr += "in the duration between " + startDate + " and " + endDate
     else:
         # TODO: Include default date
