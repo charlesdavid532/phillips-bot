@@ -289,10 +289,10 @@ def parseContextUserParametersGetSalesAmount(result):
     product = parseContextUserProduct(userParameters, detailedSalesParameters)
     period = parseContextUserPeriod(userParameters.get('period'), detailedSalesParameters.get('period'))
 
-    salesRev = getSalesAmount(period["period"], cities["cities"], product["product"])
+    salesRev = getSalesAmount(period, cities["cities"], product["product"])
 
     return {
-            "speech":generateContextResponseForSales(userParameters, detailedSalesParameters, period["period"], salesRev),
+            "speech":generateContextResponseForSales(userParameters, detailedSalesParameters, period, salesRev),
             "context": createContextObject(cities["context-geo-city-us"], cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"])
             }
 
@@ -346,10 +346,10 @@ def parseUserParametersGetSalesAmount(userParameters):
     product = parseUserProduct(userParameters)
     period = parseUserPeriod(userParameters.get('period'))
 
-    salesRev = getSalesAmount(period["period"], cities["cities"], product["product"])
+    salesRev = getSalesAmount(period, cities["cities"], product["product"])
 
     return {
-            "speech": generateResponseForSales(userParameters, period["period"], salesRev), 
+            "speech": generateResponseForSales(userParameters, period, salesRev), 
             "context": createContextObject(cities["context-geo-city-us"], cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"])
             }
 '''
