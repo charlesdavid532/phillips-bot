@@ -96,9 +96,11 @@ def handle_message():
 def processRequest(req):
     print('hi')
     if req.get("result").get("action") == "sales.statistics":
-        res = makeWebhookResult(parseUserParametersGetSalesAmount(req.get("result").get('parameters')))
+        parsedData = parseUserParametersGetSalesAmount(req.get("result").get('parameters'))
+        res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesOutputContext(parsedData["context"]))
     elif req.get("result").get("action") == "detailed.statistics":
-        res = makeWebhookResult(parseContextUserParametersGetSalesAmount(req.get("result")))
+        parsedData = parseContextUserParametersGetSalesAmount(req.get("result"))
+        res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesOutputContext(parsedData["context"]))
     elif req.get("result").get("action") == "welcome.intent":
         res = showWelcomeIntent(req)
     elif req.get("result").get("action") == "showAllUsers":
@@ -130,6 +132,19 @@ def makeWebhookResult(data):
         "displayText": speech,
         # "data": data,
         # "contextOut": [],
+        "source": "phillips-bot"
+    }
+
+'''
+This is a very temp function. It is used to just create a sample response in JSON format
+'''
+def makeContextWebhookResult(speech, context):
+    
+    return {
+        "speech": speech,
+        "displayText": speech,
+        # "data": data,
+        "contextOut": context,
         "source": "phillips-bot"
     }
     
@@ -274,9 +289,12 @@ def parseContextUserParametersGetSalesAmount(result):
     product = parseContextUserProduct(userParameters, detailedSalesParameters)
     period = parseContextUserPeriod(userParameters.get('period'), detailedSalesParameters.get('period'))
 
-    salesRev = getSalesAmount(period, cities, product)
+    salesRev = getSalesAmount(period["period"], cities["cities"], product["product"])
 
-    return generateContextResponseForSales(userParameters, detailedSalesParameters, period, salesRev)
+    return {
+            "speech":generateContextResponseForSales(userParameters, detailedSalesParameters, period["period"], salesRev),
+            "context": createContextObject(cities["context-geo-city-us"], cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"])
+            }
 
 '''
 This function returns the appropriate context
@@ -291,6 +309,35 @@ def getAppropriateUserContext(userContext, contextName):
     return "Context was not found"
 
 '''
+Creates and returns an output context object that can be returned as json in the response
+'''
+def createOutputContext(name, lifespan, contextObject):
+    outputContextObj ={}
+    outputContextObj["name"] = name
+    outputContextObj["lifespan"] = lifespan
+    outputContextObj["parameters"] = contextObject
+
+    return [outputContextObj]
+
+'''
+Creates and returns the detailed sales output context
+'''
+def createDetailedSalesOutputContext(contextObject):
+    return createOutputContext("detailed_sales", 5, contextObject)
+
+'''
+Creates and returns a context Object which can be sent to api.ai as context parameters
+'''
+def createContextObject(city, state, region, product, period):
+    contextObj = {}
+    contextObj["context-geo-city-us"] = city
+    contextObj["context-geo-state-us"] = state
+    contextObj["context-region"] = region
+    contextObj["context-product"] = product
+    contextObj["context-period"] = period
+    return contextObj
+
+'''
 This function is a controller function which parses the parameters and then returns the sales amount
 '''
 def parseUserParametersGetSalesAmount(userParameters):
@@ -299,9 +346,12 @@ def parseUserParametersGetSalesAmount(userParameters):
     product = parseUserProduct(userParameters)
     period = parseUserPeriod(userParameters.get('period'))
 
-    salesRev = getSalesAmount(period, cities, product)
+    salesRev = getSalesAmount(period["period"], cities["cities"], product["product"])
 
-    return generateResponseForSales(userParameters, period, salesRev)
+    return {
+            "speech": generateResponseForSales(userParameters, period["period"], salesRev), 
+            "context": createContextObject(cities["context-geo-city-us"], cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"])
+            }
 '''
 This function returns the sales for the specified productId, cities, period
 TODO: Change query into an aggregation function of mongo db in order to expedite the process & lift load from python
@@ -523,34 +573,64 @@ def parseContextUserPeriod(period, contextPeriod):
     '''print ("Period at index 0 is:" + period[0])'''
     '''print ("trying to get date at index 0" + period[0].get('date'))'''
     if period == "" and contextPeriod == "":
-        return {"startDate": getStrDefaultStartDate(), "endDate": getStrDefaultEndDate()}
-    elif period.get('date') != None:
-        return parseDate(period.get('date'))
-    elif contextPeriod.get('date') != None:
-        return parseDate(contextPeriod.get('date'))
-    elif period.get('date-period') != None:
-        return parseDateRange(period.get('date-period'))
-    elif contextPeriod.get('date-period') != None:
-        return parseDateRange(contextPeriod.get('date-period'))
+        return {"startDate": getStrDefaultStartDate(), "endDate": getStrDefaultEndDate(), "context-period": ""}
+    elif period.get('date') != None and period.get('date') != "":        
+        parsedDate = parseDate(period.get('date'))
+        parseDate["context-period"] = {}
+        parsedContextPeriod = parseDate["context-period"]
+        parsedContextPeriod["date"] = period.get('date')
+        parsedContextPeriod["date-period"] = "" 
+        return parsedDate
+    elif period.get('date-period') != None and period.get('date-period') != "":
+        parsedDateRange = parseDateRange(period.get('date-period'))
+        parsedDateRange["context-period"] = {}
+        parsedContextPeriod = parsedDateRange["context-period"]
+        parsedContextPeriod["date"] = ""
+        parsedContextPeriod["date-period"] = period.get('date-period')
+        return parsedDateRange
+    elif contextPeriod.get('date') != None and contextPeriod.get('date') != "":
+        parsedDate = parseDate(contextPeriod.get('date'))
+        parseDate["context-period"] = {}
+        parsedContextPeriod = parseDate["context-period"]
+        parsedContextPeriod["date"] = contextPeriod.get('date')
+        parsedContextPeriod["date-period"] = "" 
+        return parsedDate   
+    elif contextPeriod.get('date-period') != None and contextPeriod.get('date-period') != "":
+        parsedDateRange = parseDateRange(contextPeriod.get('date-period'))
+        parsedDateRange["context-period"] = {}
+        parsedContextPeriod = parsedDateRange["context-period"]
+        parsedContextPeriod["date"] = ""
+        parsedContextPeriod["date-period"] = contextPeriod.get('date-period')
+        return parsedDateRange
     else:
         # TODO: Include default date (This case should never arise)
         print ("Warning error condition reached in parse user period")
-        return {"startDate": getStrDefaultStartDate(), "endDate": getStrDefaultEndDate()}
+        return {"startDate": getStrDefaultStartDate(), "endDate": getStrDefaultEndDate(), "context-period": ""}
 
 
 def parseUserPeriod(period):
     '''print ("Period at index 0 is:" + period[0])'''
     '''print ("trying to get date at index 0" + period[0].get('date'))'''
     if period == "":
-        return {"startDate": getStrDefaultStartDate(), "endDate": getStrDefaultEndDate()}
-    elif period.get('date') != None:
-        return parseDate(period.get('date'))
-    elif period.get('date-period') != None:
-        return parseDateRange(period.get('date-period'))
+        return {"startDate": getStrDefaultStartDate(), "endDate": getStrDefaultEndDate(), "context-period": ""}
+    elif period.get('date') != None and period.get('date') != "":
+        parsedDate = parseDate(period.get('date'))
+        parseDate["context-period"] = {}
+        parsedContextPeriod = parseDate["context-period"]
+        parsedContextPeriod["date"] = period.get('date')
+        parsedContextPeriod["date-period"] = "" 
+        return parsedDate
+    elif period.get('date-period') != None and period.get('date-period') != "":
+        parsedDateRange = parseDateRange(period.get('date-period'))
+        parsedDateRange["context-period"] = {}
+        parsedContextPeriod = parsedDateRange["context-period"]
+        parsedContextPeriod["date"] = ""
+        parsedContextPeriod["date-period"] = period.get('date-period')
+        return parsedDateRange
     else:
         # TODO: Include default date (This case should never arise)
         print ("Warning error condition reached in parse user period")
-        return {"startDate": getStrDefaultStartDate(), "endDate": getStrDefaultEndDate()}
+        return {"startDate": getStrDefaultStartDate(), "endDate": getStrDefaultEndDate(), "context-period": ""}
                                      
 def parseDateRange(datePeriod):
     print("Inside Parse for Date Period")
@@ -573,38 +653,38 @@ Parses the context user region and returns the city
 '''
 def parseContextUserRegion(parameters, contextParameters):
     if parameters.get('geo-city-us') != None and parameters.get('geo-city-us') != "" and parameters.get('geo-city-us') != []:
-        return [parameters.get('geo-city-us')]
-    elif contextParameters.get('geo-city-us') != None and contextParameters.get('geo-city-us') != "" and contextParameters.get('geo-city-us') != []:
-        return [contextParameters.get('geo-city-us')]
+        return {'cities':[parameters.get('geo-city-us')], 'context-geo-city-us': parameters.get('geo-city-us'),'context-geo-state-us': '','context-region': ''}
     elif parameters.get('geo-city') != None and parameters.get('geo-city') != "" and parameters.get('geo-city') != []:
-        return [parameters.get('geo-city')]
-    elif contextParameters.get('geo-city') != None and contextParameters.get('geo-city') != "" and contextParameters.get('geo-city') != []:
-        return [contextParameters.get('geo-city')]
+        return {'cities':[parameters.get('geo-city')],'context-geo-city-us': parameters.get('geo-city'),'context-geo-state-us': '','context-region': ''}
     elif parameters.get('geo-state-us') != None and parameters.get('geo-state-us') != "" and parameters.get('geo-state-us') != []:
-        return parseState(parameters.get('geo-state-us'))
-    elif contextParameters.get('geo-state-us') != None and contextParameters.get('geo-state-us') != "" and contextParameters.get('geo-state-us') != []:
-        return parseState(contextParameters.get('geo-state-us'))
+        return {'cities':parseState(parameters.get('geo-state-us')),'context-geo-city-us': '','context-geo-state-us': parameters.get('geo-state-us'),'context-region': ''}
     elif parameters.get('region') != None and parameters.get('region') != "":
-        return parseRegion(parameters.get('region'))
+        return {'cities':parseRegion(parameters.get('region')),'context-geo-city-us': '','context-geo-state-us': '','context-region': parameters.get('region')}
+    elif contextParameters.get('geo-city-us') != None and contextParameters.get('geo-city-us') != "" and contextParameters.get('geo-city-us') != []:
+        return {'cities':[contextParameters.get('geo-city-us')],'context-geo-city-us': contextParameters.get('geo-city-us'),'context-geo-state-us': '','context-region': ''}  
+    elif contextParameters.get('geo-city') != None and contextParameters.get('geo-city') != "" and contextParameters.get('geo-city') != []:
+        return {'cities':[contextParameters.get('geo-city')],'context-geo-city-us': contextParameters.get('geo-city'),'context-geo-state-us': '','context-region': ''}    
+    elif contextParameters.get('geo-state-us') != None and contextParameters.get('geo-state-us') != "" and contextParameters.get('geo-state-us') != []:
+        return {'cities':parseState(contextParameters.get('geo-state-us')),'context-geo-city-us': '','context-geo-state-us': contextParameters.get('geo-state-us'),'context-region': ''}
     elif contextParameters.get('region') != None and contextParameters.get('region') != "":
-        return parseRegion(contextParameters.get('region'))
+        return {'cities':parseRegion(contextParameters.get('region')),'context-geo-city-us': '','context-geo-state-us': '','context-region': contextParameters.get('region')}
     else:
-        return getDefaultRegion()
+        return {'cities':getDefaultRegion(),'context-geo-city-us': '','context-geo-state-us': '','context-region': ''}
 
 '''
 Returns an array of cities (even if it is a single city)
 '''
 def parseUserRegion(parameters):
     if parameters.get('geo-city-us') != None and parameters.get('geo-city-us') != "" and parameters.get('geo-city-us') != []:
-        return [parameters.get('geo-city-us')]
+        return {'cities':[parameters.get('geo-city-us')],'context-geo-city-us': parameters.get('geo-city-us'),'context-geo-state-us': '','context-region': ''}
     elif parameters.get('geo-city') != None and parameters.get('geo-city') != "" and parameters.get('geo-city') != []:
-        return [parameters.get('geo-city')]
+        return {'cities':[parameters.get('geo-city')],'context-geo-city-us': parameters.get('geo-city'),'context-geo-state-us': '','context-region': ''}
     elif parameters.get('geo-state-us') != None and parameters.get('geo-state-us') != "" and parameters.get('geo-state-us') != []:
-        return parseState(parameters.get('geo-state-us'))
+        return {'cities':parseState(parameters.get('geo-state-us')),'context-geo-city-us': '','context-geo-state-us': parameters.get('geo-state-us'),'context-region': ''}
     elif parameters.get('region') != None and parameters.get('region') != "":
-        return parseRegion(parameters.get('region'))
+        return {'cities':parseRegion(parameters.get('region')),'context-geo-city-us': '','context-geo-state-us': '','context-region': parameters.get('region')}
     else:
-        return getDefaultRegion()
+        return {'cities':getDefaultRegion(),'context-geo-city-us': '','context-geo-state-us': '','context-region': ''}
 
 
 '''
@@ -708,18 +788,18 @@ def getAllCities():
 
 def parseContextUserProduct(parameters, contextParameters):
     if parameters.get('product') != None and parameters.get('product') != "":
-        return getPIdFromPName(parameters.get('product'))
+        return {'product': getPIdFromPName(parameters.get('product')), 'context-product': parameters.get('product')}
     elif contextParameters.get('product') != None and contextParameters.get('product') != "":
-        return getPIdFromPName(contextParameters.get('product'))
+        return {'product': getPIdFromPName(contextParameters.get('product')), 'context-product': contextParameters.get('product')}
     else:
-        return getDefaultProduct()
+        return {'product': getDefaultProduct(), 'context-product': ''}
 
 
 def parseUserProduct(parameters):
     if parameters.get('product') != None and parameters.get('product') != "":
-        return getPIdFromPName(parameters.get('product'))
+        return {'product': getPIdFromPName(parameters.get('product')), 'context-product': parameters.get('product')}
     else:
-        return getDefaultProduct()
+        return {'product': getDefaultProduct(), 'context-product': ''}
 
 def getDefaultProduct():
     print ("This function should return a list a single default product or a list of products")
