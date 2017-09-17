@@ -428,8 +428,8 @@ def generateProductChartController(userParameters):
     # Call a function that generates the chart
     img_data = drawProductChart(productRevenues, "Products", "Revenues", "Product wise Revenues")
 
-    #imageFileName = uuid.uuid4().hex[:6].upper()
-    imageFileName = 'product'
+    imageFileName = uuid.uuid4().hex[:6].upper()
+    #imageFileName = 'product'
     imageFileName += '.png'
     print ("The image file name is:"+ imageFileName)
     awsImageFileName = "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/" + imageFileName
