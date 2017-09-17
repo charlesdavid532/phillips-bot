@@ -282,7 +282,7 @@ def drawProductChart(productRevenues, xLabel, yLabel, title):
         xArr.append(prodRev["product"])
         print ("the product is:" + prodRev["product"])
         yArr.append(prodRev["salesRevenue"])
-        print ("the product is:" + str(prodRev["salesRevenue"]))
+        print ("the product revenue is:" + str(prodRev["salesRevenue"]))
 
 
     print ("xArr in create draw Product Chart is:")
@@ -299,6 +299,7 @@ def createBarChart(xArr, yArr, xLabel, yLabel, title):
     print ("xArr in create Bar Chart is:")
     for i in range(0, len(xArr)):
         print ("the product is:" + xArr[i])
+        print ("the product revenue is:" + str(yArr[i]))
 
     y_pos = np.arange(len(xArr))
 
@@ -411,6 +412,7 @@ def createContextObject(city, state, region, product, period):
 This function is a controller function for generating a product wise chart after parsing the user parameters
 '''
 def generateProductChartController(userParameters):
+    img_data = None
 
     cities = parseUserRegion(userParameters)
     products = parseUserProducts(userParameters)
