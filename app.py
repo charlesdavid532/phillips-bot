@@ -282,7 +282,7 @@ def drawProductChart(productRevenues, xLabel, yLabel, title):
         xArr.append(prodRev["product"])
         print ("the product is:" + prodRev["product"])
         yArr.append(prodRev["salesRevenue"])
-        print ("the product is:" + prodRev["salesRevenue"])
+        print ("the product is:" + str(prodRev["salesRevenue"]))
 
 
     print ("xArr in create draw Product Chart is:")
