@@ -101,6 +101,8 @@ def processRequest(req):
     elif req.get("result").get("action") == "detailed.statistics":
         parsedData = parseContextUserParametersGetSalesAmount(req.get("result"))
         res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesOutputContext(parsedData["context"]))
+    elif req.get("result").get("action") == "product.chart":
+        res = generateProductChartController(req.get("result").get('parameters'))
     elif req.get("result").get("action") == "welcome.intent":
         res = showWelcomeIntent(req)
     elif req.get("result").get("action") == "showAllUsers":
@@ -268,6 +270,63 @@ def showWelcomeIntent(resp):
         "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/incomes7.png", "Default accessibility text", [], [], True)
 
 
+'''
+Draws the product chart basis the parameters passed
+'''
+def drawProductChart(productRevenues, xLabel, yLabel, title):
+    xArr = []
+    yArr = []
+    for index in range(0, len(productRevenues)):
+        prodRev = productRevenues[index]
+        xArr.append(prodRev["product"])
+        yArr.append(prodRev["salesRevenue"])
+
+
+    return createBarChart(xArr, yArr, xLabel, yLabel, title)
+
+'''
+Creates a bar chart with the passed valuees
+'''
+def createBarChart(xArr, yArr, xLabel, yLabel, title):
+
+    y_pos = np.arange(len(xArr))
+
+    plt.bar(y_pos, yArr, align='center')
+    plt.xticks(y_pos, xArr)
+    plt.ylabel(yLabel)
+    plt.xlabel(xLabel)
+    plt.title(title)
+
+    #fig = plt.figure()
+    #print(fig)
+
+    #data = open('incomes_country.png', 'rb')
+    img_data = io.BytesIO()
+    plt.savefig(img_data, format='png')
+    img_data.seek(0)
+    return img_data
+
+
+
+'''
+Saves a resource to aws
+'''
+def saveResourceToAWS(img_data, img_name, content_type):
+    print("saving resource to aws")  
+    s3 = boto3.resource(
+        's3',
+        aws_access_key_id=os.environ['S3_KEY'],
+        aws_secret_access_key=os.environ['S3_SECRET'],
+        config=Config(signature_version='s3v4')
+        )
+    
+
+
+    s3.Bucket(BUCKET_NAME).put_object(Key=img_name, Body=img_data, ContentType=content_type)
+
+    print("Done")
+
+
 
 '''
 This function is a controller function and gateway for context which parses the context parameters and returns the sales amount
@@ -338,6 +397,31 @@ def createContextObject(city, state, region, product, period):
     return contextObj
 
 '''
+This function is a controller function for generating a product wise chart after parsing the user parameters
+'''
+def generateProductChartController(userParameters):
+
+    cities = parseUserRegion(userParameters)
+    products = parseUserProducts(userParameters)
+    period = parseUserPeriod(userParameters.get('period'))
+
+    # Call a function that returns the product wise revenues
+    productRevenues = getProductWiseRevenue(period, cities, products)
+
+    if productRevenues == []:
+        print ("There is a problem no product revenues were generated")
+        return ""
+    # Call a function that generates the chart
+    img_data = drawProductChart(productRevenues, "Products", "Revenues", "Product wise Revenues")
+
+    saveResourceToAWS(img_data, 'product.png', 'image/png')
+    # Call a function that creates the card response
+    return createCardResponse(["Here is the product wise chart requested"], 
+        ["Show digital employees", "Bye doctor dashboard"], 
+        "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
+        "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/product.png", "Default accessibility text", [], [], True)
+
+'''
 This function is a controller function which parses the parameters and then returns the sales amount
 '''
 def parseUserParametersGetSalesAmount(userParameters):
@@ -352,6 +436,74 @@ def parseUserParametersGetSalesAmount(userParameters):
             "speech": generateResponseForSales(userParameters, period, salesRev), 
             "context": createContextObject(cities["context-geo-city-us"], cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"])
             }
+
+
+'''
+This function returns product wise revenues (List of objects : product, salesRevenue) for the specified productId, cities, period
+TODO: Change query into an aggregation function of mongo db in order to expedite the process & lift load from python
+'''
+def getProductWiseRevenue(period, cities, productIds):
+    print ("In get product wise revenue")
+    print ("The start date is:" + str(period["startDate"]))
+    print ("The end date is:" + str(period["endDate"]))
+    print ("the first city is:" + cities[0])
+    print ("The first product id is:" + productIds[0])
+
+
+    productRevenues = []
+    salesRev = 0
+    salesData = mongo.db.sales1
+    startDate = period["startDate"]
+    endDate = period["endDate"]
+    '''
+    If it is a single date else it is a range
+    '''
+    if endDate == "":
+        for id in range(0, len(productIds)):
+            prodRev = {}
+            salesRev = 0
+
+            try: 
+                for s in salesData.find({'pId': productIds[id], 'city': {'$in':cities},'date': startDate}):
+                    print("The sales revenue is:"+s['salesRev'])
+                    salesRev = salesRev + int(s['salesRev'])
+                
+                print("The cumulative sales revenue for this product is:" + str(salesRev))
+                
+                prodRev['product'] = getPNameFromPId(productIds[id])
+                prodRev['salesRevenue'] = salesRev
+                productRevenues.append(prodRev)
+            
+            except Exception:
+                print("Could not query database")
+                return []
+
+        return productRevenues
+    else:
+        for id in range(0, len(productIds)):
+            prodRev = {}
+            salesRev = 0
+
+            try:
+                for s in salesData.find({'pId': productIds[id], 'city': {'$in':cities}}):
+                    print ("The date is:" + s['date'])
+                    if (dt.strptime(s['date'], "%Y-%m-%d") >= dt.strptime(startDate, "%Y-%m-%d")) and (dt.strptime(s['date'], "%Y-%m-%d") <= dt.strptime(endDate, "%Y-%m-%d")):
+                        print ("Inside if")
+                        print("The sales revenue is:"+s['salesRev'])
+                        salesRev = salesRev + int(s['salesRev'])
+            
+                print("The cumulative sales revenue for date range for this product is:" + str(salesRev))
+
+                prodRev['product'] = getPNameFromPId(productIds[id])
+                prodRev['salesRevenue'] = salesRev
+                productRevenues.append(prodRev)
+
+            except Exception:
+                print("Could not query database")
+                return []
+
+
+        return productRevenues
 '''
 This function returns the sales for the specified productId, cities, period
 TODO: Change query into an aggregation function of mongo db in order to expedite the process & lift load from python
@@ -791,6 +943,15 @@ def parseContextUserProduct(parameters, contextParameters):
         return {'product': getDefaultProduct(), 'context-product': ''}
 
 
+def parseUserProducts(parameters):
+    if parameters.get('product') != None and parameters.get('product') != "" and parameters.get('product') != []:
+        return {'product': getPIdsFromPNames(parameters.get('product')), 'context-product': parameters.get('product')}
+    else:
+        return {'product': [getDefaultProduct()], 'context-product': []}
+
+'''
+Note should be depreciated to accomodate multiple products (Will require change in generating response and sales amount)
+'''
 def parseUserProduct(parameters):
     if parameters.get('product') != None and parameters.get('product') != "":
         return {'product': getPIdFromPName(parameters.get('product')), 'context-product': parameters.get('product')}
@@ -803,6 +964,18 @@ def getDefaultProduct():
 
 def getAllProducts():
     print ("This function should return a list of all products in the database")
+
+
+'''
+Return an array of product ids
+{{pNames}} Array of product names
+'''
+def getPIdsFromPNames(pNames):
+    pIds = []
+    for index in range(0, len(pNames)):
+        pIds.append(getPIdFromPName(pNames[index]))
+
+    return pIds
 
 
 def getPIdFromPName(pName):
@@ -827,8 +1000,25 @@ def getPIdFromPName(pName):
 
 
 
+def getPNameFromPId(pId):
+    print ("This function should return a product name from a product id")
 
 
+    prodData = mongo.db.products
+    try:
+        prodCur = prodData.find({            
+            "pId":pId
+            }, {
+            "pName": 1
+            })
+
+        for p in prodCur:
+            pId = p["pId"]
+
+        return pId
+
+    except Exception:
+        print("Could not query database")
 
 
 def closeApplication(req):
