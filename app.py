@@ -303,7 +303,7 @@ def createBarChart(xArr, yArr, xLabel, yLabel, title):
         print ("the product revenue is:" + str(yArr[i]))
 
     y_pos = np.arange(len(xArr))
-
+    plt.gcf().clear()
     plt.bar(y_pos, yArr, align='center')
     plt.xticks(y_pos, xArr)
     plt.ylabel(yLabel)
