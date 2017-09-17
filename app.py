@@ -282,7 +282,7 @@ def drawProductChart(productRevenues, xLabel, yLabel, title):
         yArr.append(prodRev["salesRevenue"])
 
 
-    return createBarChart(xArr, yArr, xLabel, yLabel, title)
+    return createBarChart(tuple(xArr), yArr, xLabel, yLabel, title)
 
 '''
 Creates a bar chart with the passed valuees
