@@ -274,13 +274,19 @@ def showWelcomeIntent(resp):
 Draws the product chart basis the parameters passed
 '''
 def drawProductChart(productRevenues, xLabel, yLabel, title):
+    print(" In draw product chart")
     xArr = []
     yArr = []
     for index in range(0, len(productRevenues)):
         prodRev = productRevenues[index]
         xArr.append(prodRev["product"])
+        print ("the product is:" + prodRev["product"])
         yArr.append(prodRev["salesRevenue"])
 
+
+    print ("xArr in create draw Product Chart is:")
+    for i in range(0, len(xArr)):
+        print ("the product is:" + xArr[i])
 
     return createBarChart(tuple(xArr), yArr, xLabel, yLabel, title)
 
@@ -288,6 +294,10 @@ def drawProductChart(productRevenues, xLabel, yLabel, title):
 Creates a bar chart with the passed valuees
 '''
 def createBarChart(xArr, yArr, xLabel, yLabel, title):
+
+    print ("xArr in create Bar Chart is:")
+    for i in range(0, len(xArr)):
+        print ("the product is:" + xArr[i])
 
     y_pos = np.arange(len(xArr))
 
