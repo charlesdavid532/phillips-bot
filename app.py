@@ -406,7 +406,7 @@ def generateProductChartController(userParameters):
     period = parseUserPeriod(userParameters.get('period'))
 
     # Call a function that returns the product wise revenues
-    productRevenues = getProductWiseRevenue(period, cities, products)
+    productRevenues = getProductWiseRevenue(period, cities["cities"], products["product"])
 
     if productRevenues == []:
         print ("There is a problem no product revenues were generated")
