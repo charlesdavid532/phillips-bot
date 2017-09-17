@@ -15,6 +15,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import io
+import uuid
 
 try:
     import apiai
@@ -427,12 +428,17 @@ def generateProductChartController(userParameters):
     # Call a function that generates the chart
     img_data = drawProductChart(productRevenues, "Products", "Revenues", "Product wise Revenues")
 
-    saveResourceToAWS(img_data, 'product.png', 'image/png')
+    imageFileName = uuid.uuid4().hex[:6].upper()
+    imageFileName += '.png'
+    print ("The image file name is:"+ imageFileName)
+    awsImageFileName = "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/" + imageFileName
+
+    saveResourceToAWS(img_data, imageFileName, 'image/png')
     # Call a function that creates the card response
     return createCardResponse(["Here is the product wise chart requested"], 
         ["Show digital employees", "Bye doctor dashboard"], 
         "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
-        "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/product.png", "Default accessibility text", [], [], True)
+        awsImageFileName, "Default accessibility text", [], [], True)
 
 '''
 This function is a controller function which parses the parameters and then returns the sales amount
