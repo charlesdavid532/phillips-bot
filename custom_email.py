@@ -41,6 +41,7 @@ class Email(object):
 		server = smtplib.SMTP('smtp.gmail.com', 587)
 		server.ehlo()
 		server.starttls()
+		server.ehlo()
 		server.login(self.fromAddr, os.environ['GMAIL_SECRET'])
 		text = msg.as_string()
 		server.sendmail(self.fromAddr, self.toAddr, text)

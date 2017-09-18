@@ -268,7 +268,7 @@ def showWelcomeIntent(resp):
     '''
     Sending an email trial
     '''
-    myEmail = Email("charlesdavid532@gmail.com", "charlesdavid531@gmail.com","Hi","Testing",None)
+    myEmail = Email("charlesdavid2711@gmail.com", "charlesdavid531@gmail.com","Hi","Testing",None)
     myEmail.sendEmail()
 
     return createCardResponse(["Hi, I am Dr. Dashboard - a sales tracker. The suggestions below are some of the things I can do! At any time if you want to leave the application say Bye Dr. Dashboard! What can I do for you?"], 
