@@ -16,7 +16,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import io
 import uuid
-from .custom_email import Email
+from custom_email import Email
 
 try:
     import apiai
