@@ -266,7 +266,7 @@ def showWelcomeIntent(resp):
     '''
 
     '''
-    Sending an email
+    Sending an email trial
     '''
     myEmail = Email("charlesdavid531@gmail.com", "charlesdavid532@gmail.com","Hi","Testing",None)
     myEmail.sendEmail()
