@@ -47,3 +47,4 @@ class Email(object):
 
 
 	def sendSparkPostEmail(self):
+		print("Should send a email via spark")
