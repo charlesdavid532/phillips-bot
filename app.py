@@ -271,7 +271,7 @@ def showWelcomeIntent(resp):
     myAttachment = {}
     myAttachment["attachmentName"] = "1A0119.png"
     myAttachment["attachmentPath"] = "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/1A0119.png"
-    myEmail = Email("charlesdavid2711@gmail.com", "ashdwivedi@deloitte.com","Product wise sales report","As requested please find attached the product wise sales report",myAttachment)
+    myEmail = Email("charlesdavid2711@gmail.com", "abchaturvedi@deloitte.com","Product wise sales report","As requested please find attached the product wise sales report",myAttachment)
     myEmail.sendEmail()
 
     return createCardResponse(["Hi, I am Dr. Dashboard - a sales tracker. The suggestions below are some of the things I can do! At any time if you want to leave the application say Bye Dr. Dashboard! What can I do for you?"], 
