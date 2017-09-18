@@ -16,6 +16,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import io
 import uuid
+from .custom_email import Email
 
 try:
     import apiai
@@ -264,6 +265,11 @@ def showWelcomeIntent(resp):
         print("Could not query database")
     '''
 
+    '''
+    Sending an email
+    '''
+    myEmail = Email("charlesdavid531@gmail.com", "charlesdavid532@gmail.com","Hi","Testing",None)
+    myEmail.sendEmail()
 
     return createCardResponse(["Hi, I am Dr. Dashboard - a sales tracker. The suggestions below are some of the things I can do! At any time if you want to leave the application say Bye Dr. Dashboard! What can I do for you?"], 
         ["Show digital employees", "Bye doctor dashboard"], 
