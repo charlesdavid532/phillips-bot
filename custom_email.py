@@ -11,11 +11,12 @@ class Email(object):
 		self.toAddr = toAddr
 		self.subject = subject
 		self.body = body
+		self.hasAttachment = False
 
 		if attachment != None and attachment != "":
 			self.hasAttachment = True
 			self.attachmentName = attachment["attachmentName"]
-			self.attachmentBody = attachment["attachmentBody"]
+			self.attachmentPath = attachment["attachmentPath"]
 		
 		#Defining the default smtp server
 		self.smtpServer = "gmail"
@@ -37,7 +38,19 @@ class Email(object):
 		 
 		body = self.body
 		msg.attach(MIMEText(body, 'plain'))
-		 
+		
+
+		if self.hasAttachment == True:
+			filename = self.attachmentName
+			attachment = open(self.attachmentPath, "rb")
+			 
+			part = MIMEBase('application', 'octet-stream')
+			part.set_payload((attachment).read())
+			encoders.encode_base64(part)
+			part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+			 
+			msg.attach(part)
+
 		server = smtplib.SMTP('smtp.gmail.com', 587)
 		server.ehlo()
 		server.starttls()
