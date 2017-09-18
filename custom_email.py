@@ -2,6 +2,10 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import os
+import boto3
+from botocore.client import Config
+
+BUCKET_NAME = 'tonibot-bucket'
 
 class Email(object):
 	"""Class for sending Email. There are 2 types of smtp servers used gmail and sparkpost"""
@@ -42,8 +46,17 @@ class Email(object):
 
 		if self.hasAttachment == True:
 			filename = self.attachmentName
-			attachment = open(self.attachmentPath, "rb")
-			 
+			#attachment = open(self.attachmentPath, "rb")
+			
+
+			s3 = boto3.resource(
+		        's3',
+		        aws_access_key_id=os.environ['S3_KEY'],
+		        aws_secret_access_key=os.environ['S3_SECRET'],
+		        config=Config(signature_version='s3v4')
+		        )
+			attachment = s3.Object(BUCKET_NAME, filename)
+
 			part = MIMEBase('application', 'octet-stream')
 			part.set_payload((attachment).read())
 			encoders.encode_base64(part)
