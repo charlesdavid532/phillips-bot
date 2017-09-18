@@ -40,7 +40,7 @@ class Email(object):
 		 
 		server = smtplib.SMTP('smtp.gmail.com', 587)
 		server.starttls()
-		server.login(fromaddr, os.environ['GMAIL_SECRET'])
+		server.login(self.fromAddr, os.environ['GMAIL_SECRET'])
 		text = msg.as_string()
 		server.sendmail(self.fromAddr, self.toAddr, text)
 		server.quit()
