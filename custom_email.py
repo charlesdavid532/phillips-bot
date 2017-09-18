@@ -60,7 +60,8 @@ class Email(object):
 			attachment = s3.Object(BUCKET_NAME, filename)
 
 			part = MIMEBase('application', 'octet-stream')
-			part.set_payload((attachment).read())
+			#part.set_payload((attachment).read())
+			part.set_payload((attachment).get()['Body'].read())
 			encoders.encode_base64(part)
 			part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
 			 
