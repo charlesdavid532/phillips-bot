@@ -105,7 +105,7 @@ def processRequest(req):
         res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesOutputContext(parsedData["context"]))
     elif req.get("result").get("action") == "product.chart":
         res = generateProductChartController(req.get("result").get('parameters'))
-    elif req.get("result").get("action") == "send.email":
+    elif req.get("result").get("action") == "send.customEmail":
         res = generateEmailController(req.get("result"))
     elif req.get("result").get("action") == "welcome.intent":
         res = showWelcomeIntent(req)
