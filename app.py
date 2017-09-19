@@ -1481,7 +1481,7 @@ def createCardResponse(simpleResponse, sugList, title, formattedText, subtitle, 
         outputContext = []
     else:
         outputContext = contextList
-        print("The length of context list in card response is:"+str(len(outputContext))
+        print("The length of context list in card response is:"+str(len(outputContext)))
 
     cardResponse["contextOut"] = outputContext
 
