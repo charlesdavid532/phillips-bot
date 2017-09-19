@@ -465,15 +465,15 @@ def generateEmailController(result):
 
     emailParameters = parseContextEmail(userParameters, emailAttachmentParameters)
     print ("After email Parameters")
-    print ("the attachment name is:"+ emailParameters.get('context-attachment-name'))
-    print ("Email to be sent to:"+ emailParameters.get('email-to'))
+    print ("the attachment name is:"+ emailParameters['context-attachment-name'])
+    print ("Email to be sent to:"+ emailParameters['email-to'])
     '''
     Sending an email trial
     '''
     myAttachment = {}
-    myAttachment["attachmentName"] = emailParameters.get('context-attachment-name')
+    myAttachment["attachmentName"] = emailParameters['context-attachment-name']
     #myAttachment["attachmentPath"] = "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/1A0119.png"
-    myEmail = Email("charlesdavid2711@gmail.com", emailParameters.get('email-to'), "Product wise sales report","As requested please find attached the product wise sales report",myAttachment)
+    myEmail = Email("charlesdavid2711@gmail.com", emailParameters['email-to'], "Product wise sales report","As requested please find attached the product wise sales report",myAttachment)
     myEmail.sendEmail()
 
     return createCardResponse(["Email sent successfully! What else can I do for you?"], 
