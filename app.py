@@ -303,7 +303,8 @@ def drawProductChart(productRevenues, xLabel, yLabel, title):
     for i in range(0, len(xArr)):
         print ("the product is:" + xArr[i])
 
-    return createBarChart(tuple(xArr), yArr, xLabel, yLabel, title)
+    #return createBarChart(tuple(xArr), yArr, xLabel, yLabel, title)
+    return createPieChart(tuple(xArr), yArr, title)
 
 '''
 Creates a bar chart with the passed valuees
@@ -333,7 +334,48 @@ def createBarChart(xArr, yArr, xLabel, yLabel, title):
     return img_data
 
 
+def createPieChart(xArr, yArr, title):
+    #labels = 'Python', 'C++', 'Ruby', 'Java'
+    #sizes = [215, 130, 245, 210]
+    #colors = ['gold', 'yellowgreen', 'lightcoral', 'lightskyblue']
+    colors = getColorsForPieChart(len(yArr))
+    #explode = (0.1, 0, 0, 0)  # explode 1st slice
+    explode = getExplodeForPieChart(len(yArr))
 
+    # Plot
+    plt.pie(yArr, explode=explode, labels=xArr, colors=colors,
+            autopct='%1.1f%%', shadow=True, startangle=140)
+     
+    plt.axis('equal')
+    plt.title(title)
+
+    img_data = io.BytesIO()
+    plt.savefig(img_data, format='png')
+    img_data.seek(0)
+    return img_data
+
+'''
+Returns an array of colors of specified length
+'''
+def getColorsForPieChart(length):
+    return getColorsList()[:length]
+
+'''
+Returns an entire list of colors
+'''
+def getColorsList():
+    return ['gold', 'yellowgreen', 'lightcoral', 'lightskyblue', 'gray', 'pink', 'purple', 'red']
+
+'''
+Returns a tuple of explode parameters of specified length
+'''
+def getExplodeForPieChart(length):
+    return getExplodeTuple()[:length]
+'''
+Returns an entire list of explode tuple
+'''
+def getExplodeTuple():
+    return (0.1, 0, 0, 0, 0, 0, 0, 0)
 '''
 Saves a resource to aws
 '''
