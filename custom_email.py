@@ -50,7 +50,8 @@ class Email(object):
 		if self.hasAttachment == True:
 			filename = self.attachmentName
 			#attachment = open(self.attachmentPath, "rb")
-			
+			print("The attached filename is:" + filename)
+			print("The bucket name is:" + BUCKET_NAME)
 
 			s3 = boto3.resource(
 		        's3',
