@@ -1194,8 +1194,8 @@ def getEmailFromName(name):
 This function parses the parameters and assumes that there is an attachment in the context
 '''
 def parseContextEmail(parameters, contextParameters):
-    if parameters.get('given-name') != None and parameters.get('given-name') != "":
-        return {'email-to': getEmailFromName(parameters.get('given-name')), 'attachment-name': contextParameters.get('context-attachment-name')}
+    if parameters.get('contact-name') != None and parameters.get('contact-name') != "":
+        return {'email-to': getEmailFromName(parameters.get('contact-name')), 'attachment-name': contextParameters.get('context-attachment-name')}
     else:
         return {'email-to': getDefaultEmail(), 'attachment-name': contextParameters.get('context-attachment-name')}
 
