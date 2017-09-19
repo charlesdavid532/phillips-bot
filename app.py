@@ -350,6 +350,7 @@ def createPieChart(xArr, yArr, title):
     explode = getExplodeForPieChart(len(yArr))
 
     # Plot
+    plt.gcf().clear()
     plt.pie(yArr, explode=explode, labels=xArr, colors=colors,
             autopct='%1.1f%%', shadow=True, startangle=140)
      
