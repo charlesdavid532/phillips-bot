@@ -465,13 +465,15 @@ def createOutputContext(name, lifespan, contextObject):
 Creates and returns the detailed sales output context
 '''
 def createDetailedSalesOutputContext(contextObject):
-    return createOutputContextList(createOutputContext("detailed_sales", 5, contextObject))
+    #return createOutputContextList(createOutputContext("detailed_sales", 5, contextObject))
+    return [createOutputContext("detailed_sales", 5, contextObject)]
 
 '''
 Creates an output context for emails
 '''
 def createEmailOutputContext(contextObject):
-    return createOutputContextList(createOutputContext("send_chart_email", 5, contextObject))
+    #return createOutputContextList(createOutputContext("send_chart_email", 5, contextObject))
+    return [createOutputContext("send_chart_email", 3, contextObject)]
 
 '''
 Creates and returns a context Object for emails which can be sent to api.ai as context parameters
