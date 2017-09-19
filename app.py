@@ -104,7 +104,9 @@ def processRequest(req):
         parsedData = parseContextUserParametersGetSalesAmount(req.get("result"))
         res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesOutputContext(parsedData["context"]))
     elif req.get("result").get("action") == "product.chart":
-        res = generateProductChartController(req.get("result").get('parameters'))
+        #res = generateProductChartController(req.get("result").get('parameters'))
+        parsedData = generateProductChartController(req.get("result").get('parameters'))
+        res = makeContextWebhookResult(parsedData["speech"], parsedData["context"])
     elif req.get("result").get("action") == "send.customEmail":
         res = generateEmailController(req.get("result"))
     elif req.get("result").get("action") == "welcome.intent":
@@ -562,11 +564,18 @@ def generateProductChartController(userParameters):
     # Creating email context
     outputContext = createEmailOutputContext(createEmailContextObject(imageFileName))
 
+
+    return {
+            "speech": "HIIIIIIIIIIIIIIIII", 
+            "context": outputContext
+            }
     # Call a function that creates the card response
+    '''
     return createCardResponse(["Here is the product wise chart requested"], 
         ["Show digital employees", "Bye doctor dashboard"], 
         "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
         awsImageFileName, "Default accessibility text", [], [], True, outputContext)
+    '''
 
 '''
 This function is a controller function which parses the parameters and then returns the sales amount
