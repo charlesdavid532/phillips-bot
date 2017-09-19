@@ -440,8 +440,10 @@ Creates a list of the passed context objects
 TODO:: Ideally should be a separate class with an add method
 '''
 def createOutputContextList(contextObjectList):
+    print("inside createOutputContextList")
     contextList = []
     for index in range(0, len(contextObjectList)):
+        print("index is:"+index)
         contextList.append(contextObjectList)
 
     return contextList
@@ -1479,6 +1481,7 @@ def createCardResponse(simpleResponse, sugList, title, formattedText, subtitle, 
         outputContext = []
     else:
         outputContext = contextList
+        print("The length of context list in card response is:"+len(outputContext))
 
     cardResponse["contextOut"] = outputContext
 
