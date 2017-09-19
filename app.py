@@ -442,7 +442,7 @@ TODO:: Ideally should be a separate class with an add method
 def createOutputContextList(contextObjectList):
     print("inside createOutputContextList")
     contextList = []
-    for index in range(0, len(contextObjectList)):
+    for index in range(0, 1):
         print("index is:"+str(index))
         contextList.append(contextObjectList)
 
