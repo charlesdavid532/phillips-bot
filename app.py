@@ -450,6 +450,8 @@ def createOutputContextList(contextObjectList):
 Creates and returns an output context object that can be returned as json in the response
 '''
 def createOutputContext(name, lifespan, contextObject):
+    print("Inside create output context")
+    print("The name of the passed context is:::"+name)
     outputContextObj ={}
     outputContextObj["name"] = name
     outputContextObj["lifespan"] = lifespan
@@ -467,7 +469,7 @@ def createDetailedSalesOutputContext(contextObject):
 Creates an output context for emails
 '''
 def createEmailOutputContext(contextObject):
-    return createOutputContext("send_email", 5, contextObject)
+    return createOutputContext("send_chart_email", 5, contextObject)
 
 '''
 Creates and returns a context Object for emails which can be sent to api.ai as context parameters
@@ -497,7 +499,7 @@ def generateEmailController(result):
     userContext = result.get('contexts')
 
     # This context is an array. Parse this array until you get the required context
-    emailContext = getAppropriateUserContext(userContext, "send_email")
+    emailContext = getAppropriateUserContext(userContext, "send_chart_email")
 
     # If the context is not set
     if emailContext == "Context was not found":
