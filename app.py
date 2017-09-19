@@ -419,7 +419,7 @@ def createOutputContext(name, lifespan, contextObject):
 Creates and returns the detailed sales output context
 '''
 def createDetailedSalesOutputContext(contextObject):
-    return createOutputContextList([createOutputContext("detailed_sales", 5, contextObject)])
+    return createOutputContextList(createOutputContext("detailed_sales", 5, contextObject))
 
 '''
 Creates an output context for emails
@@ -510,7 +510,7 @@ def generateProductChartController(userParameters):
     # Creating Context
 
     # Creating email context
-    outputContext = createOutputContextList([createEmailOutputContext(createEmailContextObject(imageFileName))])
+    outputContext = createOutputContextList(createEmailOutputContext(createEmailContextObject(imageFileName)))
 
     # Call a function that creates the card response
     return createCardResponse(["Here is the product wise chart requested"], 
