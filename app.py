@@ -443,7 +443,7 @@ def createOutputContextList(contextObjectList):
     print("inside createOutputContextList")
     contextList = []
     for index in range(0, len(contextObjectList)):
-        print("index is:"+index)
+        print("index is:"+str(index))
         contextList.append(contextObjectList)
 
     return contextList
@@ -1481,7 +1481,7 @@ def createCardResponse(simpleResponse, sugList, title, formattedText, subtitle, 
         outputContext = []
     else:
         outputContext = contextList
-        print("The length of context list in card response is:"+len(outputContext))
+        print("The length of context list in card response is:"+str(len(outputContext))
 
     cardResponse["contextOut"] = outputContext
 
