@@ -1474,7 +1474,7 @@ def createCardResponse(simpleResponse, sugList, title, formattedText, subtitle, 
     basicCardDict["basicCard"] = createCard(title, formattedText, subtitle, imgURL, imgAccText, btnTitleList, btnUrlList)
 
     cardResponse["data"] = {}
-    cardResponse["source"] = "DDAsisstant"
+    cardResponse["source"] = "phillips-bot"
 
     #Adding context
     if contextList == None or contextList == "":
