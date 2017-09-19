@@ -307,7 +307,7 @@ def drawProductChart(productRevenues, xLabel, yLabel, title):
     return createPieChart(tuple(xArr), yArr, title)
 
 '''
-Creates a bar chart with the passed valuees
+Creates a bar chart with the passed values
 '''
 def createBarChart(xArr, yArr, xLabel, yLabel, title):
 
