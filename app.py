@@ -473,7 +473,7 @@ Creates an output context for emails
 '''
 def createEmailOutputContext(contextObject):
     #return createOutputContextList(createOutputContext("send_chart_email", 5, contextObject))
-    return [createOutputContext("send_chart_email", 3, contextObject)]
+    return [createOutputContext("chart_email", 3, contextObject)]
 
 '''
 Creates and returns a context Object for emails which can be sent to api.ai as context parameters
@@ -503,7 +503,7 @@ def generateEmailController(result):
     userContext = result.get('contexts')
 
     # This context is an array. Parse this array until you get the required context
-    emailContext = getAppropriateUserContext(userContext, "send_chart_email")
+    emailContext = getAppropriateUserContext(userContext, "chart_email")
 
     # If the context is not set
     if emailContext == "Context was not found":
