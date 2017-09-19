@@ -464,7 +464,9 @@ def generateEmailController(result):
     emailAttachmentParameters = emailContext.get('parameters')
 
     emailParameters = parseContextEmail(userParameters, emailAttachmentParameters)
-
+    print ("After email Parameters")
+    print ("the attachment name is:"+ emailParameters.get('context-attachment-name'))
+    print ("Email to be sent to:"+ emailParameters.get('email-to'))
     '''
     Sending an email trial
     '''

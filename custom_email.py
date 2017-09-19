@@ -22,6 +22,7 @@ class Email(object):
 		if attachment != None and attachment != "":
 			self.hasAttachment = True
 			self.attachment = attachment
+			print("The attachment is:" + attachment.get("attachmentName"))
 			self.attachmentName = attachment.get("attachmentName")
 			#self.attachmentPath = attachment["attachmentPath"]
 		
