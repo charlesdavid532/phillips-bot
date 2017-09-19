@@ -281,7 +281,7 @@ def showWelcomeIntent(resp):
     return createCardResponse(["Hi, I am Dr. Dashboard - a sales tracker. The suggestions below are some of the things I can do! At any time if you want to leave the application say Bye Dr. Dashboard! What can I do for you?"], 
         ["Show digital employees", "Bye doctor dashboard"], 
         "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
-        "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/incomes7.png", "Default accessibility text", [], [], True)
+        "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/incomes7.png", "Default accessibility text", [], [], True, None)
 
 
 '''
@@ -477,7 +477,7 @@ def generateEmailController(result):
     return createCardResponse(["Email sent successfully! What else can I do for you?"], 
         ["Show digital employees", "Bye doctor dashboard"], 
         "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
-        "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/blue-bot.png", "Default accessibility text", [], [], True)
+        "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/blue-bot.png", "Default accessibility text", [], [], True, None)
 
 
 '''
@@ -1160,7 +1160,7 @@ def closeApplication(req):
 
     return createCardResponse(["It was a pleasure serving you!"], [], 
         "Dr. Digital", "Hope to see you again soon!", "", 
-        "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/blue-bot.png", "Default accessibility text", [], [], False)
+        "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/blue-bot.png", "Default accessibility text", [], [], False, None)
 
 def showDetailedBio(req):
     print("wow")
@@ -1188,7 +1188,7 @@ def showDetailedBio(req):
 
         return createCardResponse(["The detailed bio of " + fullName, "Click on any one of the suggestions below or say Bye doctor digital to exit!"], ["Show digital employees", "Bye doctor digital"], 
             fullName, bio, designation, 
-            profilePhoto, "Default accessibility text", [], [], True)
+            profilePhoto, "Default accessibility text", [], [], True, None)
     else:
         print("In the else part of detailed bio")
         return makeWebhookResult('This name does not exist in the list! Say show digital employees to show all employees or say Bye doctor digital to exit')
