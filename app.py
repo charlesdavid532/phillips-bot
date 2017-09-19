@@ -471,7 +471,7 @@ def createDetailedSalesOutputContext(contextObject):
 Creates an output context for emails
 '''
 def createEmailOutputContext(contextObject):
-    return createOutputContext("send_chart_email", 5, contextObject)
+    return createOutputContextList(createOutputContext("send_chart_email", 5, contextObject))
 
 '''
 Creates and returns a context Object for emails which can be sent to api.ai as context parameters
@@ -558,7 +558,7 @@ def generateProductChartController(userParameters):
     # Creating Context
 
     # Creating email context
-    outputContext = createOutputContextList(createEmailOutputContext(createEmailContextObject(imageFileName)))
+    outputContext = createEmailOutputContext(createEmailContextObject(imageFileName))
 
     # Call a function that creates the card response
     return createCardResponse(["Here is the product wise chart requested"], 
