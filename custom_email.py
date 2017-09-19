@@ -21,8 +21,9 @@ class Email(object):
 
 		if attachment != None and attachment != "":
 			self.hasAttachment = True
-			self.attachmentName = attachment["attachmentName"]
-			self.attachmentPath = attachment["attachmentPath"]
+			self.attachment = attachment
+			self.attachmentName = attachment.get("attachmentName")
+			#self.attachmentPath = attachment["attachmentPath"]
 		
 		#Defining the default smtp server
 		self.smtpServer = "gmail"
@@ -79,3 +80,39 @@ class Email(object):
 
 	def sendSparkPostEmail(self):
 		print("Should send a email via spark")
+
+
+	def getFromAddress(self):
+		return self.fromAddr
+
+	def setFromAddress(self, fromAddr):
+		self.fromAddr = fromAddr
+
+
+	def getToAddress(self):
+		return self.toAddr
+
+	def setToAddress(self, toAddr):
+		self.toAddr = toAddr
+
+
+	def getSubject(self):
+		return self.subject
+
+	def setSubject(self, subject):
+		self.subject = subject
+
+	def getBody(self):
+		return self.body
+
+	def setBody(self, body):
+		self.body = body
+
+	def getAttachment(self):
+		return self.attachment
+
+	def setAttachment(self, attachment):
+		if attachment != None and attachment != "":
+			self.hasAttachment = True
+			self.attachment = attachment
+			self.attachmentName = attachment.get("attachmentName")

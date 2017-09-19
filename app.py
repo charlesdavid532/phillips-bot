@@ -105,6 +105,8 @@ def processRequest(req):
         res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesOutputContext(parsedData["context"]))
     elif req.get("result").get("action") == "product.chart":
         res = generateProductChartController(req.get("result").get('parameters'))
+    elif req.get("result").get("action") == "send.email":
+        res = generateEmailController(req.get("result"))
     elif req.get("result").get("action") == "welcome.intent":
         res = showWelcomeIntent(req)
     elif req.get("result").get("action") == "showAllUsers":
@@ -268,11 +270,13 @@ def showWelcomeIntent(resp):
     '''
     Sending an email trial
     '''
+    '''
     myAttachment = {}
     myAttachment["attachmentName"] = "1A0119.png"
-    myAttachment["attachmentPath"] = "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/1A0119.png"
+    #myAttachment["attachmentPath"] = "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/1A0119.png"
     myEmail = Email("charlesdavid2711@gmail.com", "abchaturvedi@deloitte.com","Product wise sales report","As requested please find attached the product wise sales report",myAttachment)
     myEmail.sendEmail()
+    '''
 
     return createCardResponse(["Hi, I am Dr. Dashboard - a sales tracker. The suggestions below are some of the things I can do! At any time if you want to leave the application say Bye Dr. Dashboard! What can I do for you?"], 
         ["Show digital employees", "Bye doctor dashboard"], 
@@ -390,6 +394,17 @@ def getAppropriateUserContext(userContext, contextName):
     return "Context was not found"
 
 '''
+Creates a list of the passed context objects
+TODO:: Ideally should be a separate class with an add method
+'''
+def createOutputContextList(contextObjectList):
+    contextList = []
+    for index in range(0, len(contextObjectList)):
+        contextList.append(contextObjectList)
+
+    return contextList
+
+'''
 Creates and returns an output context object that can be returned as json in the response
 '''
 def createOutputContext(name, lifespan, contextObject):
@@ -398,14 +413,27 @@ def createOutputContext(name, lifespan, contextObject):
     outputContextObj["lifespan"] = lifespan
     outputContextObj["parameters"] = contextObject
 
-    return [outputContextObj]
+    return outputContextObj
 
 '''
 Creates and returns the detailed sales output context
 '''
 def createDetailedSalesOutputContext(contextObject):
-    return createOutputContext("detailed_sales", 5, contextObject)
+    return createOutputContextList([createOutputContext("detailed_sales", 5, contextObject)])
 
+'''
+Creates an output context for emails
+'''
+def createEmailOutputContext(contextObject):
+    return createOutputContext("send_email", 5, contextObject)
+
+'''
+Creates and returns a context Object for emails which can be sent to api.ai as context parameters
+'''
+def createEmailContextObject(attachmentName):
+    contextObj = {}
+    contextObj["context-attachment-name"] = attachmentName
+    return contextObj
 '''
 Creates and returns a context Object which can be sent to api.ai as context parameters
 '''
@@ -417,6 +445,40 @@ def createContextObject(city, state, region, product, period):
     contextObj["context-product"] = product
     contextObj["context-period"] = period
     return contextObj
+
+
+'''
+This is a controller function for sending an email to the specified user.
+'''
+def generateEmailController(result):
+    userParameters = result.get('parameters')
+    userContext = result.get('contexts')
+
+    # This context is an array. Parse this array until you get the required context
+    emailContext = getAppropriateUserContext(userContext, "send_email")
+
+    # If the context is not set
+    if emailContext == "Context was not found":
+        return emailContext
+
+    emailAttachmentParameters = emailContext.get('parameters')
+
+    emailParameters = parseContextEmail(userParameters, emailAttachmentParameters)
+
+    '''
+    Sending an email trial
+    '''
+    myAttachment = {}
+    myAttachment["attachmentName"] = emailParameters.get('context-attachment-name')
+    #myAttachment["attachmentPath"] = "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/1A0119.png"
+    myEmail = Email("charlesdavid2711@gmail.com", emailParameters.get('email-to'), "Product wise sales report","As requested please find attached the product wise sales report",myAttachment)
+    myEmail.sendEmail()
+
+    return createCardResponse(["Email sent successfully! What else can I do for you?"], 
+        ["Show digital employees", "Bye doctor dashboard"], 
+        "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
+        "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/blue-bot.png", "Default accessibility text", [], [], True)
+
 
 '''
 This function is a controller function for generating a product wise chart after parsing the user parameters
@@ -444,11 +506,17 @@ def generateProductChartController(userParameters):
     awsImageFileName = "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/" + imageFileName
 
     saveResourceToAWS(img_data, imageFileName, 'image/png')
+
+    # Creating Context
+
+    # Creating email context
+    outputContext = createOutputContextList([createEmailOutputContext(createEmailContextObject(imageFileName))])
+
     # Call a function that creates the card response
     return createCardResponse(["Here is the product wise chart requested"], 
         ["Show digital employees", "Bye doctor dashboard"], 
         "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
-        awsImageFileName, "Default accessibility text", [], [], True)
+        awsImageFileName, "Default accessibility text", [], [], True, outputContext)
 
 '''
 This function is a controller function which parses the parameters and then returns the sales amount
@@ -951,6 +1019,9 @@ def getStrDefaultEndDate():
 def getStrDefaultProduct():
     return "Fan"
 
+def getStrDefaultName():
+    return "secretary"
+
 def getAllRegions():
     print ("This function should return a list of us cities in the database")
 
@@ -1049,6 +1120,40 @@ def getPNameFromPId(pId):
     except Exception:
         print("Could not query database")
 
+
+
+def getDefaultEmail():
+    print ("This function should return a list a single default email or a list of email")
+    return getEmailFromName(getStrDefaultName())
+
+def getEmailFromName(name):
+    print ("This function should return email address from a name")
+
+
+    contactData = mongo.db.contactInfo
+    try:
+        contactCur = contactData.find({            
+            "name":name
+            }, {
+            "email": 1
+            })
+
+        for p in contactCur:
+            emailAdd = p["email"]
+
+        return emailAdd
+
+    except Exception:
+        print("Could not query database")
+
+'''
+This function parses the parameters and assumes that there is an attachment in the context
+'''
+def parseContextEmail(parameters, contextParameters):
+    if parameters.get('given-name') != None and parameters.get('given-name') != "":
+        return {'email-to': getEmailFromName(parameters.get('given-name')), 'attachment-name': contextParameters.get('context-attachment-name')}
+    else:
+        return {'email-to': getDefaultEmail(), 'attachment-name': contextParameters.get('context-attachment-name')}
 
 def closeApplication(req):
     print("closing application")
@@ -1309,7 +1414,7 @@ def createImage():
 '''
 This function returns a card response
 '''
-def createCardResponse(simpleResponse, sugList, title, formattedText, subtitle, imgURL, imgAccText, btnTitleList, btnUrlList, expectedUserResponse):
+def createCardResponse(simpleResponse, sugList, title, formattedText, subtitle, imgURL, imgAccText, btnTitleList, btnUrlList, expectedUserResponse, contextList):
     cardResponse = {}
 
     itemsDict = {}
@@ -1322,6 +1427,15 @@ def createCardResponse(simpleResponse, sugList, title, formattedText, subtitle, 
 
     cardResponse["data"] = {}
     cardResponse["source"] = "DDAsisstant"
+
+    #Adding context
+    if contextList == None or contextList == "":
+        outputContext = []
+    else:
+        outputContext = contextList
+
+    cardResponse["contextOut"] = outputContext
+
     dataDict = cardResponse["data"]
 
     dataDict["google"] = {}
