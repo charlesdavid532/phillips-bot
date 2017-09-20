@@ -563,7 +563,7 @@ def generateProductChartController(userParameters):
         print ("There is a problem no product revenues were generated")
         return ""
     # Call a function that generates the chart
-    img_data = drawProductChart(productRevenues, chartType, "Products", "Revenues", "Product wise Revenues")
+    img_data = drawProductChart(productRevenues, chartType["chart-type"], "Products", "Revenues", "Product wise Revenues")
 
     imageFileName = uuid.uuid4().hex[:6].upper()
     #imageFileName = 'product'
