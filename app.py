@@ -555,7 +555,9 @@ def generateProductChartController(userParameters):
     products = parseUserProducts(userParameters)
     period = parseUserPeriod(userParameters.get('period'))
     chartType = parseUserChartType(userParameters)
+    mainChartFeature = parseUserMainChartFeature(userParameters)
 
+    '''
     # Call a function that returns the product wise revenues
     productRevenues = getProductWiseRevenue(period, cities["cities"], products["product"])
 
@@ -564,6 +566,9 @@ def generateProductChartController(userParameters):
         return ""
     # Call a function that generates the chart
     img_data = drawProductChart(productRevenues, chartType["chart-type"], "Products", "Revenues", "Product wise Revenues")
+    '''
+
+    img_data = drawMainChartFeatureChart(cities, products, period, chartType, mainChartFeature)
 
     imageFileName = uuid.uuid4().hex[:6].upper()
     #imageFileName = 'product'
@@ -592,6 +597,40 @@ def generateProductChartController(userParameters):
         "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
         awsImageFileName, "Default accessibility text", [], [], True, outputContext)
     
+
+'''
+This function parses the main chart feature and draws the appropriate chart
+'''
+def drawMainChartFeatureChart(cities, products, period, chartType, mainChartFeature):
+
+    mChartFeature = mainChartFeature["main-chart-feature"]
+
+    if mChartFeature == getStrProduct():
+        # Call a function that returns the product wise revenues
+        productRevenues = getProductWiseRevenue(period, cities["cities"], products["product"])
+
+        if productRevenues == []:
+            print ("There is a problem no product revenues were generated")
+            return ""
+        # Call a function that generates the chart
+        return drawProductChart(productRevenues, chartType["chart-type"], "Products", "Revenues", "Product wise Revenues")
+    elif mChartFeature == getStrCity():
+        print("This should return city wise revenues")
+    elif mChartFeature == getStrState():
+        print("This should return state wise revenues")
+    elif mChartFeature == getStrRegion():
+        print("This should return region wise revenues")
+    else:
+        print("Default returns product wise revenues")
+        # Call a function that returns the product wise revenues
+        productRevenues = getProductWiseRevenue(period, cities["cities"], products["product"])
+
+        if productRevenues == []:
+            print ("There is a problem no product revenues were generated")
+            return ""
+        # Call a function that generates the chart
+        return drawProductChart(productRevenues, chartType["chart-type"], "Products", "Revenues", "Product wise Revenues")
+
 
 '''
 This function is a controller function which parses the parameters and then returns the sales amount
@@ -1104,7 +1143,22 @@ def getStrBarChart():
     return "bar"
 
 def getStrPieChart():
-    return "pie"    
+    return "pie"
+
+def getStrDefaultMainChartFeature():
+    return getStrProduct()
+
+def getStrProduct():
+    return "product"
+
+def getStrCity():
+    return "city"
+
+def getStrState():
+    return "state"
+
+def getStrRegion():
+    return "region"    
 
 def getAllRegions():
     print ("This function should return a list of us cities in the database")
@@ -1214,6 +1268,16 @@ def parseUserChartType(parameters):
 def getDefaultChartType():
     print ("This function should return the default chart type")
     return getStrDefaultChartType()
+
+def parseUserMainChartFeature(parameters):
+    if parameters.get('main-chart-feature') != None and parameters.get('main-chart-feature') != "" and parameters.get('main-chart-feature') != []:
+        return {'main-chart-feature': parameters.get('main-chart-feature'), 'context-main-chart-feature': parameters.get('main-chart-feature')}
+    else:
+        return {'main-chart-feature': getDefaultMainChartFeature(), 'context-main-chart-feature': ""}
+
+def getDefaultMainChartFeature():
+    print ("This function should return the default main chart feature")
+    return getStrDefaultMainChartFeature()
 
 def getDefaultEmail():
     print ("This function should return a list a single default email or a list of email")
