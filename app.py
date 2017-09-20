@@ -1270,6 +1270,7 @@ def getDefaultChartType():
     return getStrDefaultChartType()
 
 def parseUserMainChartFeature(parameters):
+    print("main chart feature:"+ parameters.get('main-chart-feature'))
     if parameters.get('main-chart-feature') != None and parameters.get('main-chart-feature') != "" and parameters.get('main-chart-feature') != []:
         return {'main-chart-feature': parameters.get('main-chart-feature'), 'context-main-chart-feature': parameters.get('main-chart-feature')}
     else:
