@@ -294,7 +294,7 @@ def showWelcomeIntent(resp):
 '''
 Draws the product chart basis the parameters passed
 '''
-def drawProductChart(productRevenues, xLabel, yLabel, title):
+def drawProductChart(productRevenues, chartType, xLabel, yLabel, title):
     print(" In draw product chart")
     xArr = []
     yArr = []
@@ -310,8 +310,14 @@ def drawProductChart(productRevenues, xLabel, yLabel, title):
     for i in range(0, len(xArr)):
         print ("the product is:" + xArr[i])
 
-    #return createBarChart(tuple(xArr), yArr, xLabel, yLabel, title)
-    return createPieChart(tuple(xArr), yArr, title)
+
+    if chartType == getStrBarChart():
+        return createBarChart(tuple(xArr), yArr, xLabel, yLabel, title)
+    elif chartType == getStrPieChart():
+        return createPieChart(tuple(xArr), yArr, title)
+    else:
+        print ("there is an error in selecting the correct chart in drawProductChart")
+        return ""
 
 '''
 Creates a bar chart with the passed values
@@ -547,6 +553,7 @@ def generateProductChartController(userParameters):
     cities = parseUserRegion(userParameters)
     products = parseUserProducts(userParameters)
     period = parseUserPeriod(userParameters.get('period'))
+    chartType = parseUserChartType(userParameters)
 
     # Call a function that returns the product wise revenues
     productRevenues = getProductWiseRevenue(period, cities["cities"], products["product"])
@@ -555,7 +562,7 @@ def generateProductChartController(userParameters):
         print ("There is a problem no product revenues were generated")
         return ""
     # Call a function that generates the chart
-    img_data = drawProductChart(productRevenues, "Products", "Revenues", "Product wise Revenues")
+    img_data = drawProductChart(productRevenues, chartType, "Products", "Revenues", "Product wise Revenues")
 
     imageFileName = uuid.uuid4().hex[:6].upper()
     #imageFileName = 'product'
@@ -1089,6 +1096,15 @@ def getStrDefaultProduct():
 def getStrDefaultName():
     return "secretary"
 
+def getStrDefaultChartType():
+    return getStrBarChart()
+
+def getStrBarChart():
+    return "bar"
+
+def getStrPieChart():
+    return "pie"    
+
 def getAllRegions():
     print ("This function should return a list of us cities in the database")
 
@@ -1188,6 +1204,15 @@ def getPNameFromPId(pId):
         print("Could not query database")
 
 
+def parseUserChartType(parameters):
+    if parameters.get('chart-type') != None and parameters.get('chart-type') != "" and parameters.get('chart-type') != []:
+        return {'chart-type': parameters.get('chart-type'), 'context-chart-type': parameters.get('chart-type')}
+    else:
+        return {'chart-type': getDefaultChartType(), 'context-chart-type': ""}
+
+def getDefaultChartType():
+    print ("This function should return the default chart type")
+    return getStrDefaultChartType()
 
 def getDefaultEmail():
     print ("This function should return a list a single default email or a list of email")
