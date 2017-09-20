@@ -296,6 +296,7 @@ Draws the product chart basis the parameters passed
 '''
 def drawProductChart(productRevenues, chartType, xLabel, yLabel, title):
     print(" In draw product chart")
+    print("THe chart type passed is:"+ chartType)
     xArr = []
     yArr = []
     for index in range(0, len(productRevenues)):
@@ -317,7 +318,7 @@ def drawProductChart(productRevenues, chartType, xLabel, yLabel, title):
         return createPieChart(tuple(xArr), yArr, title)
     else:
         print ("there is an error in selecting the correct chart in drawProductChart")
-        return ""
+        return createBarChart(tuple(xArr), yArr, xLabel, yLabel, title)
 
 '''
 Creates a bar chart with the passed values
