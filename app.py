@@ -1264,7 +1264,9 @@ def parseUserChartType(parameters):
         return {'chart-type': parameters.get('chart-type'), 'context-chart-type': parameters.get('chart-type')}
     else:
         return {'chart-type': getDefaultChartType(), 'context-chart-type': ""}
-
+'''
+This function should return the default chart type
+'''
 def getDefaultChartType():
     print ("This function should return the default chart type")
     return getStrDefaultChartType()
