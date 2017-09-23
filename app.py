@@ -642,7 +642,7 @@ def parseContextGenerateProductChartController(result):
 
     img_data = None
     cities = parseContextUserRegion(userParameters, detailedChartParameters)
-    products = parseContextUserProduct(userParameters, detailedChartParameters)
+    products = parseContextUserProducts(userParameters, detailedChartParameters)
     period = parseContextUserPeriod(userParameters.get('period'), detailedChartParameters.get('context-period'))
     chartType = parseContextUserChartType(userParameters, detailedChartParameters)
     mainChartFeature = parseContextUserMainChartFeature(userParameters, detailedChartParameters)
@@ -1257,6 +1257,14 @@ def parseContextUserProduct(parameters, contextParameters):
     else:
         return {'product': getDefaultProduct(), 'context-product': ''}
 
+
+def parseContextUserProducts(parameters, contextParameters):
+    if parameters.get('product') != None and parameters.get('product') != "" and parameters.get('product') != []:
+        return {'product': getPIdsFromPNames(parameters.get('product')), 'context-product': parameters.get('product')}
+    elif contextParameters.get('context-product') != None and contextParameters.get('context-product') != ""  and contextParameters.get('context-product') != []:
+        return {'product': getPIdsFromPNames(contextParameters.get('context-product')), 'context-product': contextParameters.get('context-product')}
+    else:
+        return {'product': [getDefaultProduct()], 'context-product': ''}
 
 def parseUserProducts(parameters):
     if parameters.get('product') != None and parameters.get('product') != "" and parameters.get('product') != []:
