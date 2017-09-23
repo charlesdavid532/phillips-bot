@@ -606,6 +606,7 @@ def drawMainChartFeatureChart(cities, products, period, chartType, mainChartFeat
     mChartFeature = mainChartFeature["main-chart-feature"]
 
     if mChartFeature == getStrProduct():
+        print ("Correct if in draw Main chart feature")
         # Call a function that returns the product wise revenues
         productRevenues = getProductWiseRevenue(period, cities["cities"], products["product"])
 
@@ -1149,16 +1150,16 @@ def getStrDefaultMainChartFeature():
     return getStrProduct()
 
 def getStrProduct():
-    return "product"
+    return "product-wise"
 
 def getStrCity():
-    return "city"
+    return "city-wise"
 
 def getStrState():
-    return "state"
+    return "state-wise"
 
 def getStrRegion():
-    return "region"    
+    return "region-wise"    
 
 def getAllRegions():
     print ("This function should return a list of us cities in the database")
