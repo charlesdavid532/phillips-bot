@@ -112,6 +112,8 @@ def processRequest(req):
             "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
             parsedData["awsImageFileName"], "Default accessibility text", [], [], True, parsedData["context"])
         '''
+    elif req.get("result").get("action") == "detailed.chart":
+        res = parseContextGenerateProductChartController(req.get("result"))
     elif req.get("result").get("action") == "send.customEmail":
         res = generateEmailController(req.get("result"))
     elif req.get("result").get("action") == "welcome.intent":
@@ -483,12 +485,17 @@ def createDetailedSalesOutputContext(contextObject):
     #return createOutputContextList(createOutputContext("detailed_sales", 5, contextObject))
     return [createOutputContext("detailed_sales", 5, contextObject)]
 
+
+def createDetailedChartOutputContext(contextObject):
+    #return createOutputContextList(createOutputContext("detailed_sales", 5, contextObject))
+    return createOutputContext("detailed_chart", 5, contextObject)
 '''
 Creates an output context for emails
 '''
 def createEmailOutputContext(contextObject):
     #return createOutputContextList(createOutputContext("send_chart_email", 5, contextObject))
-    return [createOutputContext("chart_email", 3, contextObject)]
+    #return [createOutputContext("chart_email", 3, contextObject)]
+    return createOutputContext("chart_email", 5, contextObject)
 
 '''
 Creates and returns a context Object for emails which can be sent to api.ai as context parameters
@@ -507,6 +514,20 @@ def createContextObject(city, state, region, product, period):
     contextObj["context-region"] = region
     contextObj["context-product"] = product
     contextObj["context-period"] = period
+    return contextObj
+
+'''
+Creates and returns a context Object which can be sent to api.ai as context parameters for charting
+'''
+def createChartContextObject(city, state, region, product, period, chartType, mainChartFeature):
+    contextObj = {}
+    contextObj["context-geo-city-us"] = city
+    contextObj["context-geo-state-us"] = state
+    contextObj["context-region"] = region
+    contextObj["context-product"] = product
+    contextObj["context-period"] = period
+    contextObj["context-chart-type"] = chartType
+    contextObj["context-main-chart-feature"] = mainChartFeature
     return contextObj
 
 
@@ -581,7 +602,10 @@ def generateProductChartController(userParameters):
     # Creating Context
 
     # Creating email context
-    outputContext = createEmailOutputContext(createEmailContextObject(imageFileName))
+    outputContext = []
+    outputContext.append(createEmailOutputContext(createEmailContextObject(imageFileName)))
+    outputContext.append(createDetailedChartOutputContext(createChartContextObject(cities["context-geo-city-us"], 
+        cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"], chartType["context-chart-type"], mainChartFeature["context-main-chart-feature"])))
 
     '''
     return {
@@ -597,6 +621,58 @@ def generateProductChartController(userParameters):
         "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
         awsImageFileName, "Default accessibility text", [], [], True, outputContext)
     
+
+
+
+'''
+This function is a controller function and gateway for context which parses the context parameters and returns the chart
+'''
+def parseContextGenerateProductChartController(result):
+    userParameters = result.get('parameters')
+    userContext = result.get('contexts')
+
+    # This context is an array. Parse this array until you get the required context
+    detailedChartContext = getAppropriateUserContext(userContext, "detailed_chart")
+
+    # If the context is not set
+    if detailedChartContext == "Context was not found":
+        return detailedChartContext
+
+    detailedChartParameters = detailedChartContext.get('parameters')
+
+    img_data = None
+    cities = parseContextUserRegion(userParameters, detailedChartParameters)
+    product = parseContextUserProduct(userParameters, detailedChartParameters)
+    period = parseContextUserPeriod(userParameters.get('period'), detailedChartParameters.get('context-period'))
+    chartType = parseContextUserChartType(userParameters, detailedChartParameters)
+    mainChartFeature = parseContextUserMainChartFeature(userParameters, detailedChartParameters)
+
+    img_data = drawMainChartFeatureChart(cities, products, period, chartType, mainChartFeature)
+
+    imageFileName = uuid.uuid4().hex[:6].upper()
+    #imageFileName = 'product'
+    imageFileName += '.png'
+    print ("The image file name is:"+ imageFileName)
+    awsImageFileName = "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/" + imageFileName
+
+    saveResourceToAWS(img_data, imageFileName, 'image/png')
+
+    # Creating Context
+
+    # Creating email context
+    outputContext = []
+    outputContext.append(createEmailOutputContext(createEmailContextObject(imageFileName)))
+    outputContext.append(createDetailedChartOutputContext(createChartContextObject(cities["context-geo-city-us"], 
+        cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"], chartType["context-chart-type"], mainChartFeature["context-main-chart-feature"])))
+
+   
+    
+    return createCardResponse(["Here is the product wise chart requested"], 
+        ["Show digital employees", "Bye doctor dashboard"], 
+        "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
+        awsImageFileName, "Default accessibility text", [], [], True, outputContext)
+
+
 
 '''
 This function parses the main chart feature and draws the appropriate chart
@@ -1265,6 +1341,14 @@ def parseUserChartType(parameters):
         return {'chart-type': parameters.get('chart-type'), 'context-chart-type': parameters.get('chart-type')}
     else:
         return {'chart-type': getDefaultChartType(), 'context-chart-type': ""}
+
+def parseContextUserChartType(parameters, contextParameters):
+    if parameters.get('chart-type') != None and parameters.get('chart-type') != "" and parameters.get('chart-type') != []:
+        return {'chart-type': parameters.get('chart-type'), 'context-chart-type': parameters.get('chart-type')}
+    elif contextParameters.get('context-chart-type') != None and contextParameters.get('context-chart-type') != "" and parameters.get('context-chart-type') != []:
+        return {'chart-type': contextParameters.get('context-chart-type'), 'context-chart-type': contextParameters.get('context-chart-type')}
+    else:
+        return {'chart-type': getDefaultChartType(), 'context-chart-type': ""}
 '''
 This function should return the default chart type
 '''
@@ -1276,6 +1360,15 @@ def parseUserMainChartFeature(parameters):
     print("main chart feature:"+ parameters.get('main-chart-feature'))
     if parameters.get('main-chart-feature') != None and parameters.get('main-chart-feature') != "" and parameters.get('main-chart-feature') != []:
         return {'main-chart-feature': parameters.get('main-chart-feature'), 'context-main-chart-feature': parameters.get('main-chart-feature')}
+    else:
+        return {'main-chart-feature': getDefaultMainChartFeature(), 'context-main-chart-feature': ""}
+
+
+def parseContextUserMainChartFeature(parameters, contextParameters):
+    if parameters.get('main-chart-feature') != None and parameters.get('main-chart-feature') != "" and parameters.get('main-chart-feature') != []:
+        return {'main-chart-feature': parameters.get('main-chart-feature'), 'context-main-chart-feature': parameters.get('main-chart-feature')}
+    elif contextParameters.get('context-main-chart-feature') != None and contextParameters.get('context-main-chart-feature') != "" and parameters.get('context-main-chart-feature') != []:
+        return {'main-chart-feature': contextParameters.get('context-main-chart-feature'), 'context-main-chart-feature': contextParameters.get('context-main-chart-feature')}
     else:
         return {'main-chart-feature': getDefaultMainChartFeature(), 'context-main-chart-feature': ""}
 
