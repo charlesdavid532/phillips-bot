@@ -605,7 +605,7 @@ def generateProductChartController(userParameters):
     outputContext = []
     outputContext.append(createEmailOutputContext(createEmailContextObject(imageFileName)))
     outputContext.append(createDetailedChartOutputContext(createChartContextObject(cities["context-geo-city-us"], 
-        cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"], chartType["context-chart-type"], mainChartFeature["context-main-chart-feature"])))
+        cities["context-geo-state-us"], cities["context-region"], products["context-product"], period["context-period"], chartType["context-chart-type"], mainChartFeature["context-main-chart-feature"])))
 
     '''
     return {
@@ -642,7 +642,7 @@ def parseContextGenerateProductChartController(result):
 
     img_data = None
     cities = parseContextUserRegion(userParameters, detailedChartParameters)
-    product = parseContextUserProduct(userParameters, detailedChartParameters)
+    products = parseContextUserProduct(userParameters, detailedChartParameters)
     period = parseContextUserPeriod(userParameters.get('period'), detailedChartParameters.get('context-period'))
     chartType = parseContextUserChartType(userParameters, detailedChartParameters)
     mainChartFeature = parseContextUserMainChartFeature(userParameters, detailedChartParameters)
@@ -663,7 +663,7 @@ def parseContextGenerateProductChartController(result):
     outputContext = []
     outputContext.append(createEmailOutputContext(createEmailContextObject(imageFileName)))
     outputContext.append(createDetailedChartOutputContext(createChartContextObject(cities["context-geo-city-us"], 
-        cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"], chartType["context-chart-type"], mainChartFeature["context-main-chart-feature"])))
+        cities["context-geo-state-us"], cities["context-region"], products["context-product"], period["context-period"], chartType["context-chart-type"], mainChartFeature["context-main-chart-feature"])))
 
    
     
