@@ -501,7 +501,7 @@ def createDrawChartOutputContext(contextObject):
 
 def createDetailedChartOutputContext(contextObject):
     #return createOutputContextList(createOutputContext("detailed_sales", 5, contextObject))
-    return createOutputContext("detailed_chart", 5, contextObject)
+    return createOutputContext("detailed_chart", 1, contextObject)
 '''
 Creates an output context for emails
 '''
