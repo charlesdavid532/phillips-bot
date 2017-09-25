@@ -104,8 +104,8 @@ def processRequest(req):
         parsedData = parseContextUserParametersGetSalesAmount(req.get("result"))
         res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
     elif req.get("result").get("action") == "product.chart":
-        #res = generateProductChartController(req.get("result").get('parameters'))
-        res = generateProductChartController(req.get("result"))
+        res = generateProductChartController(req.get("result").get('parameters'))
+        #res = generateProductChartController(req.get("result"))
         #parsedData = generateProductChartController(req.get("result").get('parameters'))
         #res = makeContextWebhookResult(parsedData["speech"], parsedData["context"])
         '''
@@ -114,7 +114,9 @@ def processRequest(req):
             parsedData["awsImageFileName"], "Default accessibility text", [], [], True, parsedData["context"])
         '''
     elif req.get("result").get("action") == "detailed.chart":
-        res = parseContextGenerateProductChartController(req.get("result"))
+        res = generateProductChartController(req.get("result"))
+    elif req.get("result").get("action") == "convert.chart":
+        res = convertTextToProductChartController(req.get("result"))
     elif req.get("result").get("action") == "send.customEmail":
         res = generateEmailController(req.get("result"))
     elif req.get("result").get("action") == "welcome.intent":
@@ -494,7 +496,7 @@ def createDetailedSalesOutputContext(contextObject):
     return createOutputContext("detailed_sales", 5, contextObject)
 
 def createDrawChartOutputContext(contextObject):
-    return createOutputContext("draw_chart", 5, contextObject)
+    return createOutputContext("draw_chart", 1, contextObject)
 
 
 def createDetailedChartOutputContext(contextObject):
@@ -580,8 +582,8 @@ def generateEmailController(result):
 '''
 This function is a controller function for generating a product wise chart after parsing the user parameters
 '''
-def generateProductChartController(result):
-
+def convertTextToProductChartController(result):
+    img_data = None
     userParameters = result.get('parameters')
     userContext = result.get('contexts')
 
@@ -591,32 +593,15 @@ def generateProductChartController(result):
     # If the context is not set
     if drawChartContext == "Context was not found":
         return drawChartContext
-
+    
     drawChartParameters = drawChartContext.get('parameters')
-
-    img_data = None
-    '''
-    cities = parseUserRegion(userParameters)
-    products = parseUserProducts(userParameters)
-    period = parseUserPeriod(userParameters.get('period'))
-    chartType = parseUserChartType(userParameters)
-    mainChartFeature = parseUserMainChartFeature(userParameters)
-    '''
     cities = parseContextUserRegion(userParameters, drawChartParameters)
     products = parseContextUserProducts(userParameters, drawChartParameters)
     period = parseContextUserPeriod(userParameters.get('period'), drawChartParameters.get('context-period'))
     chartType = parseContextUserChartType(userParameters, drawChartParameters)
     mainChartFeature = parseContextUserMainChartFeature(userParameters, drawChartParameters)
-    '''
-    # Call a function that returns the product wise revenues
-    productRevenues = getProductWiseRevenue(period, cities["cities"], products["product"])
+    
 
-    if productRevenues == []:
-        print ("There is a problem no product revenues were generated")
-        return ""
-    # Call a function that generates the chart
-    img_data = drawProductChart(productRevenues, chartType["chart-type"], "Products", "Revenues", "Product wise Revenues")
-    '''
 
     img_data = drawMainChartFeatureChart(cities, products, period, chartType, mainChartFeature)
 
@@ -636,13 +621,43 @@ def generateProductChartController(result):
     outputContext.append(createDetailedChartOutputContext(createChartContextObject(cities["context-geo-city-us"], 
         cities["context-geo-state-us"], cities["context-region"], products["context-product"], period["context-period"], chartType["context-chart-type"], mainChartFeature["context-main-chart-feature"])))
 
-    '''
-    return {
-            "speech": "HIIIIIIIIIIIIIIIII", 
-            "context": outputContext,
-            "awsImageFileName": awsImageFileName
-            }
-    '''
+    # Call a function that creates the card response
+    
+    return createCardResponse(["Here is the product wise chart requested"], 
+        ["Show digital employees", "Bye doctor dashboard"], 
+        "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
+        awsImageFileName, "Default accessibility text", [], [], True, outputContext)
+'''
+This function is a controller function for generating a product wise chart after parsing the user parameters
+'''
+def generateProductChartController(userParameters):
+    img_data = None
+   
+    cities = parseUserRegion(userParameters)
+    products = parseUserProducts(userParameters)
+    period = parseUserPeriod(userParameters.get('period'))
+    chartType = parseUserChartType(userParameters)
+    mainChartFeature = parseUserMainChartFeature(userParameters)
+
+    img_data = drawMainChartFeatureChart(cities, products, period, chartType, mainChartFeature)
+
+    imageFileName = uuid.uuid4().hex[:6].upper()
+    #imageFileName = 'product'
+    imageFileName += '.png'
+    print ("The image file name is:"+ imageFileName)
+    awsImageFileName = "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/" + imageFileName
+
+    saveResourceToAWS(img_data, imageFileName, 'image/png')
+
+    # Creating Context
+
+    # Creating email context
+    outputContext = []
+    outputContext.append(createEmailOutputContext(createEmailContextObject(imageFileName)))
+    outputContext.append(createDetailedChartOutputContext(createChartContextObject(cities["context-geo-city-us"], 
+        cities["context-geo-state-us"], cities["context-region"], products["context-product"], period["context-period"], chartType["context-chart-type"], mainChartFeature["context-main-chart-feature"])))
+
+
     # Call a function that creates the card response
     
     return createCardResponse(["Here is the product wise chart requested"], 
