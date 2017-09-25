@@ -99,12 +99,13 @@ def processRequest(req):
     print('hi')
     if req.get("result").get("action") == "sales.statistics":
         parsedData = parseUserParametersGetSalesAmount(req.get("result").get('parameters'))
-        res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesOutputContext(parsedData["context"]))
+        res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
     elif req.get("result").get("action") == "detailed.statistics":
         parsedData = parseContextUserParametersGetSalesAmount(req.get("result"))
-        res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesOutputContext(parsedData["context"]))
+        res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
     elif req.get("result").get("action") == "product.chart":
-        res = generateProductChartController(req.get("result").get('parameters'))
+        #res = generateProductChartController(req.get("result").get('parameters'))
+        res = generateProductChartController(req.get("result"))
         #parsedData = generateProductChartController(req.get("result").get('parameters'))
         #res = makeContextWebhookResult(parsedData["speech"], parsedData["context"])
         '''
@@ -437,7 +438,8 @@ def parseContextUserParametersGetSalesAmount(result):
 
     return {
             "speech":generateContextResponseForSales(userParameters, detailedSalesParameters, period, salesRev),
-            "context": createContextObject(cities["context-geo-city-us"], cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"])
+            "context": createContextObject(cities["context-geo-city-us"], cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"]),
+            "draw-chart-context": createChartContextObject(cities["context-geo-city-us"], cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"],"","")
             }
 
 '''
@@ -478,12 +480,21 @@ def createOutputContext(name, lifespan, contextObject):
 
     return outputContextObj
 
+
+def createDetailedSalesAndChartOutputContext(contextObject, chartContextObject):
+    contextList = []
+    contextList.append(createDetailedSalesOutputContext(contextObject))
+    contextList.append(createDrawChartOutputContext(chartContextObject))
+    return contextList
 '''
 Creates and returns the detailed sales output context
 '''
 def createDetailedSalesOutputContext(contextObject):
     #return createOutputContextList(createOutputContext("detailed_sales", 5, contextObject))
-    return [createOutputContext("detailed_sales", 5, contextObject)]
+    return createOutputContext("detailed_sales", 5, contextObject)
+
+def createDrawChartOutputContext(contextObject):
+    return createOutputContext("draw_chart", 5, contextObject)
 
 
 def createDetailedChartOutputContext(contextObject):
@@ -569,15 +580,33 @@ def generateEmailController(result):
 '''
 This function is a controller function for generating a product wise chart after parsing the user parameters
 '''
-def generateProductChartController(userParameters):
-    img_data = None
+def generateProductChartController(result):
 
+    userParameters = result.get('parameters')
+    userContext = result.get('contexts')
+
+    # This context is an array. Parse this array until you get the required context
+    drawChartContext = getAppropriateUserContext(userContext, "draw_chart")
+
+    # If the context is not set
+    if drawChartContext == "Context was not found":
+        return drawChartContext
+
+    drawChartParameters = drawChartContext.get('parameters')
+
+    img_data = None
+    '''
     cities = parseUserRegion(userParameters)
     products = parseUserProducts(userParameters)
     period = parseUserPeriod(userParameters.get('period'))
     chartType = parseUserChartType(userParameters)
     mainChartFeature = parseUserMainChartFeature(userParameters)
-
+    '''
+    cities = parseContextUserRegion(userParameters, drawChartParameters)
+    products = parseContextUserProducts(userParameters, drawChartParameters)
+    period = parseContextUserPeriod(userParameters.get('period'), drawChartParameters.get('context-period'))
+    chartType = parseContextUserChartType(userParameters, drawChartParameters)
+    mainChartFeature = parseContextUserMainChartFeature(userParameters, drawChartParameters)
     '''
     # Call a function that returns the product wise revenues
     productRevenues = getProductWiseRevenue(period, cities["cities"], products["product"])
@@ -722,7 +751,8 @@ def parseUserParametersGetSalesAmount(userParameters):
 
     return {
             "speech": generateResponseForSales(userParameters, period, salesRev), 
-            "context": createContextObject(cities["context-geo-city-us"], cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"])
+            "context": createContextObject(cities["context-geo-city-us"], cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"]),
+            "draw-chart-context": createChartContextObject(cities["context-geo-city-us"], cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"],"","")
             }
 
 
