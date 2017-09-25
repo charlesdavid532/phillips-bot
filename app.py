@@ -114,7 +114,7 @@ def processRequest(req):
             parsedData["awsImageFileName"], "Default accessibility text", [], [], True, parsedData["context"])
         '''
     elif req.get("result").get("action") == "detailed.chart":
-        res = generateProductChartController(req.get("result"))
+        res = parseContextGenerateProductChartController(req.get("result"))
     elif req.get("result").get("action") == "convert.chart":
         res = convertTextToProductChartController(req.get("result"))
     elif req.get("result").get("action") == "send.customEmail":
