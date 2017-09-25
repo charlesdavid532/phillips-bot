@@ -493,7 +493,7 @@ Creates and returns the detailed sales output context
 '''
 def createDetailedSalesOutputContext(contextObject):
     #return createOutputContextList(createOutputContext("detailed_sales", 5, contextObject))
-    return createOutputContext("detailed_sales", 5, contextObject)
+    return createOutputContext("detailed_sales", 1, contextObject)
 
 def createDrawChartOutputContext(contextObject):
     return createOutputContext("draw_chart", 1, contextObject)
