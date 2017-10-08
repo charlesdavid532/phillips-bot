@@ -35,7 +35,9 @@ except ImportError:
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ['APP_SECRET']
 Bootstrap(app)
-
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 ACCESS_KEY_ID = ''
 ACCESS_SECRET_KEY = ''
@@ -66,7 +68,35 @@ class JSONEncoder(json.JSONEncoder):
             return str(o)
         return json.JSONEncoder.default(self, o)
 
+class User():
 
+    def __init__(self, username):
+        self.username = username
+        self.email = None
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return self.username
+
+    @staticmethod
+    def validate_login(password_hash, password):
+        return check_password_hash(password_hash, password)
+
+@login_manager.user_loader
+def load_user(username):
+    #u = mongo.db.users.find_one({"username": username})
+    u = mongo.db.users.find_one({"_id": ObjectId(username)})
+    if not u:
+        return None
+    return User(u['_id'])
 
 class LoginForm(FlaskForm):
     username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
@@ -95,6 +125,13 @@ def verify():
     return "Hello world I am Charles", 200
 
 
+@app.route('/temp', methods=['GET'])
+@login_required
+def verifyTemp():
+    print ("Hellow world")
+    return "Hello world this is the login protected page", 200
+
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -102,11 +139,14 @@ def login():
 
     if form.validate_on_submit():
         users = mongo.db.users
-        login_user = users.find_one({'username' : form.username.data})
-        if login_user:
-            if check_password_hash(login_user['password'], form.password.data):
-                session['username'] = form.username.data
-                return redirect(url_for('verify'))
+        loginUser = users.find_one({'username' : form.username.data})
+        if loginUser:
+            if check_password_hash(loginUser['password'], form.password.data):
+                #session['username'] = form.username.data
+                user_obj = loginUser['_id']
+                #user_obj = login_user['username']
+                login_user(user_obj)
+                return redirect(url_for('verifyTemp'))
 
         return 'Invalid username/password combination'
         '''
@@ -121,6 +161,12 @@ def login():
         #return '<h1>' + form.username.data + ' ' + form.password.data + '</h1>'
 
     return render_template('login.html', form=form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return 'You are now logged out'
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
