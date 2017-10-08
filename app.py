@@ -75,7 +75,7 @@ class LoginForm(FlaskForm):
 
 class RegisterForm(FlaskForm):
     #email = StringField('email', validators=[InputRequired(), Length(max=50)])
-    email = StringField('email', validators=[InputRequired(), Email('Invalid email'), Length(max=50)])
+    email = StringField('email', validators=[InputRequired(), validators.Email(message = 'Invalid email'), Length(max=50)])
     username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
     password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
 '''
