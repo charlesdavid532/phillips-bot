@@ -96,7 +96,8 @@ def load_user(username):
     u = mongo.db.users.find_one({"_id": ObjectId(username)})
     if not u:
         return None
-    return User(u['_id'])
+    #return User(u['_id'])
+    return User(u)
 
 class LoginForm(FlaskForm):
     username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
