@@ -101,6 +101,14 @@ def login():
     form = LoginForm()
 
     if form.validate_on_submit():
+        users = mongo.db.users
+        login_user = users.find_one({'username' : form.username.data})
+        if login_user:
+            if check_password_hash(login_user['password'], form.password.data):
+                session['username'] = form.username.data
+                return redirect(url_for('verify'))
+
+        return 'Invalid username/password combination'
         '''
         user = User.query.filter_by(username=form.username.data).first()
         if user:
@@ -110,7 +118,7 @@ def login():
 
         return '<h1>Invalid username or password</h1>'
         '''
-        return '<h1>' + form.username.data + ' ' + form.password.data + '</h1>'
+        #return '<h1>' + form.username.data + ' ' + form.password.data + '</h1>'
 
     return render_template('login.html', form=form)
 
@@ -119,6 +127,17 @@ def signup():
     form = RegisterForm()
 
     if form.validate_on_submit():
+        users = mongo.db.users
+        existing_user = users.find_one({'username' : form.username.data})
+        if existing_user is None:
+            #hashpass = bcrypt.hashpw(request.form['pass'].encode('utf-8'), bcrypt.gensalt())
+            hashed_password = generate_password_hash(form.password.data, method='sha256')
+            users.insert({'username' : form.username.data, 'password' : hashed_password})
+            session['username'] = form.username.data
+            return '<h1>New user has been created!</h1>'
+            #return redirect(url_for('index'))
+        
+        return 'That username already exists!'
         '''
         hashed_password = generate_password_hash(form.password.data, method='sha256')
         new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
@@ -127,7 +146,7 @@ def signup():
 
         return '<h1>New user has been created!</h1>'
         '''
-        return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
+        #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
 
     return render_template('signup.html', form=form)
 
