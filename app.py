@@ -182,9 +182,10 @@ def signup():
             #hashpass = bcrypt.hashpw(request.form['pass'].encode('utf-8'), bcrypt.gensalt())
             hashed_password = generate_password_hash(form.password.data, method='sha256')
             users.insert({'username' : form.username.data, 'password' : hashed_password})
-            session['username'] = form.username.data
-            return '<h1>New user has been created!</h1>'
-            #return redirect(url_for('index'))
+            user_obj = User(loginUser[form.username.data])
+            login_user(user_obj)
+            #return '<h1>New user has been created!</h1>'
+            return redirect(url_for('verifyTemp'))
         
         return 'That username already exists!'
         '''
