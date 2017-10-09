@@ -92,13 +92,13 @@ class User():
 
 @login_manager.user_loader
 def load_user(username):
-    #u = mongo.db.users.find_one({"username": username})
+    u = mongo.db.users.find_one({"username": username})
     #u = mongo.db.users.find_one({"_id": ObjectId(username)})
-    u = mongo.db.users.find_one({"_id": username['_id']})
+    #u = mongo.db.users.find_one({"_id": username['_id']})
     if not u:
         return None
     #return User(u['_id'])
-    return User(u)
+    return User(u['username'])
 
 class LoginForm(FlaskForm):
     username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
@@ -146,7 +146,7 @@ def login():
             if check_password_hash(loginUser['password'], form.password.data):
                 #session['username'] = form.username.data
                 #user_obj = loginUser['_id']
-                user_obj = loginUser
+                user_obj = User(loginUser['username'])
                 #user_obj = login_user['username']
                 login_user(user_obj)
                 return redirect(url_for('verifyTemp'))
