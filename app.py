@@ -234,6 +234,8 @@ def oauth_callback(provider):
     print("In callback for google")
     oauth = OAuthSignIn.get_provider(provider)
     username, email = oauth.callback()
+    print("the username is:"+username)
+    print("the email is:"+email)
     if email is None:
         # I need a valid email address for my user identification
         print('Authentication failed')
