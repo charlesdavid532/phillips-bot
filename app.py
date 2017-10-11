@@ -234,8 +234,8 @@ def oauth_callback(provider):
         return redirect(url_for('index'))
     # Look if the user already exists
     users = mongo.db.users
-    loginUser = users.find_one({'username' : form.username.data})
-    user_obj = User(loginUser['username'])
+    loginUser = users.find_one({'username' : email})
+    
     #user=User.query.filter_by(email=email).first()
     if not loginUser:
         # Create the user. Try and use their name returned by Google,
@@ -253,6 +253,8 @@ def oauth_callback(provider):
         db.session.commit()
         '''
         user_obj = User(email)
+    else:
+        user_obj = User(loginUser['username'])
     # Log in the user, by default remembering them for their next visit
     # unless they log out.
     '''
