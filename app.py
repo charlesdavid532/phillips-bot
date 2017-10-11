@@ -24,7 +24,7 @@ import io
 import uuid
 from custom_email import Email
 from rauth import OAuth2Service
-import urllib2
+from urllib.request import urlopen
 
 try:
     import apiai
@@ -111,7 +111,7 @@ class GoogleSignIn(OAuthSignIn):
     def __init__(self):
         super(GoogleSignIn, self).__init__('google')
         #TODO this is an external file. Need to host it on my server        
-        googleinfo = urllib2.urlopen('https://accounts.google.com/.well-known/openid-configuration')
+        googleinfo = urlopen('https://accounts.google.com/.well-known/openid-configuration')
         google_params = json.load(googleinfo)
         self.service = OAuth2Service(
                 name='google',
