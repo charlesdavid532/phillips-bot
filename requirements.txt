@@ -50,3 +50,4 @@ uuid==1.30
 visitor==0.1.3
 Werkzeug==0.12.2
 WTForms==2.1
+rauth==0.7.3
