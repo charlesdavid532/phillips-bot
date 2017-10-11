@@ -270,7 +270,8 @@ def oauth_callback(provider):
     login_user(user, remember=True)
     '''
     login_user(user_obj)
-    return redirect(url_for('index'))
+    #return redirect(url_for('index'))
+    return redirect('https://oauth-redirect.googleusercontent.com/r/phillipsbot-70197')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
