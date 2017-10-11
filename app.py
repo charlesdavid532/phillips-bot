@@ -271,7 +271,7 @@ def oauth_callback(provider):
     '''
     login_user(user_obj)
     #return redirect(url_for('index'))
-    return redirect(url_for('webhook'))
+    return redirect(url_for('handle_message'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
