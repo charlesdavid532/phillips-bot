@@ -212,15 +212,19 @@ def verifyTemp():
 @app.route('/authorize/<provider>')
 def oauth_authorize(provider):
     # Flask-Login function
+    '''
     if not current_user.is_anonymous():
         return redirect(url_for('index'))
+    '''
     oauth = OAuthSignIn.get_provider(provider)
     return oauth.authorize()
 
 @app.route('/callback/<provider>')
 def oauth_callback(provider):
+    '''
     if not current_user.is_anonymous():
         return redirect(url_for('index'))
+    '''
     oauth = OAuthSignIn.get_provider(provider)
     username, email = oauth.callback()
     if email is None:
