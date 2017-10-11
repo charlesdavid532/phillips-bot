@@ -216,6 +216,7 @@ def oauth_authorize(provider):
     if not current_user.is_anonymous():
         return redirect(url_for('index'))
     '''
+    print("In authorize for google")
     oauth = OAuthSignIn.get_provider(provider)
     return oauth.authorize()
 
@@ -225,11 +226,12 @@ def oauth_callback(provider):
     if not current_user.is_anonymous():
         return redirect(url_for('index'))
     '''
+    print("In callback for google")
     oauth = OAuthSignIn.get_provider(provider)
     username, email = oauth.callback()
     if email is None:
         # I need a valid email address for my user identification
-        console.log('Authentication failed')
+        print('Authentication failed')
         #flash('Authentication failed.')
         return redirect(url_for('index'))
     # Look if the user already exists
