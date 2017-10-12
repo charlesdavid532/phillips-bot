@@ -172,6 +172,12 @@ class GoogleSignIn(OAuthSignIn):
         return (me['name'],
                 me['email'])
 
+    def getCallbackURI(self):
+        getVars = {'code': 'abcdefgh','state': self.state}
+        callbackURI = self.redirect_uri + '/?' + urllib.parse.urlencode(getVars)
+        print('callback uri is::'+callbackURI)
+        return callbackURI
+
 class User():
 
     def __init__(self, username):
@@ -294,7 +300,8 @@ def oauth_callback(provider):
     login_user(user, remember=True)
     '''
     login_user(user_obj)
-    return redirect(url_for('index'))
+    #return redirect(url_for('index'))
+    return redirect(oauth.getCallbackURI())
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
