@@ -177,7 +177,7 @@ class GoogleSignIn(OAuthSignIn):
 
     def getCallbackURI(self):
         getVars = {'code': 'abcdefgh','state': session['state']}
-        callbackURI = session['redirect_uri'] + '/?' + urllib.parse.urlencode(getVars)
+        callbackURI = session['redirect_uri'] + '?' + urllib.parse.urlencode(getVars)
         print('callback uri is::'+callbackURI)
         print("Adding comment")
         return callbackURI
