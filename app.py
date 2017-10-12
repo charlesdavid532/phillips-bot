@@ -124,6 +124,7 @@ class GoogleSignIn(OAuthSignIn):
         )
 
     def authorize(self):
+        print("the request arguments are:"+ str(request.args))
         print("the authorization endpoint url is:"+str(self.service.get_authorize_url(
             scope='email',
             response_type='code',
