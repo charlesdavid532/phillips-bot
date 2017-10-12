@@ -140,6 +140,7 @@ class GoogleSignIn(OAuthSignIn):
             print("client_id::"+self.client_id)
         if 'redirect_uri' in request.args:
             self.redirect_uri = request.args['redirect_uri']
+            session['redirect_uri'] = request.args['redirect_uri']
             print("redirect_uri::"+self.redirect_uri)
         if 'state' in request.args:
             self.state = request.args['state']
@@ -176,7 +177,7 @@ class GoogleSignIn(OAuthSignIn):
 
     def getCallbackURI(self):
         getVars = {'code': 'abcdefgh','state': session['state']}
-        callbackURI = self.redirect_uri + '/?' + urllib.parse.urlencode(getVars)
+        callbackURI = session['redirect_uri'] + '/?' + urllib.parse.urlencode(getVars)
         print('callback uri is::'+callbackURI)
         print("Adding comment")
         return callbackURI
