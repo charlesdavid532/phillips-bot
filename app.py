@@ -128,6 +128,27 @@ class GoogleSignIn(OAuthSignIn):
             response_type='code',
             redirect_uri=self.get_callback_url())))
         print ("the callback url is:"+str(self.get_callback_url()))
+        '''
+        Storing all the values
+        '''
+        if 'scope' in request.args:
+            self.scope = request.args['scope']
+            print("scope::"+self.scope)
+        if 'client_id' in request.args:
+            self.client_id = request.args['client_id']
+            print("client_id::"+self.client_id)
+        if 'redirect_uri' in request.args:
+            self.redirect_uri = request.args['redirect_uri']
+            print("redirect_uri::"+self.redirect_uri)
+        if 'state' in request.args:
+            self.state = request.args['state']
+            print("state::"+self.state)
+        if 'response_type' in request.args:
+            self.response_type = request.args['response_type']
+            print("response_type::"+self.response_type)
+        '''
+        End of storing values
+        '''
         return redirect(self.service.get_authorize_url(
             scope='email',
             response_type='code',
