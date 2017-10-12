@@ -135,10 +135,10 @@ class GoogleSignIn(OAuthSignIn):
             )
 
     def callback(self):
-        print("the request arguments are:"+ request.args)
+        print("the request arguments are:"+ str(request.args))
         if 'code' not in request.args:
             return None, None, None
-        print("the code request arguments are:"+ request.args['code'])
+        print("the code request arguments are:"+ str(request.args['code']))
         oauth_session = self.service.get_auth_session(
                 data={'code': request.args['code'],
                       'grant_type': 'authorization_code',
@@ -147,7 +147,7 @@ class GoogleSignIn(OAuthSignIn):
                 decoder = json.loads
         )
         me = oauth_session.get('').json()
-        print("The me is:"+ me)
+        print("The me is:"+ str(me))
         return (me['name'],
                 me['email'])
 
