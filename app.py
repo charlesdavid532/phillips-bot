@@ -318,6 +318,7 @@ def oauth_token(provider):
     print("In token exchange for google")
     oauth = OAuthSignIn.get_provider(provider)
     print("In token request args are:::::"+ str(request.args))
+    return redirect(url_for('index'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
