@@ -308,6 +308,15 @@ def oauth_callback(provider):
     #return redirect(url_for('index'))
     return redirect(oauth.getCallbackURI())
 
+
+@app.route('/token/<provider>')
+def oauth_token(provider):
+    '''
+    if not current_user.is_anonymous():
+        return redirect(url_for('index'))
+    '''
+    print("In token exchange for google")
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
