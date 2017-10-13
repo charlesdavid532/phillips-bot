@@ -311,10 +311,6 @@ def oauth_callback(provider):
 '''
 @app.route('/token/<provider>')
 def oauth_token(provider):
-    '''
-    if not current_user.is_anonymous():
-        return redirect(url_for('index'))
-    '''
     print("In token exchange for google")
     oauth = OAuthSignIn.get_provider(provider)
     print("In token request args are:::::"+ str(request.args))
