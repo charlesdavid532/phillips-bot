@@ -316,7 +316,7 @@ def oauth_token(provider):
     print("In token request args are:::::"+ str(request.args))
     return redirect(url_for('index'))
 '''
-@app.route('/token/google')
+@app.route('/token/google',methods=['POST'])
 def oauth_token():
     '''
     if not current_user.is_anonymous():
