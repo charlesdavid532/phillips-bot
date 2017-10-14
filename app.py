@@ -324,9 +324,10 @@ def oauth_token():
     '''
     print("In token exchange for google")
     #oauth = OAuthSignIn.get_provider(provider)
-    data = request.get_json(force=True)
+    #data = request.get_json(force=True)
     print("In token request args are::::::")
-    print(json.dumps(data, indent=4))
+    print(str(request.form.keys()[0]))
+    #print(json.dumps(data, indent=4))
     #print(json.loads(data))
     print("End token exchange")
     return redirect(url_for('index'))
