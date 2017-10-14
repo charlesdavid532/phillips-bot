@@ -331,8 +331,15 @@ def oauth_token():
     print("the req args are:"+ str(reqArgs))
     #print(json.dumps(data, indent=4))
     #print(json.loads(data))
+    response = {}
+    response['token_type'] = "bearer"
+    response['access_token'] = "1234"
+    response['expires_in'] = 100000
+    print("response::")
+    print(str(response))
     print("End token exchange")
-    return redirect(url_for('index'))
+    #return redirect(url_for('index'))
+    return response
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
