@@ -326,7 +326,8 @@ def oauth_token():
     #oauth = OAuthSignIn.get_provider(provider)
     data = request.get_json()
     print("In token request args are::::::")
-    print(json.dumps(data, indent=4))
+    #print(json.dumps(data, indent=4))
+    print(json.loads(data))
     return redirect(url_for('index'))
 
 @app.route('/login', methods=['GET', 'POST'])
