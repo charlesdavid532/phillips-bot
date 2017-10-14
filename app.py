@@ -337,9 +337,13 @@ def oauth_token():
     response['expires_in'] = 100000
     print("response::")
     print(str(response))
+    response = json.dumps(response, indent=4, cls=JSONEncoder)
+    print(response)
+    r = make_response(res)
+    r.headers['Content-Type'] = 'application/json'
     print("End token exchange")
     #return redirect(url_for('index'))
-    return response
+    return r
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
