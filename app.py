@@ -339,7 +339,7 @@ def oauth_token():
     print(str(response))
     response = json.dumps(response, indent=4, cls=JSONEncoder)
     print(response)
-    r = make_response(res)
+    r = make_response(response)
     r.headers['Content-Type'] = 'application/json'
     print("End token exchange")
     #return redirect(url_for('index'))
