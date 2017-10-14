@@ -328,6 +328,7 @@ def oauth_token():
     print("In token request args are::::::")
     print(json.dumps(data, indent=4))
     #print(json.loads(data))
+    print("End token exchange")
     return redirect(url_for('index'))
 
 @app.route('/login', methods=['GET', 'POST'])
