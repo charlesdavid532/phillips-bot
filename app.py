@@ -326,7 +326,7 @@ def oauth_token():
     #oauth = OAuthSignIn.get_provider(provider)
     #data = request.get_json(force=True)
     print("In token request args are::::::")
-    print(str(list(request.form.keys())))
+    print(str(list(request.form)))
     #print(json.dumps(data, indent=4))
     #print(json.loads(data))
     print("End token exchange")
