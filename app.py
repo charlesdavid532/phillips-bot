@@ -26,6 +26,7 @@ from custom_email import Email
 from rauth import OAuth2Service
 import urllib
 from urllib.request import urlopen
+import secrets
 
 try:
     import apiai
@@ -136,20 +137,46 @@ class GoogleSignIn(OAuthSignIn):
         if 'scope' in request.args:
             self.scope = request.args['scope']
             print("scope::"+self.scope)
+
+
         if 'client_id' in request.args:
             self.client_id = request.args['client_id']
             print("client_id::"+self.client_id)
+            #Checking if the client id passed is the same as the one registered with google
+            if self.consumer_id != self.client_id:
+                print("The consumer and client ids do not match")
+                return '' #TODO:this return statement should be modified to fail gracefully
+
+        else:
+            return '' #TODO:this return statement should be modified to fail gracefully
+
+
         if 'redirect_uri' in request.args:
             self.redirect_uri = request.args['redirect_uri']
             session['redirect_uri'] = request.args['redirect_uri']
             print("redirect_uri::"+self.redirect_uri)
+            #Checking if the redirect uri passed is the same as the one registered with google
+            if self.redirect_uri != os.environ['GOOGLE_REDIRECT_URI']:
+                print("The redirect uri does not match with the one registered on google")
+                return '' #TODO:this return statement should be modified to fail gracefully                
+        else:
+            return '' #TODO:this return statement should be modified to fail gracefully
+
         if 'state' in request.args:
             self.state = request.args['state']
             session['state'] = request.args['state']
             print("state::"+self.state)
+
+
         if 'response_type' in request.args:
             self.response_type = request.args['response_type']
             print("response_type::"+self.response_type)
+            #Checking if the redirect uri passed is the same as the one registered with google
+            if self.response_type != 'code':
+                print("The response type is not code")
+                return '' #TODO:this return statement should be modified to fail gracefully                   
+        else:
+            return '' #TODO:this return statement should be modified to fail gracefully
         '''
         End of storing values
         '''
@@ -177,11 +204,16 @@ class GoogleSignIn(OAuthSignIn):
                 me['email'])
 
     def getCallbackURI(self):
+        secureAuthCode = self.generateSecretToken()
+        print("the secret auth code is::"+secureAuthCode) 
         getVars = {'code': 'abcdefgh','state': session['state']}
         callbackURI = session['redirect_uri'] + '?' + urllib.parse.urlencode(getVars)
         print('callback uri is::'+callbackURI)
         print("Adding comment")
         return callbackURI
+
+    def generateSecretToken(self):
+        return secrets.token_hex(32)
 
 class User():
 
