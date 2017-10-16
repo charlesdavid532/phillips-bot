@@ -229,6 +229,18 @@ class GoogleSignIn(OAuthSignIn):
                             'userId': email,'clientId': 'google',
                             'expiresAt': expiryTime})
 
+    def addRefreshTokenToDb(self, id, email):
+        tokenCodes = mongo.db.tokens
+        tokenCodes.insert({'_id' : id, 'type' : 'REFRESH',
+                            'userId': email,'clientId': 'google',
+                            'expiresAt': NULL})
+
+    def addAccessTokenToDb(self, id, email, expiryTime):
+        tokenCodes = mongo.db.tokens
+        tokenCodes.insert({'_id' : id, 'type' : 'ACCESS',
+                            'userId': email,'clientId': 'google',
+                            'expiresAt': expiryTime})
+
     def getTokenResponse(self):
         print("Inside get token response")
 
@@ -259,6 +271,16 @@ class GoogleSignIn(OAuthSignIn):
             if grantType == 'authorization_code':
                 if isTokenValid(reqArgs['code']) == True:
                     print("Token is valid")
+                    tokenRecord = getTokenRecord(reqArgs['code'])
+                    accessTokenId = self.generateSecretToken()
+                    refreshTokenId = self.generateSecretToken()
+                    self.addAccessTokenToDb(accessTokenId, tokenRecord['userId'], getStrFutureDateAndTime(60))
+                    self.addRefreshTokenToDb(refreshTokenId, tokenRecord['userId'])
+                    response = {}
+                    response['token_type'] = "bearer"
+                    response['access_token'] = accessTokenId
+                    response['refresh_token'] = refreshTokenId
+                    response['expires_in'] = 3600
                 else:
                     response = {}
                     response['error'] = "invalid_grant"
@@ -268,13 +290,34 @@ class GoogleSignIn(OAuthSignIn):
                     return r
             elif grantType == 'refresh_token':
                 print("Inside only refresh token")
+                reqRefreshToken = reqArgs['refresh_token']
+                if isTokenValid(reqRefreshToken) == True:
+                    print("refresh token is valid")
+                    refreshTokenRecord = getTokenRecord(reqRefreshToken)
+                    accessTokenId = self.generateSecretToken()
+                    self.addAccessTokenToDb(accessTokenId, refreshTokenRecord['userId'], getStrFutureDateAndTime(60))
+                    response = {}
+                    response['token_type'] = "bearer"
+                    response['access_token'] = accessTokenId
+                    response['expires_in'] = 3600
+                else:
+                    response = {}
+                    response['error'] = "invalid_grant"
+                    response = json.dumps(response, indent=4, cls=JSONEncoder)
+                    print(response)
+                    r = make_response(response, 400)
+                    return r
+            else:
+                return ''#TODO:this return statement should be modified to fail gracefully
         else:
             return '' #TODO:this return statement should be modified to fail gracefully
 
+        '''
         response = {}
         response['token_type'] = "bearer"
         response['access_token'] = "1234"
         response['expires_in'] = 100000
+        '''
         print("response::")
         print(str(response))
         response = json.dumps(response, indent=4, cls=JSONEncoder)
@@ -1715,6 +1758,18 @@ def getStrFutureDateAndTime(mins):
     #print("the future date time is:"+ getFutureDateAndTime(mins).strftime("%Y-%m-%d %H:%M:%S"))
     return getFutureDateAndTime(mins).strftime("%Y-%m-%d %H:%M:%S")
 
+'''
+Returns the record from the db containing the token id
+'''
+def getTokenRecord(id):
+    print("Inside getTokenRecord")
+    tokens = mongo.db.tokens
+    existing_token = tokens.find_one({'_id' : id})
+
+    if not existing_token:
+        return 'Token does not exist in db'
+
+    return existing_token
 '''
 Checks and returns whether the token is valid or not
 '''
