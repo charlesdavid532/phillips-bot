@@ -256,6 +256,23 @@ class GoogleSignIn(OAuthSignIn):
         else:
             return '' #TODO:this return statement should be modified to fail gracefully
 
+        if 'grant_type' in reqArgs:
+            grantType = reqArgs['grant_type']
+            if grantType == 'authorization_code':
+                if isTokenValid(reqArgs['code']) == True:
+                    print("Token is valid")
+                else:
+                    response = {}
+                    response['error'] = "invalid_grant"
+                    response = json.dumps(response, indent=4, cls=JSONEncoder)
+                    print(response)
+                    r = make_response(response, 400)
+                    return r
+            elif grantType == 'refresh_token':
+
+        else:
+            return '' #TODO:this return statement should be modified to fail gracefully
+
         response = {}
         response['token_type'] = "bearer"
         response['access_token'] = "1234"
@@ -1704,6 +1721,7 @@ def getStrFutureDateAndTime(mins):
 Checks and returns whether the token is valid or not
 '''
 def isTokenValid(id):
+    print("Inside isTokenValid")
     tokens = mongo.db.tokens
     existing_token = tokens.find_one({'_id' : id})
 
