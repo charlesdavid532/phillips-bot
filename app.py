@@ -232,8 +232,7 @@ class GoogleSignIn(OAuthSignIn):
     def addRefreshTokenToDb(self, id, email):
         tokenCodes = mongo.db.tokens
         tokenCodes.insert({'_id' : id, 'type' : 'REFRESH',
-                            'userId': email,'clientId': 'google',
-                            'expiresAt': NULL})
+                            'userId': email,'clientId': 'google'})
 
     def addAccessTokenToDb(self, id, email, expiryTime):
         tokenCodes = mongo.db.tokens
