@@ -368,7 +368,7 @@ def oauth_token(provider):
     return redirect(url_for('index'))
 '''
 @app.route('/token/<provider>',methods=['POST'])
-def oauth_token():
+def oauth_token(provider):
     '''
     if not current_user.is_anonymous():
         return redirect(url_for('index'))
