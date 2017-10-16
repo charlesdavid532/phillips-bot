@@ -1637,7 +1637,7 @@ def getStrCurrentDateAndTime():
     return getCurrentDateAndTime().strftime("%Y-%m-%d %H:%M:%S")
 
 def getFutureDateAndTime(mins):
-    return getCurrentDateAndTime() + datetime.timedelta(minutes=mins)
+    return getCurrentDateAndTime() + timedelta(minutes=mins)
 
 def getStrFutureDateAndTime(mins):
     return getFutureDateAndTime(mins).strftime("%Y-%m-%d %H:%M:%S")
