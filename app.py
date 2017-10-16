@@ -1637,7 +1637,7 @@ def getStrCurrentDateAndTime():
     return getCurrentDateAndTime().strftime("%Y-%m-%d %H:%M:%S")
 
 def getFutureDateAndTime(mins):
-    print("The current date time now is::" + getCurrentDateAndTime())
+    #print("The current date time now is::" + str(getCurrentDateAndTime()))
     print("The current string date time is::" + getStrCurrentDateAndTime())
     return getCurrentDateAndTime() + timedelta(minutes=mins)
 
