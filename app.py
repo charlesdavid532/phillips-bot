@@ -242,7 +242,6 @@ class GoogleSignIn(OAuthSignIn):
             if self.consumer_id != reqArgs['client_id']:
                 print("The consumer and client ids do not match")
                 return '' #TODO:this return statement should be modified to fail gracefully
-
         else:
             return '' #TODO:this return statement should be modified to fail gracefully
 
@@ -252,7 +251,6 @@ class GoogleSignIn(OAuthSignIn):
             if self.consumer_secret != reqArgs['client_secret']:
                 print("The consumer and client secrets do not match")
                 return '' #TODO:this return statement should be modified to fail gracefully
-
         else:
             return '' #TODO:this return statement should be modified to fail gracefully
 
@@ -269,7 +267,7 @@ class GoogleSignIn(OAuthSignIn):
                     r = make_response(response, 400)
                     return r
             elif grantType == 'refresh_token':
-
+                print("Inside only refresh token")
         else:
             return '' #TODO:this return statement should be modified to fail gracefully
 
