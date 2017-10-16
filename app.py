@@ -205,6 +205,11 @@ class GoogleSignIn(OAuthSignIn):
                 me['email'])
 
     def getCallbackURI(self, email, expiryTime):
+
+        if session['redirect_uri'] != os.environ['GOOGLE_REDIRECT_URI']:
+                print("The redirect uri does not match with the one registered on google")
+                return '' #TODO:this return statement should be modified to fail gracefully 
+
         secureAuthCode = self.generateSecretToken()
         self.addSecretTokenToDb(secureAuthCode, email, expiryTime)
         print("the secret auth code is::"+secureAuthCode) 
@@ -347,7 +352,8 @@ def oauth_callback(provider):
     '''
     login_user(user_obj)
     #return redirect(url_for('index'))
-    return redirect(oauth.getCallbackURI(email, getStrFutureDateAndTime(10)))
+    gCallbackURI = oauth.getCallbackURI(email, getStrFutureDateAndTime(10))
+    return redirect(gCallbackURI)
 
 '''
 @app.route('/token/<provider>')
@@ -1638,11 +1644,11 @@ def getStrCurrentDateAndTime():
 
 def getFutureDateAndTime(mins):
     #print("The current date time now is::" + str(getCurrentDateAndTime()))
-    print("The current string date time is::" + getStrCurrentDateAndTime())
+    #print("The current string date time is::" + getStrCurrentDateAndTime())
     return getCurrentDateAndTime() + timedelta(minutes=mins)
 
 def getStrFutureDateAndTime(mins):
-    print("the future date time is:"+ getFutureDateAndTime(mins).strftime("%Y-%m-%d %H:%M:%S"))
+    #print("the future date time is:"+ getFutureDateAndTime(mins).strftime("%Y-%m-%d %H:%M:%S"))
     return getFutureDateAndTime(mins).strftime("%Y-%m-%d %H:%M:%S")
 
 '''
