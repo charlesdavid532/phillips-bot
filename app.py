@@ -229,6 +229,10 @@ class GoogleSignIn(OAuthSignIn):
                             'userId': email,'clientId': 'google',
                             'expiresAt': expiryTime})
 
+    def getTokenResponse(self):
+        print("Inside get token response")
+        return ''
+
 class User():
 
     def __init__(self, username):
@@ -363,7 +367,7 @@ def oauth_token(provider):
     print("In token request args are:::::"+ str(request.args))
     return redirect(url_for('index'))
 '''
-@app.route('/token/google',methods=['POST'])
+@app.route('/token/<provider>',methods=['POST'])
 def oauth_token():
     '''
     if not current_user.is_anonymous():
@@ -378,6 +382,11 @@ def oauth_token():
     print("the req args are:"+ str(reqArgs))
     #print(json.dumps(data, indent=4))
     #print(json.loads(data))
+
+    #Creating the oauth class
+    oauth = OAuthSignIn.get_provider(provider)
+    oauth.getTokenResponse()
+
     response = {}
     response['token_type'] = "bearer"
     response['access_token'] = "1234"
