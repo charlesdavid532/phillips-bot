@@ -347,7 +347,7 @@ def oauth_callback(provider):
     '''
     login_user(user_obj)
     #return redirect(url_for('index'))
-    return redirect(oauth.getCallbackURI(email, getStrFutureDateAndTime()))
+    return redirect(oauth.getCallbackURI(email, getStrFutureDateAndTime(10)))
 
 '''
 @app.route('/token/<provider>')
