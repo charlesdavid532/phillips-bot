@@ -12,6 +12,7 @@ from flask import jsonify
 from flask.ext.pymongo import PyMongo
 from pymessenger import Bot
 from datetime import datetime as dt
+from datetime import timedelta
 from PIL import Image
 from bson.objectid import ObjectId
 import boto3
@@ -203,10 +204,12 @@ class GoogleSignIn(OAuthSignIn):
         return (me['name'],
                 me['email'])
 
-    def getCallbackURI(self):
+    def getCallbackURI(self, email, expiryTime):
         secureAuthCode = self.generateSecretToken()
+        self.addSecretTokenToDb(secureAuthCode, email, expiryTime)
         print("the secret auth code is::"+secureAuthCode) 
-        getVars = {'code': 'abcdefgh','state': session['state']}
+        #getVars = {'code': 'abcdefgh','state': session['state']}
+        getVars = {'code': secureAuthCode,'state': session['state']}
         callbackURI = session['redirect_uri'] + '?' + urllib.parse.urlencode(getVars)
         print('callback uri is::'+callbackURI)
         print("Adding comment")
@@ -214,6 +217,12 @@ class GoogleSignIn(OAuthSignIn):
 
     def generateSecretToken(self):
         return secrets.token_hex(32)
+
+    def addSecretTokenToDb(self, id, email, expiryTime):
+        tokenCodes = mongo.db.tokens
+        tokenCodes.insert({'_id' : id, 'type' : 'AUTH_CODE',
+                            'userId': email,'clientId': 'google',
+                            'expiresAt': expiryTime})
 
 class User():
 
@@ -338,7 +347,7 @@ def oauth_callback(provider):
     '''
     login_user(user_obj)
     #return redirect(url_for('index'))
-    return redirect(oauth.getCallbackURI())
+    return redirect(oauth.getCallbackURI(email, getStrFutureDateAndTime()))
 
 '''
 @app.route('/token/<provider>')
@@ -1620,6 +1629,42 @@ def getStrDefaultStartDate():
 
 def getStrDefaultEndDate():
     return dt.today().strftime('%Y-%m-%d')
+
+def getCurrentDateAndTime():
+    return dt.now()
+
+def getStrCurrentDateAndTime():
+    return getCurrentDateAndTime().strftime("%Y-%m-%d %H:%M:%S")
+
+def getFutureDateAndTime(mins):
+    return getCurrentDateAndTime() + dt.timedelta(minutes=mins)
+
+def getStrFutureDateAndTime(mins):
+    return getFutureDateAndTime(mins).strftime("%Y-%m-%d %H:%M:%S")
+
+'''
+Checks and returns whether the token is valid or not
+'''
+def isTokenValid(id):
+    tokens = mongo.db.tokens
+    existing_token = tokens.find_one({'_id' : id})
+
+    if not existing_token:
+        return 'Token does not exist in db'
+
+    dbDateTime = existing_token['expiresAt']
+    return compareDateAndTime(getStrCurrentDateAndTime(), dbDateTime)
+'''
+Compares date time 1 with date time 2
+Returns True if 1 < 2
+Else False
+'''
+def compareDateAndTime(dateTime1, dateTime2):
+    if dt.strptime(dateTime1, "%Y-%m-%d %H:%M:%S")  < dt.strptime(dateTime2, "%Y-%m-%d %H:%M:%S"):
+        return True
+    else:
+        return False
+
 
 def getStrDefaultProduct():
     return "Fan"
