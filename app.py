@@ -231,7 +231,43 @@ class GoogleSignIn(OAuthSignIn):
 
     def getTokenResponse(self):
         print("Inside get token response")
-        return ''
+
+        print("In token request args are::::::")
+        print(str(list(request.form)))
+        reqArgs = request.form
+        print("the req args are:"+ str(reqArgs))
+
+        if 'client_id' in reqArgs:
+            #Checking if the client id passed is the same as the one registered with google
+            if self.consumer_id != reqArgs['client_id']:
+                print("The consumer and client ids do not match")
+                return '' #TODO:this return statement should be modified to fail gracefully
+
+        else:
+            return '' #TODO:this return statement should be modified to fail gracefully
+
+
+        if 'client_secret' in reqArgs:
+            #Checking if the client secret passed is the same as the one registered with google
+            if self.consumer_secret != reqArgs['client_secret']:
+                print("The consumer and client secrets do not match")
+                return '' #TODO:this return statement should be modified to fail gracefully
+
+        else:
+            return '' #TODO:this return statement should be modified to fail gracefully
+
+        response = {}
+        response['token_type'] = "bearer"
+        response['access_token'] = "1234"
+        response['expires_in'] = 100000
+        print("response::")
+        print(str(response))
+        response = json.dumps(response, indent=4, cls=JSONEncoder)
+        print(response)
+        r = make_response(response)
+        r.headers['Content-Type'] = 'application/json'
+
+        return r
 
 class User():
 
@@ -376,17 +412,20 @@ def oauth_token(provider):
     print("In token exchange for google")
     #oauth = OAuthSignIn.get_provider(provider)
     #data = request.get_json(force=True)
+    '''
     print("In token request args are::::::")
     print(str(list(request.form)))
     reqArgs = request.form
     print("the req args are:"+ str(reqArgs))
+    '''
     #print(json.dumps(data, indent=4))
     #print(json.loads(data))
 
     #Creating the oauth class
     oauth = OAuthSignIn.get_provider(provider)
-    oauth.getTokenResponse()
+    r = oauth.getTokenResponse()
 
+    '''
     response = {}
     response['token_type'] = "bearer"
     response['access_token'] = "1234"
@@ -397,6 +436,7 @@ def oauth_token(provider):
     print(response)
     r = make_response(response)
     r.headers['Content-Type'] = 'application/json'
+    '''
     print("End token exchange")
     #return redirect(url_for('index'))
     return r
