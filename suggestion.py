@@ -7,12 +7,12 @@ class Suggestion(object):
 
 	def getSuggestionResponse(self):
 		suggestionDict = {}
-    	suggestionDict["title"] = self.title
-    	return suggestionDict
+		suggestionDict["title"] = self.title
+		return suggestionDict
 
     def setSuggestionTitle(self, title):
-    	self.title = title
+		self.title = title
 
     def getSuggestionTitle(self):
-    	return self.title
+		return self.title
 		

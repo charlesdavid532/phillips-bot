@@ -58,63 +58,61 @@ class Card(object):
 
 	def getCardResponse(self):
 		cardResponse = {}
-
-    	itemsDict = {}
-    	itemsDict["simpleResponse"] = {}
-    	simpleResponseDict = itemsDict["simpleResponse"]
-    	simpleResponseDict["textToSpeech"] = self.simpleResponse[0]
-
-
-    	basicCardDict = {}
-    	basicCardDict["basicCard"] = self.getInteriorCardResponse()
-
-    	cardResponse["data"] = {}
-    	cardResponse["source"] = "phillips-bot"
-
-    	#Adding context
-    	if self.outputContext == None or self.outputContext == "":
-        	outputContext = []
-    	else:
-        	outputContext = self.outputContext
-        	print("The length of context list in card response is:"+str(len(outputContext)))
-
-    	cardResponse["contextOut"] = outputContext
-
-    	dataDict = cardResponse["data"]
-
-    	dataDict["google"] = {}
-    	googleDict = dataDict["google"]
-
-    	googleDict["expect_user_response"] = self.expectedUserResponse
-    	googleDict["rich_response"] = {}
-    
-
-    	richResponseDict = googleDict["rich_response"]
-    	richResponseDict["items"] = []
-
-    	itemList = richResponseDict["items"]
-    	itemList.append(itemsDict)
-    	itemList.append(basicCardDict)
-
-    	if len(self.simpleResponse) > 1:
-        	secondItemsDict = {}
-        	secondItemsDict["simpleResponse"] = {}
-        	secondSimpleResponseDict = secondItemsDict["simpleResponse"]
-        	secondSimpleResponseDict["textToSpeech"] = simpleResponse[1]
-        	itemList.append(secondItemsDict)
+		itemsDict = {}
+		itemsDict["simpleResponse"] = {}
+		simpleResponseDict = itemsDict["simpleResponse"]
+		simpleResponseDict["textToSpeech"] = self.simpleResponse[0]
 
 
-        if self.sugTitles != "" and self.sugTitles != None:
-    		richResponseDict["suggestions"] = SuggestionList(self.sugTitles)
+		basicCardDict = {}
+		basicCardDict["basicCard"] = self.getInteriorCardResponse()
 
-    
+		cardResponse["data"] = {}
+		cardResponse["source"] = "phillips-bot"
 
-    return cardResponse
+		#Adding context
+		if self.outputContext == None or self.outputContext == "":
+			outputContext = []
+		else:
+			outputContext = self.outputContext
+			print("The length of context list in card response is:"+str(len(outputContext)))
+
+		cardResponse["contextOut"] = outputContext
+
+		dataDict = cardResponse["data"]
+		dataDict["google"] = {}
+		googleDict = dataDict["google"]
+
+		googleDict["expect_user_response"] = self.expectedUserResponse
+		googleDict["rich_response"] = {}
+
+
+		richResponseDict = googleDict["rich_response"]
+		richResponseDict["items"] = []
+
+		itemList = richResponseDict["items"]
+		itemList.append(itemsDict)
+		itemList.append(basicCardDict)
+
+		if len(self.simpleResponse) > 1:
+	    	secondItemsDict = {}
+	    	secondItemsDict["simpleResponse"] = {}
+	    	secondSimpleResponseDict = secondItemsDict["simpleResponse"]
+	    	secondSimpleResponseDict["textToSpeech"] = simpleResponse[1]
+	    	itemList.append(secondItemsDict)
+
+
+	    if self.sugTitles != "" and self.sugTitles != None:
+			richResponseDict["suggestions"] = SuggestionList(self.sugTitles)
+
+
+
+	return cardResponse
 
 
 
     def getInteriorCardResponse(self):
-    	basicCard = {}
+		basicCard = {}
 
 		if self.title != "" and self.title != None:
 			basicCard["title"] = self.title
@@ -129,30 +127,30 @@ class Card(object):
 		if self.hasImage == True:
 			basicCard["image"] = {}
 
-    		imageDict = basicCard["image"]
-    		imageDict["url"] = self.imgURL
-    		imageDict["accessibilityText"] = self.imgAccText
+			imageDict = basicCard["image"]
+			imageDict["url"] = self.imgURL
+			imageDict["accessibilityText"] = self.imgAccText
 
 
-    	if self.linkTitle != '' and self.linkTitle != None and self.linkTitle != []:
-    		basicCard["buttons"] = []
+		if self.linkTitle != '' and self.linkTitle != None and self.linkTitle != []:
+			basicCard["buttons"] = []
 
-    		buttonsList = basicCard["buttons"]
-    		buttonsList.append(self.getButtonResponse())
+			buttonsList = basicCard["buttons"]
+			buttonsList.append(self.getButtonResponse())
 
-    	return basicCard
+		return basicCard
 
 
 
     def getButtonResponse(self):
-    	btnDict = {}
+		btnDict = {}
 
-    	btnDict["title"] = self.linkTitle
-    	btnDict["openUrlAction"] = {}
+		btnDict["title"] = self.linkTitle
+		btnDict["openUrlAction"] = {}
 
-    	openUrlActionDict = btnDict["openUrlAction"]
-    	openUrlActionDict["url"] = self.linkUrl
+		openUrlActionDict = btnDict["openUrlAction"]
+		openUrlActionDict["url"] = self.linkUrl
 
-    	return btnDict
+		return btnDict
 
 		
