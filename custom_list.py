@@ -101,7 +101,7 @@ class List(object):
 		simpleResponseDict["textToSpeech"] = self.simpleResponse[0]
 
 		#Code to add multiple simple responses (Seems unwieldy & needs to be better done for a loop)
-		if len(simpleResponseArr) > 1:
+		if len(self.simpleResponse) > 1:
 			itemsDict1 = {}
 			itemsDict1["simpleResponse"] = {}
 			simpleResponseDict1 = itemsDict1["simpleResponse"]
@@ -126,7 +126,7 @@ class List(object):
 		itemList = richResponseDict["items"]
 		itemList.append(itemsDict)
 
-		if len(simpleResponseArr) > 1:
+		if len(self.simpleResponse) > 1:
 		    itemList.append(itemsDict1)
 
 
