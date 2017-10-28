@@ -5,12 +5,13 @@ class SuggestionList(object):
 	def __init__(self, titleList):
 		super(SuggestionList, self).__init__()
 		self.titleList = titleList
-		return self.getSuggestionListResponse()
+		#return self.getSuggestionListResponse()
 
 	def getSuggestionListResponse(self):
 		suggestionList = []
 		for index in range(0, len(self.titleList)):
-			suggestionList.append(Suggestion(self.titleList[index]))
+			mySuggestion = Suggestion(self.titleList[index])
+			suggestionList.append(mySuggestion.getSuggestionResponse())
 
 		return suggestionList
 		

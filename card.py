@@ -30,7 +30,7 @@ class Card(object):
 
 		if self.hasImage == False and self.hasText == False:
 			print("Does not have text or image")
-			return ''
+			#return ''
 
 
 	def addTitle(self, title):
@@ -103,7 +103,8 @@ class Card(object):
 
 
 		if self.sugTitles != "" and self.sugTitles != None:
-			richResponseDict["suggestions"] = SuggestionList(self.sugTitles)
+			mySuggestionList = SuggestionList(self.sugTitles)
+			richResponseDict["suggestions"] = mySuggestionList.getSuggestionListResponse()
 
 
 
