@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 import io
 import uuid
 from custom_email import Email
+from amazon_s3 import AmazonS3
 
 try:
     import apiai
@@ -399,7 +400,9 @@ def getExplodeTuple():
 '''
 Saves a resource to aws
 '''
+
 def saveResourceToAWS(img_data, img_name, content_type):
+    '''
     print("saving resource to aws")  
     s3 = boto3.resource(
         's3',
@@ -413,6 +416,9 @@ def saveResourceToAWS(img_data, img_name, content_type):
     s3.Bucket(BUCKET_NAME).put_object(Key=img_name, Body=img_data, ContentType=content_type)
 
     print("Done")
+    '''
+    myAmazonS3 = AmazonS3(BUCKET_NAME)
+    myAmazonS3.saveResourceToAWS(img_data, img_name, content_type, BUCKET_NAME)
 
 
 
