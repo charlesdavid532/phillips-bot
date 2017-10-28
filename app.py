@@ -123,8 +123,8 @@ def processRequest(req):
     elif req.get("result").get("action") == "send.customEmail":
         res = generateEmailController(req.get("result"))
     elif req.get("result").get("action") == "welcome.intent":
-        #res = showWelcomeIntent(req)
-        res = makeListOfAllUsers(req)
+        res = showWelcomeIntent(req)
+        #res = makeListOfAllUsers(req)
     elif req.get("result").get("action") == "showAllUsers":
         res = makeListOfAllUsers(req)
     elif req.get("result").get("action") == "detailed.bio":
