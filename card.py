@@ -102,7 +102,7 @@ class Card(object):
 			itemList.append(secondItemsDict)
 
 
-	    if self.sugTitles != "" and self.sugTitles != None:
+		if self.sugTitles != "" and self.sugTitles != None:
 			richResponseDict["suggestions"] = SuggestionList(self.sugTitles)
 
 
