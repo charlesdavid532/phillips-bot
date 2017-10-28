@@ -19,6 +19,7 @@ import uuid
 from custom_email import Email
 from amazon_s3 import AmazonS3
 from card import Card
+from custom_list import List
 
 try:
     import apiai
@@ -122,7 +123,8 @@ def processRequest(req):
     elif req.get("result").get("action") == "send.customEmail":
         res = generateEmailController(req.get("result"))
     elif req.get("result").get("action") == "welcome.intent":
-        res = showWelcomeIntent(req)
+        #res = showWelcomeIntent(req)
+        res = makeListOfAllUsers(req)
     elif req.get("result").get("action") == "showAllUsers":
         res = makeListOfAllUsers(req)
     elif req.get("result").get("action") == "detailed.bio":
@@ -1570,7 +1572,8 @@ def makeListOfAllUsers(resp):
     #print(json.dumps(createListItem(fullName,fullName,designation,"https://developers.google.com/actions/images/badges/XPM_BADGING_GoogleAssistant_VER.png"), indent=4))
     #print(json.dumps(createListResponse("My sample response",["sug1","sug2"],"My list title",[fullName, "Charlie"],[fullName, "Dans"],[designation, "Cons"],["https://developers.google.com/actions/images/badges/XPM_BADGING_GoogleAssistant_VER.png","https://developers.google.com/actions/images/badges/XPM_BADGING_GoogleAssistant_VER.png"]), indent=4))
 
-    return createListResponse(["Here are the employees of Deloitte Digital. Click on any one of them or say their names to view their detailed bio"],[],"DD Resources", keys, fullName, fullName, designation, profilePhoto, False)
+    return createListResponse(["Here are the employees of Deloitte Digital. Click on any one of them or say their names to view their detailed bio"],
+        [],"DD Resources", keys, fullName, fullName, designation, profilePhoto, ["acc","acc1"], False)
     '''
     return {
         "speech": "Howdy",
@@ -1886,7 +1889,17 @@ def createList(listTitle, keyArr, titleArr, synArr, descriptionArr, imgUrlArr):
     return systemIntentDict
 
 
-def createListResponse(simpleResponseArr, sugList, listTitle, keyArr, titleArr, synArr, descriptionArr, imgUrlArr, expectedUserResponse):
+def createListResponse(simpleResponseArr, sugList, listTitle, keyArr, titleArr, synArr, descriptionArr, imgUrlArr, imgAccTextArr, expectedUserResponse):
+    myList = List(simpleResponse)
+    if expectedUserResponse == True:
+        myList.addExpectedUserResponse()
+    else:
+        myList.removeExpectedUserResponse()
+    myList.addSugTitles(sugList)
+    myList.addListTitle(listTitle)
+    myList.addCompleteListItem(keyArr, titleArr, synArr, descriptionArr, imgUrlArr, imgAccTextArr)
+    return myList.getListResponse()
+    '''
     listResponse = {}
     itemsDict = {}
     itemsDict["simpleResponse"] = {}
@@ -1926,6 +1939,7 @@ def createListResponse(simpleResponseArr, sugList, listTitle, keyArr, titleArr, 
     googleDict["systemIntent"] = createList(listTitle, keyArr, titleArr, synArr, descriptionArr, imgUrlArr)
 
     return listResponse
+    '''
 
 
 def createSuggestion(title):
