@@ -10,9 +10,9 @@ class Suggestion(object):
 		suggestionDict["title"] = self.title
 		return suggestionDict
 
-    def setSuggestionTitle(self, title):
+	def setSuggestionTitle(self, title):
 		self.title = title
 
-    def getSuggestionTitle(self):
+	def getSuggestionTitle(self):
 		return self.title
 		

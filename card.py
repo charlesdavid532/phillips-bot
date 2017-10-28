@@ -111,7 +111,7 @@ class Card(object):
 
 
 
-    def getInteriorCardResponse(self):
+	def getInteriorCardResponse(self):
 		basicCard = {}
 
 		if self.title != "" and self.title != None:
@@ -142,7 +142,7 @@ class Card(object):
 
 
 
-    def getButtonResponse(self):
+	def getButtonResponse(self):
 		btnDict = {}
 
 		btnDict["title"] = self.linkTitle
