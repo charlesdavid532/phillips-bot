@@ -5,7 +5,7 @@ class SuggestionList(object):
 	def __init__(self, titleList):
 		super(SuggestionList, self).__init__()
 		self.titleList = titleList
-
+		return self.getSuggestionListResponse()
 
 	def getSuggestionListResponse(self):
 		suggestionList = []
