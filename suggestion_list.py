@@ -9,8 +9,8 @@ class SuggestionList(object):
 
 	def getSuggestionListResponse(self):
 		suggestionList = []
-		for index in range(0, len(titleList)):
-			suggestionList.append(Suggestion(titleList[index]))
+		for index in range(0, len(self.titleList)):
+			suggestionList.append(Suggestion(self.titleList[index]))
 
 		return suggestionList
 		
