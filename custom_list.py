@@ -37,7 +37,7 @@ class List(object):
 		self.imgURLArr.append(imgURL)
 		self.imgAccTextArr.append(imgAccText)
 
-	def addCompleteListItem(self, keyArr, titleArr, synArr, descriptionArr, imgUrlArr, imgAccTextArr):
+	def addCompleteListItem(self, keyArr, titleArr, synArr, descriptionArr, imgURLArr, imgAccTextArr):
 		self.keyArr = keyArr
 		self.titleArr = titleArr
 		self.synArr = synArr
@@ -87,7 +87,7 @@ class List(object):
 
 		for index in range(0, len(self.titleArr)):
 			itemList.append(self.getListItemResponse(self.keyArr[index], self.titleArr[index], 
-				self.synArr[index], self.descriptionArr[index], self.imgUrlArr[index], self.imgAccTextArr[index]))
+				self.synArr[index], self.descriptionArr[index], self.imgURLArr[index], self.imgAccTextArr[index]))
 
 
 		return systemIntentDict
