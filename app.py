@@ -1890,7 +1890,7 @@ def createList(listTitle, keyArr, titleArr, synArr, descriptionArr, imgUrlArr):
 
 
 def createListResponse(simpleResponseArr, sugList, listTitle, keyArr, titleArr, synArr, descriptionArr, imgUrlArr, imgAccTextArr, expectedUserResponse):
-    myList = List(simpleResponse)
+    myList = List(simpleResponseArr)
     if expectedUserResponse == True:
         myList.addExpectedUserResponse()
     else:
