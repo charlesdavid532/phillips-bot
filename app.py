@@ -18,6 +18,7 @@ import io
 import uuid
 from custom_email import Email
 from amazon_s3 import AmazonS3
+from card import Card
 
 try:
     import apiai
@@ -1728,6 +1729,19 @@ def createImage():
 This function returns a card response
 '''
 def createCardResponse(simpleResponse, sugList, title, formattedText, subtitle, imgURL, imgAccText, btnTitleList, btnUrlList, expectedUserResponse, contextList):
+    myCard = Card(simpleResponse, formattedText, imgURL, imgAccText)
+    myCard.addTitle(title)
+    myCard.addSubTitle(subtitle)
+    myCard.addLinkBtn(btnTitleList, btnUrlList)
+    myCard.addOutputContext(contextList)
+    myCard.addSugTitles(sugList)
+    if expectedUserResponse == True:
+        myCard.addExpectedUserResponse()
+    else:
+        myCard.removeExpectedUserResponse()
+
+    return myCard.getCardResponse()
+    '''
     cardResponse = {}
 
     itemsDict = {}
@@ -1779,6 +1793,7 @@ def createCardResponse(simpleResponse, sugList, title, formattedText, subtitle, 
     
 
     return cardResponse
+    '''
 
 '''
 This function creates a card
