@@ -95,11 +95,11 @@ class Card(object):
 		itemList.append(basicCardDict)
 
 		if len(self.simpleResponse) > 1:
-	    	secondItemsDict = {}
-	    	secondItemsDict["simpleResponse"] = {}
-	    	secondSimpleResponseDict = secondItemsDict["simpleResponse"]
-	    	secondSimpleResponseDict["textToSpeech"] = simpleResponse[1]
-	    	itemList.append(secondItemsDict)
+			secondItemsDict = {}
+			secondItemsDict["simpleResponse"] = {}
+			secondSimpleResponseDict = secondItemsDict["simpleResponse"]
+			secondSimpleResponseDict["textToSpeech"] = simpleResponse[1]
+			itemList.append(secondItemsDict)
 
 
 	    if self.sugTitles != "" and self.sugTitles != None:
