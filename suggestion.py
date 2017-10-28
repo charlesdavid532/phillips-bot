@@ -3,7 +3,7 @@ class Suggestion(object):
 	def __init__(self, title):
 		super(Suggestion, self).__init__()
 		self.title = title
-		return self.getSuggestionResponse()
+		#return self.getSuggestionResponse()
 
 	def getSuggestionResponse(self):
 		suggestionDict = {}
