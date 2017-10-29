@@ -449,7 +449,7 @@ def parseContextUserParametersGetSalesAmount(result):
     if detailedSalesContext == "Context was not found":
         return detailedSalesContext
     '''
-    if myContextRequest.isContextSet() == False:
+    if myContextRequest.getIsContextSet() == False:
         return detailedSalesContext
 
     detailedSalesParameters = detailedSalesContext.get('parameters')

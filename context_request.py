@@ -19,7 +19,7 @@ class ContextRequest(object):
 		return "Context was not found"
 
 
-	def isContextSet(self):
+	def getIsContextSet(self):
 		return self.isContextSet
 
 		
