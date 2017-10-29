@@ -20,6 +20,8 @@ from custom_email import Email
 from amazon_s3 import AmazonS3
 from card import Card
 from custom_list import List
+from context_response import ContextResponse
+from context_responseList import ContextResponseList
 
 try:
     import apiai
@@ -102,7 +104,8 @@ def processRequest(req):
     print('hi')
     if req.get("result").get("action") == "sales.statistics":
         parsedData = parseUserParametersGetSalesAmount(req.get("result").get('parameters'))
-        res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
+        #res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
+        res = makeContextWebhookResult(parsedData["speech"], self.contextResponseMainList.getContextJSONResponse())
     elif req.get("result").get("action") == "detailed.statistics":
         parsedData = parseContextUserParametersGetSalesAmount(req.get("result"))
         res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
@@ -772,6 +775,28 @@ def parseUserParametersGetSalesAmount(userParameters):
     period = parseUserPeriod(userParameters.get('period'))
 
     salesRev = getSalesAmount(period, cities["cities"], product["product"])
+
+    # Creating the detailed sales context object
+    detailedSalesContextResponseObject = ContextResponse("detailed_sales", 1)
+    detailedSalesContextResponseObject.addFeature("context-geo-city-us", cities["context-geo-city-us"])
+    detailedSalesContextResponseObject.addFeature("context-geo-state-us", cities["context-geo-state-us"])
+    detailedSalesContextResponseObject.addFeature("context-region", cities["context-region"])
+    detailedSalesContextResponseObject.addFeature("context-product", product["context-product"])
+    detailedSalesContextResponseObject.addFeature("context-period", period["context-period"])
+
+    #Creating the chart context object
+    drawChartContextResponseObject = ContextResponse("draw_chart", 1)
+    drawChartContextResponseObject.addFeature("context-geo-city-us", cities["context-geo-city-us"])
+    drawChartContextResponseObject.addFeature("context-geo-state-us", cities["context-geo-state-us"])
+    drawChartContextResponseObject.addFeature("context-region", cities["context-region"])
+    drawChartContextResponseObject.addFeature("context-product", product["context-product"])
+    drawChartContextResponseObject.addFeature("context-period", period["context-period"])
+    drawChartContextResponseObject.addFeature("context-chart-type", "")
+    drawChartContextResponseObject.addFeature("context-main-chart-feature", "")
+
+    self.contextResponseMainList = ContextResponseList()
+    self.contextResponseMainList.addContext(detailedSalesContextResponseObject)
+    self.contextResponseMainList.addContext(drawChartContextResponseObject)
 
     return {
             "speech": generateResponseForSales(userParameters, period, salesRev), 
