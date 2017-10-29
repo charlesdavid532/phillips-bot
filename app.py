@@ -750,11 +750,20 @@ def parseContextGenerateProductChartController(result):
     userParameters = result.get('parameters')
     userContext = result.get('contexts')
 
+    #Creating a context request class
+    myContextRequest = ContextRequest(userContext)
+
     # This context is an array. Parse this array until you get the required context
-    detailedChartContext = getAppropriateUserContext(userContext, "detailed_chart")
+    #detailedChartContext = getAppropriateUserContext(userContext, "detailed_chart")
+    detailedChartContext = myContextRequest.getAppropriateUserContext("detailed_chart")
 
     # If the context is not set
+    '''
     if detailedChartContext == "Context was not found":
+        return detailedChartContext
+    '''
+
+    if myContextRequest.getIsContextSet() == False:
         return detailedChartContext
 
     detailedChartParameters = detailedChartContext.get('parameters')
@@ -778,18 +787,42 @@ def parseContextGenerateProductChartController(result):
 
     # Creating Context
 
+    '''
     # Creating email context
     outputContext = []
     outputContext.append(createEmailOutputContext(createEmailContextObject(imageFileName)))
     outputContext.append(createDetailedChartOutputContext(createChartContextObject(cities["context-geo-city-us"], 
         cities["context-geo-state-us"], cities["context-region"], products["context-product"], period["context-period"], chartType["context-chart-type"], mainChartFeature["context-main-chart-feature"])))
-
+    '''
    
-    
+    #Creating the email context object
+    emailContextResponseObject = ContextResponse("chart_email", 5)
+    emailContextResponseObject.addFeature("context-attachment-name", imageFileName)
+    #Creating the chart context object
+    detailedChartContextResponseObject = ContextResponse("detailed_chart", 1)
+    detailedChartContextResponseObject.addFeature("context-geo-city-us", cities["context-geo-city-us"])
+    detailedChartContextResponseObject.addFeature("context-geo-state-us", cities["context-geo-state-us"])
+    detailedChartContextResponseObject.addFeature("context-region", cities["context-region"])
+    detailedChartContextResponseObject.addFeature("context-product", products["context-product"])
+    detailedChartContextResponseObject.addFeature("context-period", period["context-period"])
+    detailedChartContextResponseObject.addFeature("context-chart-type", chartType["context-chart-type"])
+    detailedChartContextResponseObject.addFeature("context-main-chart-feature", mainChartFeature["context-main-chart-feature"])
+
+    contextResponseMainList = ContextResponseList()
+    contextResponseMainList.addContext(emailContextResponseObject)
+    contextResponseMainList.addContext(detailedChartContextResponseObject)
+
+
+    '''
     return createCardResponse(["Here is the product wise chart requested"], 
         ["Show digital employees", "Bye doctor dashboard"], 
         "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
         awsImageFileName, "Default accessibility text", [], [], True, outputContext)
+    '''
+    return createCardResponse(["Here is the product wise chart requested"], 
+        ["Show digital employees", "Bye doctor dashboard"], 
+        "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
+        awsImageFileName, "Default accessibility text", [], [], True, contextResponseMainList.getContextJSONResponse())
 
 
 
