@@ -105,7 +105,7 @@ def processRequest(req):
     if req.get("result").get("action") == "sales.statistics":
         parsedData = parseUserParametersGetSalesAmount(req.get("result").get('parameters'))
         #res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
-        res = makeContextWebhookResult(parsedData["speech"], self.contextResponseMainList.getContextJSONResponse())
+        res = makeContextWebhookResult(parsedData["speech"], parsedData["context-list"].getContextJSONResponse())
     elif req.get("result").get("action") == "detailed.statistics":
         parsedData = parseContextUserParametersGetSalesAmount(req.get("result"))
         res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
@@ -794,14 +794,20 @@ def parseUserParametersGetSalesAmount(userParameters):
     drawChartContextResponseObject.addFeature("context-chart-type", "")
     drawChartContextResponseObject.addFeature("context-main-chart-feature", "")
 
-    self.contextResponseMainList = ContextResponseList()
-    self.contextResponseMainList.addContext(detailedSalesContextResponseObject)
-    self.contextResponseMainList.addContext(drawChartContextResponseObject)
+    contextResponseMainList = ContextResponseList()
+    contextResponseMainList.addContext(detailedSalesContextResponseObject)
+    contextResponseMainList.addContext(drawChartContextResponseObject)
 
+    '''
     return {
             "speech": generateResponseForSales(userParameters, period, salesRev), 
             "context": createContextObject(cities["context-geo-city-us"], cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"]),
             "draw-chart-context": createChartContextObject(cities["context-geo-city-us"], cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"],"","")
+            }
+    '''
+    return {
+            "speech": generateResponseForSales(userParameters, period, salesRev), 
+            "context-list": contextResponseMainList
             }
 
 
