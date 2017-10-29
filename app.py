@@ -108,7 +108,8 @@ def processRequest(req):
         res = makeContextWebhookResult(parsedData["speech"], parsedData["context-list"].getContextJSONResponse())
     elif req.get("result").get("action") == "detailed.statistics":
         parsedData = parseContextUserParametersGetSalesAmount(req.get("result"))
-        res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
+        #res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
+        res = makeContextWebhookResult(parsedData["speech"], parsedData["context-list"].getContextJSONResponse())
     elif req.get("result").get("action") == "product.chart":
         res = generateProductChartController(req.get("result").get('parameters'))
         #res = generateProductChartController(req.get("result"))
@@ -435,11 +436,19 @@ def parseContextUserParametersGetSalesAmount(result):
     userParameters = result.get('parameters')
     userContext = result.get('contexts')
 
+    #Creating a context request class
+    myContextRequest = ContextRequest(userContext)
+
     # This context is an array. Parse this array until you get the required context
-    detailedSalesContext = getAppropriateUserContext(userContext, "detailed_sales")
+    #detailedSalesContext = getAppropriateUserContext(userContext, "detailed_sales")
+    detailedSalesContext = myContextRequest.getAppropriateUserContext("detailed_sales")
 
     # If the context is not set
+    '''
     if detailedSalesContext == "Context was not found":
+        return detailedSalesContext
+    '''
+    if myContextRequest.isContextSet() == False:
         return detailedSalesContext
 
     detailedSalesParameters = detailedSalesContext.get('parameters')
@@ -450,11 +459,40 @@ def parseContextUserParametersGetSalesAmount(result):
 
     salesRev = getSalesAmount(period, cities["cities"], product["product"])
 
+    # Creating the detailed sales context object
+    detailedSalesContextResponseObject = ContextResponse("detailed_sales", 1)
+    detailedSalesContextResponseObject.addFeature("context-geo-city-us", cities["context-geo-city-us"])
+    detailedSalesContextResponseObject.addFeature("context-geo-state-us", cities["context-geo-state-us"])
+    detailedSalesContextResponseObject.addFeature("context-region", cities["context-region"])
+    detailedSalesContextResponseObject.addFeature("context-product", product["context-product"])
+    detailedSalesContextResponseObject.addFeature("context-period", period["context-period"])
+
+    #Creating the chart context object
+    drawChartContextResponseObject = ContextResponse("draw_chart", 1)
+    drawChartContextResponseObject.addFeature("context-geo-city-us", cities["context-geo-city-us"])
+    drawChartContextResponseObject.addFeature("context-geo-state-us", cities["context-geo-state-us"])
+    drawChartContextResponseObject.addFeature("context-region", cities["context-region"])
+    drawChartContextResponseObject.addFeature("context-product", product["context-product"])
+    drawChartContextResponseObject.addFeature("context-period", period["context-period"])
+    drawChartContextResponseObject.addFeature("context-chart-type", "")
+    drawChartContextResponseObject.addFeature("context-main-chart-feature", "")
+
+    contextResponseMainList = ContextResponseList()
+    contextResponseMainList.addContext(detailedSalesContextResponseObject)
+    contextResponseMainList.addContext(drawChartContextResponseObject)
+
+   
+    return {
+            "speech": generateContextResponseForSales(userParameters, detailedSalesParameters, period, salesRev), 
+            "context-list": contextResponseMainList
+            }
+    '''
     return {
             "speech":generateContextResponseForSales(userParameters, detailedSalesParameters, period, salesRev),
             "context": createContextObject(cities["context-geo-city-us"], cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"]),
             "draw-chart-context": createChartContextObject(cities["context-geo-city-us"], cities["context-geo-state-us"], cities["context-region"], product["context-product"], period["context-period"],"","")
             }
+    '''
 
 '''
 This function returns the appropriate context
