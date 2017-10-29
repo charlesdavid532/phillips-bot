@@ -22,6 +22,7 @@ from card import Card
 from custom_list import List
 from context_response import ContextResponse
 from context_responseList import ContextResponseList
+from context_request import ContextRequest
 
 try:
     import apiai
