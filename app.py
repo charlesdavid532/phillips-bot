@@ -602,11 +602,20 @@ def generateEmailController(result):
     userParameters = result.get('parameters')
     userContext = result.get('contexts')
 
+    #Creating a context request class
+    myContextRequest = ContextRequest(userContext)
+
     # This context is an array. Parse this array until you get the required context
-    emailContext = getAppropriateUserContext(userContext, "chart_email")
+    #emailContext = getAppropriateUserContext(userContext, "chart_email")
+    emailContext = myContextRequest.getAppropriateUserContext("chart_email")
 
     # If the context is not set
+    '''
     if emailContext == "Context was not found":
+        return emailContext
+    '''
+
+    if myContextRequest.getIsContextSet() == False:
         return emailContext
 
     emailAttachmentParameters = emailContext.get('parameters')
@@ -638,12 +647,23 @@ def convertTextToProductChartController(result):
     userParameters = result.get('parameters')
     userContext = result.get('contexts')
 
+    #Creating a context request class
+    myContextRequest = ContextRequest(userContext)
+
     # This context is an array. Parse this array until you get the required context
-    drawChartContext = getAppropriateUserContext(userContext, "draw_chart")
+    #drawChartContext = getAppropriateUserContext(userContext, "draw_chart")
+    drawChartContext = myContextRequest.getAppropriateUserContext("draw_chart")
 
     # If the context is not set
+    '''
     if drawChartContext == "Context was not found":
         return drawChartContext
+    '''
+    if myContextRequest.getIsContextSet() == False:
+        return drawChartContext   
+    
+
+    
     
     drawChartParameters = drawChartContext.get('parameters')
     cities = parseContextUserRegion(userParameters, drawChartParameters)
@@ -667,17 +687,49 @@ def convertTextToProductChartController(result):
     # Creating Context
 
     # Creating email context
+    '''
     outputContext = []
     outputContext.append(createEmailOutputContext(createEmailContextObject(imageFileName)))
     outputContext.append(createDetailedChartOutputContext(createChartContextObject(cities["context-geo-city-us"], 
         cities["context-geo-state-us"], cities["context-region"], products["context-product"], period["context-period"], chartType["context-chart-type"], mainChartFeature["context-main-chart-feature"])))
+    '''
+
+    #Creating the email context object
+    emailContextResponseObject = ContextResponse("chart_email", 5)
+    emailContextResponseObject.addFeature("context-attachment-name", imageFileName)
+    #Creating the chart context object
+    detailedChartContextResponseObject = ContextResponse("detailed_chart", 1)
+    detailedChartContextResponseObject.addFeature("context-geo-city-us", cities["context-geo-city-us"])
+    detailedChartContextResponseObject.addFeature("context-geo-state-us", cities["context-geo-state-us"])
+    detailedChartContextResponseObject.addFeature("context-region", cities["context-region"])
+    detailedChartContextResponseObject.addFeature("context-product", products["context-product"])
+    detailedChartContextResponseObject.addFeature("context-period", period["context-period"])
+    detailedChartContextResponseObject.addFeature("context-chart-type", chartType["context-chart-type"])
+    detailedChartContextResponseObject.addFeature("context-main-chart-feature", mainChartFeature["context-main-chart-feature"])
+
+    contextResponseMainList = ContextResponseList()
+    contextResponseMainList.addContext(emailContextResponseObject)
+    contextResponseMainList.addContext(detailedChartContextResponseObject)
+
+
 
     # Call a function that creates the card response
-    
+    '''
     return createCardResponse(["Here is the product wise chart requested"], 
         ["Show digital employees", "Bye doctor dashboard"], 
         "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
         awsImageFileName, "Default accessibility text", [], [], True, outputContext)
+    '''
+    return createCardResponse(["Here is the product wise chart requested"], 
+        ["Show digital employees", "Bye doctor dashboard"], 
+        "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
+        awsImageFileName, "Default accessibility text", [], [], True, contextResponseMainList.getContextJSONResponse())
+
+
+
+
+
+
 '''
 This function is a controller function for generating a product wise chart after parsing the user parameters
 '''
