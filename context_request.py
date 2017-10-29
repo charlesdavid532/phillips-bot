@@ -12,7 +12,7 @@ class ContextRequest(object):
 		    if self.userContext[index]["name"] == contextName:
 		        print("found the right context")
 		        self.isContextSet = True
-		        return userContext[index]
+		        return self.userContext[index]
 
 		# Could not find the right context
 		self.isContextSet = False
