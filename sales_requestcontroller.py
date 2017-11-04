@@ -30,7 +30,7 @@ class SalesRequestController(object):
 
 		# If the context is not set		
 		if myContextRequest.getIsContextSet() == False:
-	    	return detailedSalesContext
+			return detailedSalesContext
 
 		self.contextParameters = detailedSalesContext.get('parameters')
 
@@ -49,7 +49,7 @@ class SalesRequestController(object):
 			self.cities, self.product, self.period = self.parseContextParameters()
 
 		self.salesRev = self.getSalesAmount(self.period, self.cities["cities"], self.product["product"])
-		
+
 		contextResponseMainList = self.createSalesContext()
 
 		if self.getIsContext() == False:
