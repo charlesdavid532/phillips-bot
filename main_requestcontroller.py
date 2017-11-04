@@ -6,7 +6,7 @@ from email_request_controller import EmailRequestController
 class MainRequestController(object):
 	"""Handles the request from api.ai"""
 	def __init__(self, data, mongo):
-		super(Parser, self).__init__()
+		super(MainRequestController, self).__init__()
 		self.requestData = data
 		self.responseData = None
 		self.mongo = mongo
