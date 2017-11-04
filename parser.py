@@ -57,14 +57,14 @@ class Parser(object):
 		        "city": 1
 		        })
 
-		    for s in stateCur:
-		        print ("inside parse state the city is:" + s["city"])
-		        cities.append(s["city"])
+			for s in stateCur:
+				print ("inside parse state the city is:" + s["city"])
+				cities.append(s["city"])
 
-		    return cities
+			return cities
 
 		except Exception:
-		    print("Could not query database")
+			print("Could not query database")
 
 
 
