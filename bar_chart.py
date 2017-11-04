@@ -18,8 +18,8 @@ class BarChart(Chart):
 
 		print ("xArr in create Bar Chart is:")
 		for i in range(0, len(self.xArr)):
-		   	print ("the product is:" + self.xArr[i])
-		    print ("the product revenue is:" + str(self.yArr[i]))
+			print ("the product is:" + self.xArr[i])
+			print ("the product revenue is:" + str(self.yArr[i]))
 
 		y_pos = np.arange(len(self.xArr))
 		plt.gcf().clear()
