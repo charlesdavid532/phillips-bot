@@ -22,7 +22,8 @@ class MainRequestController(object):
 		elif self.requestData.get("result").get("action") == "detailed.statistics":			
 			salesRequestController = SalesRequestController(self.requestData, self.mongo)
 			salesRequestController.setIsContext(Constants.getStrDetailedSalesContext())
-			self.responseData = salesRequestController.getSalesResponse()
+			salesResponseData = salesRequestController.getSalesResponse()
+			self.responseData = self.makeContextWebhookResult(salesResponseData["speech"], salesResponseData["context-list"])
 		elif self.requestData.get("result").get("action") == "product.chart":
 			chartController = ChartController(self.requestData, self.mongo)
 			self.responseData = chartController.getChartResponse()
