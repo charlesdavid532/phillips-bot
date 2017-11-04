@@ -87,14 +87,14 @@ class ChartController(object):
 	    mChartFeature = self.mainChartFeature["main-chart-feature"]
 
 	    if mChartFeature == Constants.getStrProduct():
-	    	prodChartContrObj = ProductChartController(self.cities, self.products, self.period, self.chartType, self.mainChartFeature, self.mongo)
-	    	return prodChartContrObj.drawChart()	        
+			prodChartContrObj = ProductChartController(self.cities, self.products, self.period, self.chartType, self.mainChartFeature, self.mongo)
+			return prodChartContrObj.drawChart()	        
 	    elif mChartFeature == Constants.getStrCity():
-	        print("This should return city wise revenues")
+			print("This should return city wise revenues")
 	    elif mChartFeature == Constants.getStrState():
-	        print("This should return state wise revenues")
+			print("This should return state wise revenues")
 	    elif mChartFeature == Constants.getStrRegion():
-	        print("This should return region wise revenues")
+			print("This should return region wise revenues")
 	    else:
 			print("Default returns product wise revenues")
 			prodChartContrObj = ProductChartController(self.cities, self.products, self.period, self.chartType, self.mainChartFeature, self.mongo)
