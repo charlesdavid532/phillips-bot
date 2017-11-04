@@ -27,7 +27,7 @@ class ProductChartController(object):
 	This function returns product wise revenues (List of objects : product, salesRevenue) for the specified productId, cities, period
 	TODO: Change query into an aggregation function of mongo db in order to expedite the process & lift load from python
 	'''
-	def getProductWiseRevenue(period, cities, productIds):
+	def getProductWiseRevenue(self, period, cities, productIds):
 		print ("In get product wise revenue")
 		print ("The start date is:" + str(period["startDate"]))
 		print ("The end date is:" + str(period["endDate"]))
@@ -91,7 +91,7 @@ class ProductChartController(object):
 		return productRevenues
 		
 
-	def getPNameFromPId(pId):
+	def getPNameFromPId(self, pId):
 		print ("This function should return a product name from a product id")
 
 
@@ -115,7 +115,7 @@ class ProductChartController(object):
 	'''
 	Draws the product chart basis the parameters passed
 	'''
-	def drawProductChart(productRevenues, chartType, xLabel, yLabel, title):
+	def drawProductChart(self, productRevenues, chartType, xLabel, yLabel, title):
 		print(" In draw product chart")
 		print("THe chart type passed is:"+ chartType)
 		xArr = []
