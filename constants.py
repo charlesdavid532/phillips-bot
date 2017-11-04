@@ -6,7 +6,7 @@ class Constants(object):
 
 	@staticmethod
 	def getStrDefaultProduct():
-    	return "Fan"
+		return "Fan"
 
 
     @staticmethod
@@ -16,7 +16,7 @@ class Constants(object):
 
 	@staticmethod
 	def getStrDefaultStartDate():
-    	return dt(2017,1,1,00,00).date().strftime("%Y-%m-%d")
+		return dt(2017,1,1,00,00).date().strftime("%Y-%m-%d")
 
     @staticmethod
 	def getStrDefaultEndDate():
@@ -37,61 +37,61 @@ class Constants(object):
 
 	@staticmethod
 	def getStrProduct():
-    	return "product-wise"
+		return "product-wise"
 
     @staticmethod
 	def getStrCity():
-    	return "city-wise"
+		return "city-wise"
 
     @staticmethod
 	def getStrState():
-    	return "state-wise"
+		return "state-wise"
 
     @staticmethod
 	def getStrRegion():
-    	return "region-wise"
+		return "region-wise"
 
     @staticmethod
 	def getStrDetailedSalesContext():
-    	return "detailed_sales"
+		return "detailed_sales"
 
     @staticmethod
 	def getStrDrawChartContext():
-    	return "draw_chart"
+		return "draw_chart"
 
     @staticmethod
 	def getStrChartEmailContext():
-    	return "chart_email"
+		return "chart_email"
 
     @staticmethod
 	def getStrDetailedChartContext():
-    	return "detailed_chart"
+		return "detailed_chart"
 
     @staticmethod
     def getAWSBucketURL():
-    	return "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/"
+		return "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/"
 
     @staticmethod
     def getBlueBotURL():
-    	return "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/incomes7.png"
+		return "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/incomes7.png"
 
     @staticmethod
     def getAWSBucketName():
-    	return "tonibot-bucket"
+		return "tonibot-bucket"
 
     @staticmethod
     def getStrImageContentType():
-    	return "image/png"
+		return "image/png"
 
     @staticmethod
     def getStrProducts():
-    	return "Products"
+		return "Products"
 
     @staticmethod
     def getStrRevenues():
-    	return "Revenues"
+		return "Revenues"
 
     @staticmethod
     def getStrProductWiseRevenues():
-    	return "Product wise Revenues"
+		return "Product wise Revenues"
 		
