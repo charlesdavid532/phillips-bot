@@ -171,5 +171,6 @@ class SalesRequestController(object):
 	def getContextSpeechResponseForSales(self):
 		myResponse = SalesResponseController(self.userParameters, self.salesRev, self.period)
 		myResponse.setIsContext(self.contextParameters)
+		print("The response in getContextSpeechResponseForSales::" + myResponse.getSalesResponseStr())
 		return myResponse.getSalesResponseStr()
 		
