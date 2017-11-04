@@ -58,6 +58,7 @@ class SalesRequestController(object):
 		else:
 			speech = self.getContextSpeechResponseForSales()
 
+		print("the context response in main list of sales response is::" + contextResponseMainList.getContextJSONResponse())
 		return {
 		    "speech": speech,
 		    "context-list": contextResponseMainList.getContextJSONResponse()

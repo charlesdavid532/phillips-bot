@@ -22,7 +22,7 @@ class MainRequestController(object):
 		elif self.requestData.get("result").get("action") == "detailed.statistics":			
 			salesRequestController = SalesRequestController(self.requestData, self.mongo)
 			salesRequestController.setIsContext(Constants.getStrDetailedSalesContext())
-			salesResponseData = salesRequestController.getSalesResponse()
+			self.salesResponseData = salesRequestController.getSalesResponse()
 		elif self.requestData.get("result").get("action") == "product.chart":
 			chartController = ChartController(self.requestData, self.mongo)
 			self.responseData = chartController.getChartResponse()
