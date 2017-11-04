@@ -96,9 +96,9 @@ class ChartController(object):
 	    elif mChartFeature == Constants.getStrRegion():
 	        print("This should return region wise revenues")
 	    else:
-	        print("Default returns product wise revenues")
-	        prodChartContrObj = ProductChartController(self.cities, self.products, self.period, self.chartType, self.mainChartFeature, self.mongo)
-	    	return prodChartContrObj.drawChart()	        
+			print("Default returns product wise revenues")
+			prodChartContrObj = ProductChartController(self.cities, self.products, self.period, self.chartType, self.mainChartFeature, self.mongo)
+			return prodChartContrObj.drawChart()	        
 
 
 
@@ -107,10 +107,10 @@ class ChartController(object):
 		myParser.setUserParameters(self.userParameters)
 
 		cities = myParser.parseUserRegion(self.userParameters)
-	    products = myParser.parseUserProducts(self.userParameters)
-	    period = myParser.parseUserPeriod(self.userParameters.get('period'))
-	    chartType = myParser.parseUserChartType(self.userParameters)
-	    mainChartFeature = myParser.parseUserMainChartFeature(self.userParameters)
+		products = myParser.parseUserProducts(self.userParameters)
+		period = myParser.parseUserPeriod(self.userParameters.get('period'))
+		chartType = myParser.parseUserChartType(self.userParameters)
+		mainChartFeature = myParser.parseUserMainChartFeature(self.userParameters)
 
 		return cities, products, period, chartType, mainChartFeature
 
@@ -136,9 +136,9 @@ class ChartController(object):
 		print ("The image file name is:"+ self.imageFileName)
 		self.awsImageFileName = Constants.getAWSBucketURL() + self.imageFileName
 
-		
+
 		myAmazonS3 = AmazonS3(Constants.getAWSBucketName())
-    	myAmazonS3.saveResourceToAWS(img_data, self.imageFileName, Constants.getStrImageContentType(), Constants.getAWSBucketName())
+		myAmazonS3.saveResourceToAWS(img_data, self.imageFileName, Constants.getStrImageContentType(), Constants.getAWSBucketName())
 
 
     def createChartContext(self):
