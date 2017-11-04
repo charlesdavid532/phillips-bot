@@ -1,6 +1,8 @@
 from parser import Parser
 from custom_email import Email
 from card import Card
+from context_request import ContextRequest
+from constants import Constants
 class EmailRequestController(object):
 	"""docstring for EmailRequestController"""
 	def __init__(self, requestData, mongo):
