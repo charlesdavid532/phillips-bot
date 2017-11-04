@@ -2,6 +2,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import io
+from chart import Chart
 class PieChart(Chart):
 	"""docstring for PieChart"""
 	def __init__(self, xArr, yArr):
