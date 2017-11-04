@@ -9,8 +9,8 @@ class Constants(object):
 		return "Fan"
 
 
-    @staticmethod
-    def getStrDefaultRegion():
+	@staticmethod
+	def getStrDefaultRegion():
 		return "North East"
 
 
@@ -18,7 +18,7 @@ class Constants(object):
 	def getStrDefaultStartDate():
 		return dt(2017,1,1,00,00).date().strftime("%Y-%m-%d")
 
-    @staticmethod
+	@staticmethod
 	def getStrDefaultEndDate():
 		return dt.today().strftime('%Y-%m-%d')
 
@@ -39,59 +39,59 @@ class Constants(object):
 	def getStrProduct():
 		return "product-wise"
 
-    @staticmethod
+	@staticmethod
 	def getStrCity():
 		return "city-wise"
 
-    @staticmethod
+	@staticmethod
 	def getStrState():
 		return "state-wise"
 
-    @staticmethod
+	@staticmethod
 	def getStrRegion():
 		return "region-wise"
 
-    @staticmethod
+	@staticmethod
 	def getStrDetailedSalesContext():
 		return "detailed_sales"
 
-    @staticmethod
+	@staticmethod
 	def getStrDrawChartContext():
 		return "draw_chart"
 
-    @staticmethod
+	@staticmethod
 	def getStrChartEmailContext():
 		return "chart_email"
 
-    @staticmethod
+	@staticmethod
 	def getStrDetailedChartContext():
 		return "detailed_chart"
 
-    @staticmethod
-    def getAWSBucketURL():
+	@staticmethod
+	def getAWSBucketURL():
 		return "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/"
 
-    @staticmethod
-    def getBlueBotURL():
+	@staticmethod
+	def getBlueBotURL():
 		return "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/incomes7.png"
 
-    @staticmethod
-    def getAWSBucketName():
+	@staticmethod
+	def getAWSBucketName():
 		return "tonibot-bucket"
 
-    @staticmethod
-    def getStrImageContentType():
+	@staticmethod
+	def getStrImageContentType():
 		return "image/png"
 
-    @staticmethod
-    def getStrProducts():
+	@staticmethod
+	def getStrProducts():
 		return "Products"
 
-    @staticmethod
-    def getStrRevenues():
+	@staticmethod
+	def getStrRevenues():
 		return "Revenues"
 
-    @staticmethod
-    def getStrProductWiseRevenues():
+	@staticmethod
+	def getStrProductWiseRevenues():
 		return "Product wise Revenues"
 		
