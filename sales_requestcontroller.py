@@ -58,7 +58,7 @@ class SalesRequestController(object):
 			speech = self.getContextSpeechResponseForSales()
 
 		return {
-		    "speech": speech
+		    "speech": speech,
 		    "context-list": contextResponseMainList.getContextJSONResponse()
 		    }
 
