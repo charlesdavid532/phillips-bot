@@ -84,21 +84,21 @@ class ChartController(object):
 	'''
 	def drawMainChartFeatureChart():
 
-	    mChartFeature = self.mainChartFeature["main-chart-feature"]
+		mChartFeature = self.mainChartFeature["main-chart-feature"]
 
-	    if mChartFeature == Constants.getStrProduct():
+		if mChartFeature == Constants.getStrProduct():
 			prodChartContrObj = ProductChartController(self.cities, self.products, self.period, self.chartType, self.mainChartFeature, self.mongo)
 			return prodChartContrObj.drawChart()	        
-	    elif mChartFeature == Constants.getStrCity():
+		elif mChartFeature == Constants.getStrCity():
 			print("This should return city wise revenues")
-	    elif mChartFeature == Constants.getStrState():
+		elif mChartFeature == Constants.getStrState():
 			print("This should return state wise revenues")
-	    elif mChartFeature == Constants.getStrRegion():
+		elif mChartFeature == Constants.getStrRegion():
 			print("This should return region wise revenues")
-	    else:
+		else:
 			print("Default returns product wise revenues")
 			prodChartContrObj = ProductChartController(self.cities, self.products, self.period, self.chartType, self.mainChartFeature, self.mongo)
-			return prodChartContrObj.drawChart()	        
+			return prodChartContrObj.drawChart()		        
 
 
 
@@ -141,7 +141,7 @@ class ChartController(object):
 		myAmazonS3.saveResourceToAWS(img_data, self.imageFileName, Constants.getStrImageContentType(), Constants.getAWSBucketName())
 
 
-    def createChartContext(self):
+	def createChartContext(self):
 
 		#Creating the email context object
 		emailContextResponseObject = ContextResponse(Constants.getStrChartEmailContext(), 5)
