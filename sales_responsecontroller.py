@@ -86,11 +86,11 @@ class SalesResponseController(object):
 		resStr = ""
 
 		if parameters.get('product') != None and parameters.get('product') != "":
-	    	resStr += parameters.get('product')
+			resStr += parameters.get('product')
 		elif contextParameters.get('context-product') != None and contextParameters.get('context-product') != "":
-	    	resStr += contextParameters.get('context-product')
+			resStr += contextParameters.get('context-product')
 		else:
-	    	resStr += Constants.getStrDefaultProduct()
+			resStr += Constants.getStrDefaultProduct()
 
 		return resStr
 
