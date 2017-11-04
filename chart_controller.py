@@ -52,7 +52,7 @@ class ChartController(object):
 			self.cities, self.products, self.period, self.chartType, self.mainChartFeature = self.parseContextParameters()
 
 
-		img_data = self.drawMainChartFeatureChart(self.cities, self.products, self.period, self.chartType, self.mainChartFeature)
+		img_data = self.drawMainChartFeatureChart()
 
 		self.storeImageInAWS(img_data)
 
