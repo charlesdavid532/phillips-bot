@@ -78,31 +78,31 @@ class Parser(object):
 		if region == "North East":
 			regionNotation = "NE"
 		elif region == "North West":
-	    	regionNotation = "NW"
+			regionNotation = "NW"
 		elif region == "South East":
-	    	regionNotation = "SE"
+			regionNotation = "SE"
 		elif region == "South West":
-	    	regionNotation = "SW"
+			regionNotation = "SW"
 		else:
-	    	region = ""
+			region = ""
 
 
 		regionData = self.mongo.db.region
 		cities = []
 		try:
-		    regionCur = regionData.find({            
-		        "region":regionNotation
-		        }, {
-		        "city": 1
-		        })
+			regionCur = regionData.find({            
+			    "region":regionNotation
+			    }, {
+			    "city": 1
+			    })
 
-		    for r in regionCur:
-		        cities.append(r["city"])
-		        print("The city is:"+ r["city"])
+			for r in regionCur:
+				cities.append(r["city"])
+				print("The city is:"+ r["city"])
 
-		    #print("the list of cities is:"+ cities[0])
-		    #print("the list of cities is:"+ cities[1])
-		    return cities
+			#print("the list of cities is:"+ cities[0])
+			#print("the list of cities is:"+ cities[1])
+			return cities
 
 		except Exception:
 			print("Could not query database")
@@ -132,7 +132,7 @@ class Parser(object):
 			return {'cities':self.parseState(contextParameters.get('context-geo-state-us')),'context-geo-city-us': '','context-geo-state-us': contextParameters.get('context-geo-state-us'),'context-region': ''}
 		elif contextParameters.get('context-region') != None and contextParameters.get('context-region') != "":
 			return {'cities':self.parseRegion(contextParameters.get('context-region')),'context-geo-city-us': '','context-geo-state-us': '','context-region': contextParameters.get('context-region')}
-			else:
+		else:
 			return {'cities':self.getDefaultRegion(),'context-geo-city-us': '','context-geo-state-us': '','context-region': ''}
 
 
@@ -147,98 +147,98 @@ class Parser(object):
 		if parameters.get('product') != None and parameters.get('product') != "" and parameters.get('product') != []:
 			return {'product': self.getPIdsFromPNames(parameters.get('product')), 'context-product': parameters.get('product')}
 		else:
-	    	return {'product': [self.getDefaultProduct()], 'context-product': []}
+			return {'product': [self.getDefaultProduct()], 'context-product': []}
 
 	'''
 	Note should be depreciated to accomodate multiple products (Will require change in generating response and sales amount)
 	'''
 	def parseUserProduct(parameters):
-	    if parameters.get('product') != None and parameters.get('product') != "":
-        	return {'product': self.getPIdFromPName(parameters.get('product')), 'context-product': parameters.get('product')}
-	    else:
-        	return {'product': self.getDefaultProduct(), 'context-product': ''}
+		if parameters.get('product') != None and parameters.get('product') != "":
+			return {'product': self.getPIdFromPName(parameters.get('product')), 'context-product': parameters.get('product')}
+		else:
+			return {'product': self.getDefaultProduct(), 'context-product': ''}
 
 	def getDefaultProduct():
-	    print ("This function should return a list a single default product or a list of products")
-	    return self.getPIdFromPName(self.getStrDefaultProduct())
+		print ("This function should return a list a single default product or a list of products")
+		return self.getPIdFromPName(self.getStrDefaultProduct())
 
 	def getAllProducts():
-    	print ("This function should return a list of all products in the database")
+		print ("This function should return a list of all products in the database")
 
     def getStrDefaultProduct():
-    	return Constants.getStrDefaultProduct()
+		return Constants.getStrDefaultProduct()
     '''
 	Return an array of product ids
 	{{pNames}} Array of product names
 	'''
 	def getPIdsFromPNames(pNames):
-	    pIds = []
-	    for index in range(0, len(pNames)):
-	    	pIds.append(self.getPIdFromPName(pNames[index]))
+		pIds = []
+		for index in range(0, len(pNames)):
+			pIds.append(self.getPIdFromPName(pNames[index]))
 
-	    return pIds
+		return pIds
 
 
 	def getPIdFromPName(pName):
-	    print ("This function should return a product id from a product name")
+		print ("This function should return a product id from a product name")
 
 
-	    prodData = self.mongo.db.products
-	    try:
-	        prodCur = prodData.find({            
-	            "pName":pName
-	            }, {
-	            "pId": 1
-	            })
+		prodData = self.mongo.db.products
+		try:
+			prodCur = prodData.find({            
+			    "pName":pName
+			    }, {
+			    "pId": 1
+			    })
 
-	        for p in prodCur:
-            	pId = p["pId"]
+			for p in prodCur:
+				pId = p["pId"]
 
-	        return pId
+			return pId
 
-	    except Exception:
-        	print("Could not query database")
+		except Exception:
+			print("Could not query database")
 
 
 
 	def getPNameFromPId(pId):
-	    print ("This function should return a product name from a product id")
+		print ("This function should return a product name from a product id")
 
 
-	   	prodData = self.mongo.db.products
+		prodData = self.mongo.db.products
 		try:
-	    	prodCur = prodData.find({            
-	            "pId":pId
-	            }, {
-	            "pName": 1
-	            })
+			prodCur = prodData.find({            
+			    "pId":pId
+			    }, {
+			    "pName": 1
+			    })
 
-	    	for p in prodCur:
-        		pName = p["pName"]
+			for p in prodCur:
+				pName = p["pName"]
 
-	    	return pName
+			return pName
 
 		except Exception:
-    		print("Could not query database")
+			print("Could not query database")
 
 
 
 	def parseContextUserProduct(parameters, contextParameters):
 		if parameters.get('product') != None and parameters.get('product') != "":
-	   		return {'product': self.getPIdFromPName(parameters.get('product')), 'context-product': parameters.get('product')}
+			return {'product': self.getPIdFromPName(parameters.get('product')), 'context-product': parameters.get('product')}
 		elif contextParameters.get('context-product') != None and contextParameters.get('context-product') != "":
-	    	return {'product': self.getPIdFromPName(contextParameters.get('context-product')), 'context-product': contextParameters.get('context-product')}
+			return {'product': self.getPIdFromPName(contextParameters.get('context-product')), 'context-product': contextParameters.get('context-product')}
 		else:
-	    	return {'product': self.getDefaultProduct(), 'context-product': ''}
+			return {'product': self.getDefaultProduct(), 'context-product': ''}
 
 
 	def parseContextUserProducts(parameters, contextParameters):
 		if parameters.get('product') != None and parameters.get('product') != "" and parameters.get('product') != []:
-	    	return {'product': self.getPIdsFromPNames(parameters.get('product')), 'context-product': parameters.get('product')}
+			return {'product': self.getPIdsFromPNames(parameters.get('product')), 'context-product': parameters.get('product')}
 		elif contextParameters.get('context-product') != None and contextParameters.get('context-product') != ""  and contextParameters.get('context-product') != []:
-	    	return {'product': self.getPIdsFromPNames(contextParameters.get('context-product')), 'context-product': contextParameters.get('context-product')}
+			return {'product': self.getPIdsFromPNames(contextParameters.get('context-product')), 'context-product': contextParameters.get('context-product')}
 		else:
-	    	return {'product': [self.getDefaultProduct()], 'context-product': ''}
+			return {'product': [self.getDefaultProduct()], 'context-product': ''}
 
 
 
@@ -256,25 +256,25 @@ class Parser(object):
 		'''print ("Period at index 0 is:" + period[0])'''
 		'''print ("trying to get date at index 0" + period[0].get('date'))'''
 		if period == "":
-	    	return {"startDate": self.getStrDefaultStartDate(), "endDate": self.getStrDefaultEndDate(), "context-period": ""}
+			return {"startDate": self.getStrDefaultStartDate(), "endDate": self.getStrDefaultEndDate(), "context-period": ""}
 		elif period.get('date') != None and period.get('date') != "":
-		    parsedDate = self.parseDate(period.get('date'))
-		    parseDate["context-period"] = {}
-		    parsedContextPeriod = parseDate["context-period"]
-		    parsedContextPeriod["date"] = period.get('date')
-		    parsedContextPeriod["date-period"] = "" 
-		    return parsedDate
+			parsedDate = self.parseDate(period.get('date'))
+			parseDate["context-period"] = {}
+			parsedContextPeriod = parseDate["context-period"]
+			parsedContextPeriod["date"] = period.get('date')
+			parsedContextPeriod["date-period"] = "" 
+			return parsedDate
 		elif period.get('date-period') != None and period.get('date-period') != "":
-		    parsedDateRange = self.parseDateRange(period.get('date-period'))
-		    parsedDateRange["context-period"] = {}
-		    parsedContextPeriod = parsedDateRange["context-period"]
-		    parsedContextPeriod["date"] = ""
-		    parsedContextPeriod["date-period"] = period.get('date-period')
-		    return parsedDateRange
+			parsedDateRange = self.parseDateRange(period.get('date-period'))
+			parsedDateRange["context-period"] = {}
+			parsedContextPeriod = parsedDateRange["context-period"]
+			parsedContextPeriod["date"] = ""
+			parsedContextPeriod["date-period"] = period.get('date-period')
+			return parsedDateRange
 		else:
-		    # TODO: Include default date (This case should never arise)
-		    print ("Warning error condition reached in parse user period")
-		    return {"startDate": self.getStrDefaultStartDate(), "endDate": self.getStrDefaultEndDate(), "context-period": ""}
+			# TODO: Include default date (This case should never arise)
+			print ("Warning error condition reached in parse user period")
+			return {"startDate": self.getStrDefaultStartDate(), "endDate": self.getStrDefaultEndDate(), "context-period": ""}
                                      
 	def parseDateRange(datePeriod):
 		print("Inside Parse for Date Period")
@@ -288,10 +288,10 @@ class Parser(object):
 
 	def parseDate(date):
 		print("Inside Parse for Date")
-    	return {"startDate": date, "endDate": ""}
+		return {"startDate": date, "endDate": ""}
 
 	def getStrDefaultStartDate():
-    	return Constants.getStrDefaultStartDate()
+		return Constants.getStrDefaultStartDate()
 
 	def getStrDefaultEndDate():
 		return Constants.getStrDefaultEndDate()
@@ -302,39 +302,39 @@ class Parser(object):
 		'''print ("Period at index 0 is:" + period[0])'''
 		'''print ("trying to get date at index 0" + period[0].get('date'))'''
 		if period == "" and contextPeriod == "":
-	    	return {"startDate": self.getStrDefaultStartDate(), "endDate": self.getStrDefaultEndDate(), "context-period": ""}
+			return {"startDate": self.getStrDefaultStartDate(), "endDate": self.getStrDefaultEndDate(), "context-period": ""}
 		elif period != None and period != "" and period.get('date') != None and period.get('date') != "":        
-		    parsedDate = self.parseDate(period.get('date'))
-		    parsedDate["context-period"] = {}
-		    parsedContextPeriod = parsedDate["context-period"]
-		    parsedContextPeriod["date"] = period.get('date')
-		    parsedContextPeriod["date-period"] = "" 
-		    return parsedDate
+			parsedDate = self.parseDate(period.get('date'))
+			parsedDate["context-period"] = {}
+			parsedContextPeriod = parsedDate["context-period"]
+			parsedContextPeriod["date"] = period.get('date')
+			parsedContextPeriod["date-period"] = "" 
+			return parsedDate
 		elif period != None and period != "" and period.get('date-period') != None and period.get('date-period') != "":
-		    parsedDateRange = self.parseDateRange(period.get('date-period'))
-		    parsedDateRange["context-period"] = {}
-		    parsedContextPeriod = parsedDateRange["context-period"]
-		    parsedContextPeriod["date"] = ""
-		    parsedContextPeriod["date-period"] = period.get('date-period')
-		    return parsedDateRange
+			parsedDateRange = self.parseDateRange(period.get('date-period'))
+			parsedDateRange["context-period"] = {}
+			parsedContextPeriod = parsedDateRange["context-period"]
+			parsedContextPeriod["date"] = ""
+			parsedContextPeriod["date-period"] = period.get('date-period')
+			return parsedDateRange
 		elif contextPeriod != None and contextPeriod != "" and contextPeriod.get('date') != None and contextPeriod.get('date') != "":
-		    parsedDate = self.parseDate(contextPeriod.get('date'))
-		    parsedDate["context-period"] = {}
-		    parsedContextPeriod = parsedDate["context-period"]
-		    parsedContextPeriod["date"] = contextPeriod.get('date')
-		    parsedContextPeriod["date-period"] = "" 
-		    return parsedDate   
+			parsedDate = self.parseDate(contextPeriod.get('date'))
+			parsedDate["context-period"] = {}
+			parsedContextPeriod = parsedDate["context-period"]
+			parsedContextPeriod["date"] = contextPeriod.get('date')
+			parsedContextPeriod["date-period"] = "" 
+			return parsedDate   
 		elif contextPeriod != None and contextPeriod != "" and contextPeriod.get('date-period') != None and contextPeriod.get('date-period') != "":
-		    parsedDateRange = self.parseDateRange(contextPeriod.get('date-period'))
-		    parsedDateRange["context-period"] = {}
-		    parsedContextPeriod = parsedDateRange["context-period"]
-		    parsedContextPeriod["date"] = ""
-		    parsedContextPeriod["date-period"] = contextPeriod.get('date-period')
-		    return parsedDateRange
+			parsedDateRange = self.parseDateRange(contextPeriod.get('date-period'))
+			parsedDateRange["context-period"] = {}
+			parsedContextPeriod = parsedDateRange["context-period"]
+			parsedContextPeriod["date"] = ""
+			parsedContextPeriod["date-period"] = contextPeriod.get('date-period')
+			return parsedDateRange
 		else:
-		    # TODO: Include default date (This case should never arise)
-		    print ("Warning error condition reached in parse user period")
-		    return {"startDate": self.getStrDefaultStartDate(), "endDate": self.getStrDefaultEndDate(), "context-period": ""}
+			# TODO: Include default date (This case should never arise)
+			print ("Warning error condition reached in parse user period")
+			return {"startDate": self.getStrDefaultStartDate(), "endDate": self.getStrDefaultEndDate(), "context-period": ""}
 
 
 
@@ -347,17 +347,17 @@ class Parser(object):
 
 	def parseUserChartType(parameters):
 		if parameters.get('chart-type') != None and parameters.get('chart-type') != "" and parameters.get('chart-type') != []:
-	    	return {'chart-type': parameters.get('chart-type'), 'context-chart-type': parameters.get('chart-type')}
+			return {'chart-type': parameters.get('chart-type'), 'context-chart-type': parameters.get('chart-type')}
 		else:
-	    	return {'chart-type': self.getDefaultChartType(), 'context-chart-type': ""}
+			return {'chart-type': self.getDefaultChartType(), 'context-chart-type': ""}
 
 
 	'''
 	This function should return the default chart type
 	'''
 	def getDefaultChartType():
-	    print ("This function should return the default chart type")
-	    return self.getStrDefaultChartType()
+		print ("This function should return the default chart type")
+		return self.getStrDefaultChartType()
 
 
 	def getStrDefaultChartType():
@@ -372,11 +372,11 @@ class Parser(object):
 
 	def parseContextUserChartType(parameters, contextParameters):
 		if parameters.get('chart-type') != None and parameters.get('chart-type') != "" and parameters.get('chart-type') != []:
-	    	return {'chart-type': parameters.get('chart-type'), 'context-chart-type': parameters.get('chart-type')}
+			return {'chart-type': parameters.get('chart-type'), 'context-chart-type': parameters.get('chart-type')}
 		elif contextParameters.get('context-chart-type') != None and contextParameters.get('context-chart-type') != "" and parameters.get('context-chart-type') != []:
-	    	return {'chart-type': contextParameters.get('context-chart-type'), 'context-chart-type': contextParameters.get('context-chart-type')}
+			return {'chart-type': contextParameters.get('context-chart-type'), 'context-chart-type': contextParameters.get('context-chart-type')}
 		else:
-	    	return {'chart-type': self.getDefaultChartType(), 'context-chart-type': ""}
+			return {'chart-type': self.getDefaultChartType(), 'context-chart-type': ""}
 
 
 
@@ -389,9 +389,9 @@ class Parser(object):
 	def parseUserMainChartFeature(parameters):
 		print("main chart feature:"+ parameters.get('main-chart-feature'))
 		if parameters.get('main-chart-feature') != None and parameters.get('main-chart-feature') != "" and parameters.get('main-chart-feature') != []:
-	    	return {'main-chart-feature': parameters.get('main-chart-feature'), 'context-main-chart-feature': parameters.get('main-chart-feature')}
+			return {'main-chart-feature': parameters.get('main-chart-feature'), 'context-main-chart-feature': parameters.get('main-chart-feature')}
 		else:
-	    	return {'main-chart-feature': self.getDefaultMainChartFeature(), 'context-main-chart-feature': ""}
+			return {'main-chart-feature': self.getDefaultMainChartFeature(), 'context-main-chart-feature': ""}
 
 
 
@@ -404,26 +404,26 @@ class Parser(object):
 		return self.getStrProduct()
 
 	def getStrProduct():
-    	return Constants.getStrProduct()
+		return Constants.getStrProduct()
 
 	def getStrCity():
-    	return Constants.getStrCity()
+		return Constants.getStrCity()
 
 	def getStrState():
-    	return Constants.getStrState()
+		return Constants.getStrState()
 
 	def getStrRegion():
-    	return Constants.getStrRegion()
+		return Constants.getStrRegion()
 
 
 
 	def parseContextUserMainChartFeature(parameters, contextParameters):
 		if parameters.get('main-chart-feature') != None and parameters.get('main-chart-feature') != "" and parameters.get('main-chart-feature') != []:
-	    	return {'main-chart-feature': parameters.get('main-chart-feature'), 'context-main-chart-feature': parameters.get('main-chart-feature')}
+			return {'main-chart-feature': parameters.get('main-chart-feature'), 'context-main-chart-feature': parameters.get('main-chart-feature')}
 		elif contextParameters.get('context-main-chart-feature') != None and contextParameters.get('context-main-chart-feature') != "" and parameters.get('context-main-chart-feature') != []:
-	    	return {'main-chart-feature': contextParameters.get('context-main-chart-feature'), 'context-main-chart-feature': contextParameters.get('context-main-chart-feature')}
+			return {'main-chart-feature': contextParameters.get('context-main-chart-feature'), 'context-main-chart-feature': contextParameters.get('context-main-chart-feature')}
 		else:
-	    	return {'main-chart-feature': self.getDefaultMainChartFeature(), 'context-main-chart-feature': ""}
+			return {'main-chart-feature': self.getDefaultMainChartFeature(), 'context-main-chart-feature': ""}
 
 
 
@@ -431,10 +431,10 @@ class Parser(object):
 	This function parses the parameters and assumes that there is an attachment in the context
 	'''
 	def parseContextEmail(parameters, contextParameters):
-	    if parameters.get('contact-name') != None and parameters.get('contact-name') != "":
-	        return {'email-to': self.getEmailFromName(parameters.get('contact-name')), 'attachment-name': contextParameters.get('context-attachment-name')}
-	    else:
-	        return {'email-to': self.getDefaultEmail(), 'attachment-name': contextParameters.get('context-attachment-name')}
+		if parameters.get('contact-name') != None and parameters.get('contact-name') != "":
+			return {'email-to': self.getEmailFromName(parameters.get('contact-name')), 'attachment-name': contextParameters.get('context-attachment-name')}
+		else:
+			return {'email-to': self.getDefaultEmail(), 'attachment-name': contextParameters.get('context-attachment-name')}
 
 
 	def getEmailFromName(name):
@@ -443,19 +443,19 @@ class Parser(object):
 
 		contactData = self.mongo.db.contactInfo
 		try:
-		    contactCur = contactData.find({            
-		        "name":name
-		        }, {
-		        "email": 1
-		        })
+			contactCur = contactData.find({            
+			    "name":name
+			    }, {
+			    "email": 1
+			    })
 
-		    for p in contactCur:
-		        emailAdd = p["email"]
+			for p in contactCur:
+				emailAdd = p["email"]
 
-		    return emailAdd
+			return emailAdd
 
 		except Exception:
-		    print("Could not query database")
+			print("Could not query database")
 
 	def getDefaultEmail():
 		print ("This function should return a list a single default email or a list of email")
