@@ -165,9 +165,9 @@ class Parser(object):
 	def getAllProducts():
 		print ("This function should return a list of all products in the database")
 
-    def getStrDefaultProduct():
+	def getStrDefaultProduct():
 		return Constants.getStrDefaultProduct()
-    '''
+	'''
 	Return an array of product ids
 	{{pNames}} Array of product names
 	'''
@@ -247,12 +247,12 @@ class Parser(object):
 
 
 
-    '''
+	'''
 	Parsing of Dates and Periods
 	'''
 
 
-    def parseUserPeriod(period):
+	def parseUserPeriod(period):
 		'''print ("Period at index 0 is:" + period[0])'''
 		'''print ("trying to get date at index 0" + period[0].get('date'))'''
 		if period == "":
@@ -275,7 +275,7 @@ class Parser(object):
 			# TODO: Include default date (This case should never arise)
 			print ("Warning error condition reached in parse user period")
 			return {"startDate": self.getStrDefaultStartDate(), "endDate": self.getStrDefaultEndDate(), "context-period": ""}
-                                     
+	                                 
 	def parseDateRange(datePeriod):
 		print("Inside Parse for Date Period")
 		startDate = datePeriod.split('/')[0]
@@ -297,7 +297,7 @@ class Parser(object):
 		return Constants.getStrDefaultEndDate()
 
 
-	
+
 	def parseContextUserPeriod(period, contextPeriod):
 		'''print ("Period at index 0 is:" + period[0])'''
 		'''print ("trying to get date at index 0" + period[0].get('date'))'''
