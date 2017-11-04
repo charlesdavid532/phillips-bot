@@ -15,47 +15,47 @@ class MainRequestController(object):
 
 	def processRequest(self):
 		print('hi')
-	    if self.requestData.get("result").get("action") == "sales.statistics":	    	
-	        salesRequestController = SalesRequestController(self.requestData, self.mongo)
-	        salesResponseData = salesRequestController.getSalesResponse()
-	        self.responseData = self.makeContextWebhookResult(salesResponseData["speech"], salesResponseData["context-list"])
+		if self.requestData.get("result").get("action") == "sales.statistics":	    	
+			salesRequestController = SalesRequestController(self.requestData, self.mongo)
+			salesResponseData = salesRequestController.getSalesResponse()
+			self.responseData = self.makeContextWebhookResult(salesResponseData["speech"], salesResponseData["context-list"])
 		elif self.requestData.get("result").get("action") == "detailed.statistics":			
-	        salesRequestController = SalesRequestController(self.requestData, self.mongo)
-	        salesRequestController.setIsContext(Constants.getStrDetailedSalesContext())
-	        salesResponseData = salesRequestController.getSalesResponse()
-	    elif self.requestData.get("result").get("action") == "product.chart":
-	    	chartController = ChartController(self.requestData, self.mongo)
-	    	self.responseData = chartController.getChartResponse()
-	        #self.responseData = generateProductChartController(self.requestData.get("result").get('parameters'))
-	    elif self.requestData.get("result").get("action") == "detailed.chart":
-	    	chartController = ChartController(self.requestData, self.mongo)
-	    	chartController.setIsContext(Constants.getStrDetailedChartContext())
-	    	self.responseData = chartController.getChartResponse()
-	        #self.responseData = parseContextGenerateProductChartController(self.requestData.get("result"))
-	    elif self.requestData.get("result").get("action") == "convert.chart":
-	    	chartController = ChartController(self.requestData, self.mongo)
-	    	chartController.setIsContext(Constants.getStrDrawChartContext())
-	    	self.responseData = chartController.getChartResponse()
-	        #self.responseData = convertTextToProductChartController(self.requestData.get("result"))
-	    elif self.requestData.get("result").get("action") == "send.customEmail":
-	    	emailControllerObj = EmailRequestController(self.requestData,self.mongo)
-	    	emailControllerObj.setIsContext(Constants.getStrChartEmailContext())
-	    	self.responseData = emailControllerObj.getEmailResponse()
-	        #self.responseData = generateEmailController(self.requestData.get("result"))
-	    elif self.requestData.get("result").get("action") == "welcome.intent":
-	    	welcomeResponseObj = WelcomeResponse(self.requestData)
-	        self.responseData = welcomeResponseObj.getWelcomeResponse()
-	    elif self.requestData.get("result").get("action") == "showAllUsers":
-	        self.responseData = makeListOfAllUsers(self.requestData)
-	    elif self.requestData.get("result").get("action") == "detailed.bio":
-	        self.responseData = showDetailedBio(self.requestData)
-	    elif self.requestData.get("result").get("action") == "application.close":
-	        self.responseData = closeApplication(self.requestData)    
-	    elif self.requestData.get("result").get("action") == "time.timeperiod":	        
-	        return {}
-	    else:
-	        return {}
-	    return self.responseData
+			salesRequestController = SalesRequestController(self.requestData, self.mongo)
+			salesRequestController.setIsContext(Constants.getStrDetailedSalesContext())
+			salesResponseData = salesRequestController.getSalesResponse()
+		elif self.requestData.get("result").get("action") == "product.chart":
+			chartController = ChartController(self.requestData, self.mongo)
+			self.responseData = chartController.getChartResponse()
+			#self.responseData = generateProductChartController(self.requestData.get("result").get('parameters'))
+		elif self.requestData.get("result").get("action") == "detailed.chart":
+			chartController = ChartController(self.requestData, self.mongo)
+			chartController.setIsContext(Constants.getStrDetailedChartContext())
+			self.responseData = chartController.getChartResponse()
+			#self.responseData = parseContextGenerateProductChartController(self.requestData.get("result"))
+		elif self.requestData.get("result").get("action") == "convert.chart":
+			chartController = ChartController(self.requestData, self.mongo)
+			chartController.setIsContext(Constants.getStrDrawChartContext())
+			self.responseData = chartController.getChartResponse()
+			#self.responseData = convertTextToProductChartController(self.requestData.get("result"))
+		elif self.requestData.get("result").get("action") == "send.customEmail":
+			emailControllerObj = EmailRequestController(self.requestData,self.mongo)
+			emailControllerObj.setIsContext(Constants.getStrChartEmailContext())
+			self.responseData = emailControllerObj.getEmailResponse()
+			#self.responseData = generateEmailController(self.requestData.get("result"))
+		elif self.requestData.get("result").get("action") == "welcome.intent":
+			welcomeResponseObj = WelcomeResponse(self.requestData)
+			self.responseData = welcomeResponseObj.getWelcomeResponse()
+		elif self.requestData.get("result").get("action") == "showAllUsers":
+			self.responseData = makeListOfAllUsers(self.requestData)
+		elif self.requestData.get("result").get("action") == "detailed.bio":
+			self.responseData = showDetailedBio(self.requestData)
+		elif self.requestData.get("result").get("action") == "application.close":
+			self.responseData = closeApplication(self.requestData)    
+		elif self.requestData.get("result").get("action") == "time.timeperiod":	        
+			return {}
+		else:
+			return {}
+		return self.responseData
 
 	def setRequestData(self, data):
 		self.requestData = data
