@@ -71,7 +71,7 @@ class MainRequestController(object):
 	'''
 	This is a very temp function. It is used to just create a sample response in JSON format
 	'''
-	def makeContextWebhookResult(speech, context):
+	def makeContextWebhookResult(self, speech, context):
 
 		return {
 		    "speech": speech,

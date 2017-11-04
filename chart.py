@@ -8,7 +8,7 @@ class Chart(object):
 	def setTitle(self, title):
 		self.title = title
 
-	def drawChart():
+	def drawChart(self):
 		print("inside draw chart of Chart")
 		pass
 		

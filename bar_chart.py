@@ -14,7 +14,7 @@ class BarChart(Chart):
 	def setYLabel(self, yLabel):
 		self.yLabel = yLabel
 
-	def drawChart():
+	def drawChart(self):
 		print("inside draw chart of Bar Chart")
 
 		print ("xArr in create Bar Chart is:")

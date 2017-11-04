@@ -30,7 +30,7 @@ class SalesResponseController(object):
 
 
 
-	def generateContextResponseForSales(userParameters, contextParameters):
+	def generateContextResponseForSales(self, userParameters, contextParameters):
 
 		if self.salesRev == "":
 			return "There was an error while querying the data and it returned null sales revenue"
@@ -56,7 +56,7 @@ class SalesResponseController(object):
 	Returns a string which will be sent as response to the user when he/she queries for sales data
 
 	'''
-	def generateResponseForSales(userParameters):
+	def generateResponseForSales(self, userParameters):
 	    
 		if self.salesRev == "":
 			return "There was an error while querying the data and it returned null sales revenue"
@@ -82,7 +82,7 @@ class SalesResponseController(object):
 	'''
 	Returns either the requested product name or the default product name
 	'''
-	def generateContextResponseForProduct(parameters, contextParameters):
+	def generateContextResponseForProduct(self, parameters, contextParameters):
 		resStr = ""
 
 		if parameters.get('product') != None and parameters.get('product') != "":
@@ -97,7 +97,7 @@ class SalesResponseController(object):
 	'''
 	Returns either the requested product name or the default product name
 	'''
-	def generateResponseForProduct(parameters):
+	def generateResponseForProduct(self, parameters):
 		resStr = ""
 
 		if parameters.get('product') != None and parameters.get('product') != "":
@@ -111,7 +111,7 @@ class SalesResponseController(object):
 	'''
 	Should return either the city or the state or the region or the default that the user has requested
 	'''
-	def generateContextResponseForRegion(parameters, contextParameters):
+	def generateContextResponseForRegion(self, parameters, contextParameters):
 		resStr = ""
 
 		if parameters.get('geo-city-us') != None and parameters.get('geo-city-us') != "" and parameters.get('geo-city-us') != []:
@@ -136,7 +136,7 @@ class SalesResponseController(object):
 	'''
 	Should return either the city or the state or the region or the default that the user has requested
 	'''
-	def generateResponseForRegion(parameters):
+	def generateResponseForRegion(self, parameters):
 		resStr = ""
 
 		if parameters.get('geo-city-us') != None and parameters.get('geo-city-us') != "" and parameters.get('geo-city-us') != []:
@@ -153,7 +153,7 @@ class SalesResponseController(object):
 		return resStr
 
 
-	def generateContextResponseForPeriod(parameters, contextParameters, period):
+	def generateContextResponseForPeriod(self, parameters, contextParameters, period):
 		resStr = ""
 		startDate = period["startDate"]
 		endDate = period["endDate"]
@@ -177,7 +177,7 @@ class SalesResponseController(object):
 		return resStr
 
 
-	def generateResponseForPeriod(parameters, period):
+	def generateResponseForPeriod(self, parameters, period):
 		resStr = ""
 		startDate = period["startDate"]
 		endDate = period["endDate"]

@@ -29,7 +29,7 @@ class Parser(object):
 	'''
 	Returns an array of cities (even if it is a single city)
 	'''
-	def parseUserRegion(parameters):
+	def parseUserRegion(self, parameters):
 		if parameters.get('geo-city-us') != None and parameters.get('geo-city-us') != "" and parameters.get('geo-city-us') != []:
 			return {'cities':[parameters.get('geo-city-us')],'context-geo-city-us': parameters.get('geo-city-us'),'context-geo-state-us': '','context-region': ''}
 		elif parameters.get('geo-city') != None and parameters.get('geo-city') != "" and parameters.get('geo-city') != []:
@@ -45,7 +45,7 @@ class Parser(object):
 	'''
 	TODO:: Fill with dummy data currently. Adding dummy comment
 	'''
-	def parseState(state):
+	def parseState(self, state):
 		print ("This function should return a list of us cities linked to this state")
 
 		stateData = self.mongo.db.states
@@ -70,7 +70,7 @@ class Parser(object):
 
 
 
-	def parseRegion(region):
+	def parseRegion(self, region):
 		print ("This function should return a list of us cities linked to this region")
 
 		regionNotation = ""
@@ -107,17 +107,17 @@ class Parser(object):
 		except Exception:
 			print("Could not query database")
 
-	def getDefaultRegion():
+	def getDefaultRegion(self):
 		print ("This function should return a list of us cities linked to the default region")
 		return self.parseRegion(self.getStrDefaultRegion())
 
-	def getStrDefaultRegion():
+	def getStrDefaultRegion(self):
 		return Constants.getStrDefaultRegion()
 
 	'''
 	Parses the context user region and returns the city
 	'''
-	def parseContextUserRegion(parameters, contextParameters):
+	def parseContextUserRegion(self, parameters, contextParameters):
 		if parameters.get('geo-city-us') != None and parameters.get('geo-city-us') != "" and parameters.get('geo-city-us') != []:
 			return {'cities':[parameters.get('geo-city-us')], 'context-geo-city-us': parameters.get('geo-city-us'),'context-geo-state-us': '','context-region': ''}
 		elif parameters.get('geo-city') != None and parameters.get('geo-city') != "" and parameters.get('geo-city') != []:
@@ -143,7 +143,7 @@ class Parser(object):
 	'''
 	Parsing of Products
 	'''
-	def parseUserProducts(parameters):
+	def parseUserProducts(self, parameters):
 		if parameters.get('product') != None and parameters.get('product') != "" and parameters.get('product') != []:
 			return {'product': self.getPIdsFromPNames(parameters.get('product')), 'context-product': parameters.get('product')}
 		else:
@@ -152,26 +152,26 @@ class Parser(object):
 	'''
 	Note should be depreciated to accomodate multiple products (Will require change in generating response and sales amount)
 	'''
-	def parseUserProduct(parameters):
+	def parseUserProduct(self, parameters):
 		if parameters.get('product') != None and parameters.get('product') != "":
 			return {'product': self.getPIdFromPName(parameters.get('product')), 'context-product': parameters.get('product')}
 		else:
 			return {'product': self.getDefaultProduct(), 'context-product': ''}
 
-	def getDefaultProduct():
+	def getDefaultProduct(self):
 		print ("This function should return a list a single default product or a list of products")
 		return self.getPIdFromPName(self.getStrDefaultProduct())
 
-	def getAllProducts():
+	def getAllProducts(self):
 		print ("This function should return a list of all products in the database")
 
-	def getStrDefaultProduct():
+	def getStrDefaultProduct(self):
 		return Constants.getStrDefaultProduct()
 	'''
 	Return an array of product ids
 	{{pNames}} Array of product names
 	'''
-	def getPIdsFromPNames(pNames):
+	def getPIdsFromPNames(self, pNames):
 		pIds = []
 		for index in range(0, len(pNames)):
 			pIds.append(self.getPIdFromPName(pNames[index]))
@@ -179,7 +179,7 @@ class Parser(object):
 		return pIds
 
 
-	def getPIdFromPName(pName):
+	def getPIdFromPName(self, pName):
 		print ("This function should return a product id from a product name")
 
 
@@ -201,7 +201,7 @@ class Parser(object):
 
 
 
-	def getPNameFromPId(pId):
+	def getPNameFromPId(self, pId):
 		print ("This function should return a product name from a product id")
 
 
@@ -223,7 +223,7 @@ class Parser(object):
 
 
 
-	def parseContextUserProduct(parameters, contextParameters):
+	def parseContextUserProduct(self, parameters, contextParameters):
 		if parameters.get('product') != None and parameters.get('product') != "":
 			return {'product': self.getPIdFromPName(parameters.get('product')), 'context-product': parameters.get('product')}
 		elif contextParameters.get('context-product') != None and contextParameters.get('context-product') != "":
@@ -232,7 +232,7 @@ class Parser(object):
 			return {'product': self.getDefaultProduct(), 'context-product': ''}
 
 
-	def parseContextUserProducts(parameters, contextParameters):
+	def parseContextUserProducts(self, parameters, contextParameters):
 		if parameters.get('product') != None and parameters.get('product') != "" and parameters.get('product') != []:
 			return {'product': self.getPIdsFromPNames(parameters.get('product')), 'context-product': parameters.get('product')}
 		elif contextParameters.get('context-product') != None and contextParameters.get('context-product') != ""  and contextParameters.get('context-product') != []:
@@ -252,7 +252,7 @@ class Parser(object):
 	'''
 
 
-	def parseUserPeriod(period):
+	def parseUserPeriod(self, period):
 		'''print ("Period at index 0 is:" + period[0])'''
 		'''print ("trying to get date at index 0" + period[0].get('date'))'''
 		if period == "":
@@ -276,7 +276,7 @@ class Parser(object):
 			print ("Warning error condition reached in parse user period")
 			return {"startDate": self.getStrDefaultStartDate(), "endDate": self.getStrDefaultEndDate(), "context-period": ""}
 	                                 
-	def parseDateRange(datePeriod):
+	def parseDateRange(self, datePeriod):
 		print("Inside Parse for Date Period")
 		startDate = datePeriod.split('/')[0]
 		print ("The start date is:" + startDate)
@@ -286,19 +286,19 @@ class Parser(object):
 		return {"startDate": startDate, "endDate": endDate}
 	    
 
-	def parseDate(date):
+	def parseDate(self, date):
 		print("Inside Parse for Date")
 		return {"startDate": date, "endDate": ""}
 
-	def getStrDefaultStartDate():
+	def getStrDefaultStartDate(self):
 		return Constants.getStrDefaultStartDate()
 
-	def getStrDefaultEndDate():
+	def getStrDefaultEndDate(self):
 		return Constants.getStrDefaultEndDate()
 
 
 
-	def parseContextUserPeriod(period, contextPeriod):
+	def parseContextUserPeriod(self, period, contextPeriod):
 		'''print ("Period at index 0 is:" + period[0])'''
 		'''print ("trying to get date at index 0" + period[0].get('date'))'''
 		if period == "" and contextPeriod == "":
@@ -345,7 +345,7 @@ class Parser(object):
 	Parsing of Chart Type
 	'''
 
-	def parseUserChartType(parameters):
+	def parseUserChartType(self, parameters):
 		if parameters.get('chart-type') != None and parameters.get('chart-type') != "" and parameters.get('chart-type') != []:
 			return {'chart-type': parameters.get('chart-type'), 'context-chart-type': parameters.get('chart-type')}
 		else:
@@ -355,22 +355,22 @@ class Parser(object):
 	'''
 	This function should return the default chart type
 	'''
-	def getDefaultChartType():
+	def getDefaultChartType(self):
 		print ("This function should return the default chart type")
 		return self.getStrDefaultChartType()
 
 
-	def getStrDefaultChartType():
+	def getStrDefaultChartType(self):
 		return self.getStrBarChart()
 
-	def getStrBarChart():
+	def getStrBarChart(self):
 		return Constants.getStrBarChart()
 
-	def getStrPieChart():
+	def getStrPieChart(self):
 		return Constants.getStrPieChart()
 
 
-	def parseContextUserChartType(parameters, contextParameters):
+	def parseContextUserChartType(self, parameters, contextParameters):
 		if parameters.get('chart-type') != None and parameters.get('chart-type') != "" and parameters.get('chart-type') != []:
 			return {'chart-type': parameters.get('chart-type'), 'context-chart-type': parameters.get('chart-type')}
 		elif contextParameters.get('context-chart-type') != None and contextParameters.get('context-chart-type') != "" and parameters.get('context-chart-type') != []:
@@ -386,7 +386,7 @@ class Parser(object):
 	Parsing of Main Chart Feature
 	'''
 
-	def parseUserMainChartFeature(parameters):
+	def parseUserMainChartFeature(self, parameters):
 		print("main chart feature:"+ parameters.get('main-chart-feature'))
 		if parameters.get('main-chart-feature') != None and parameters.get('main-chart-feature') != "" and parameters.get('main-chart-feature') != []:
 			return {'main-chart-feature': parameters.get('main-chart-feature'), 'context-main-chart-feature': parameters.get('main-chart-feature')}
@@ -395,29 +395,29 @@ class Parser(object):
 
 
 
-	def getDefaultMainChartFeature():
+	def getDefaultMainChartFeature(self):
 		print ("This function should return the default main chart feature")
 		return self.getStrDefaultMainChartFeature()
 
 
-	def getStrDefaultMainChartFeature():
+	def getStrDefaultMainChartFeature(self):
 		return self.getStrProduct()
 
-	def getStrProduct():
+	def getStrProduct(self):
 		return Constants.getStrProduct()
 
-	def getStrCity():
+	def getStrCity(self):
 		return Constants.getStrCity()
 
-	def getStrState():
+	def getStrState(self):
 		return Constants.getStrState()
 
-	def getStrRegion():
+	def getStrRegion(self):
 		return Constants.getStrRegion()
 
 
 
-	def parseContextUserMainChartFeature(parameters, contextParameters):
+	def parseContextUserMainChartFeature(self, parameters, contextParameters):
 		if parameters.get('main-chart-feature') != None and parameters.get('main-chart-feature') != "" and parameters.get('main-chart-feature') != []:
 			return {'main-chart-feature': parameters.get('main-chart-feature'), 'context-main-chart-feature': parameters.get('main-chart-feature')}
 		elif contextParameters.get('context-main-chart-feature') != None and contextParameters.get('context-main-chart-feature') != "" and parameters.get('context-main-chart-feature') != []:
@@ -430,14 +430,14 @@ class Parser(object):
 	'''
 	This function parses the parameters and assumes that there is an attachment in the context
 	'''
-	def parseContextEmail(parameters, contextParameters):
+	def parseContextEmail(self, parameters, contextParameters):
 		if parameters.get('contact-name') != None and parameters.get('contact-name') != "":
 			return {'email-to': self.getEmailFromName(parameters.get('contact-name')), 'attachment-name': contextParameters.get('context-attachment-name')}
 		else:
 			return {'email-to': self.getDefaultEmail(), 'attachment-name': contextParameters.get('context-attachment-name')}
 
 
-	def getEmailFromName(name):
+	def getEmailFromName(self, name):
 		print ("This function should return email address from a name")
 
 
@@ -457,10 +457,10 @@ class Parser(object):
 		except Exception:
 			print("Could not query database")
 
-	def getDefaultEmail():
+	def getDefaultEmail(self):
 		print ("This function should return a list a single default email or a list of email")
 		return self.getEmailFromName(self.getStrDefaultName())
 
 
-	def getStrDefaultName():
+	def getStrDefaultName(self):
 		return Constants.getStrDefaultName()

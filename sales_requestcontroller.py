@@ -91,7 +91,7 @@ class SalesRequestController(object):
 	This function returns the sales for the specified productId, cities, period
 	TODO: Change query into an aggregation function of mongo db in order to expedite the process & lift load from python
 	'''
-	def getSalesAmount(period, cities, productId):
+	def getSalesAmount(self, period, cities, productId):
 		print ("In get sales amount")
 		print ("The start date is:" + str(period["startDate"]))
 		print ("The end date is:" + str(period["endDate"]))

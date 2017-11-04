@@ -9,7 +9,7 @@ class PieChart(Chart):
 		super(PieChart, self).__init__(xArr, yArr)
 
 
-	def drawChart():
+	def drawChart(self):
 		#labels = 'Python', 'C++', 'Ruby', 'Java'
 		#sizes = [215, 130, 245, 210]
 		#colors = ['gold', 'yellowgreen', 'lightcoral', 'lightskyblue']
@@ -34,23 +34,23 @@ class PieChart(Chart):
 	'''
 	Returns an array of colors of specified length
 	'''
-	def getColorsForPieChart(length):
+	def getColorsForPieChart(self, length):
 	    return self.getColorsList()[:length]
 
 	'''
 	Returns an entire list of colors
 	'''
-	def getColorsList():
+	def getColorsList(self):
 	    return ['gold', 'yellowgreen', 'lightcoral', 'lightskyblue', 'gray', 'pink', 'purple', 'red']
 
 	'''
 	Returns a tuple of explode parameters of specified length
 	'''
-	def getExplodeForPieChart(length):
+	def getExplodeForPieChart(self, length):
 	    return self.getExplodeTuple()[:length]
 	'''
 	Returns an entire list of explode tuple
 	'''
-	def getExplodeTuple():
+	def getExplodeTuple(self):
 	    return (0.1, 0, 0, 0, 0, 0, 0, 0)
 		

@@ -82,7 +82,7 @@ class ChartController(object):
 	'''
 	This function parses the main chart feature and draws the appropriate chart
 	'''
-	def drawMainChartFeatureChart():
+	def drawMainChartFeatureChart(self):
 
 		mChartFeature = self.mainChartFeature["main-chart-feature"]
 
