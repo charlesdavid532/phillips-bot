@@ -279,7 +279,7 @@ class GoogleSignIn(OAuthSignIn):
                     response['token_type'] = "bearer"
                     response['access_token'] = accessTokenId
                     response['refresh_token'] = refreshTokenId
-                    response['expires_in'] = 3600
+                    response['expires_in'] = 60
                 else:
                     response = {}
                     response['error'] = "invalid_grant"
@@ -298,7 +298,7 @@ class GoogleSignIn(OAuthSignIn):
                     response = {}
                     response['token_type'] = "bearer"
                     response['access_token'] = accessTokenId
-                    response['expires_in'] = 3600
+                    response['expires_in'] = 60
                 else:
                     response = {}
                     response['error'] = "invalid_grant"
@@ -573,6 +573,19 @@ def handle_message():
     data = request.get_json()
     print("Request:")
     print(json.dumps(data, indent=4))
+
+    '''
+    Checking if the token exists and if expired
+    '''
+    if hasTokenExpired(data) == True:
+        response = {}
+        response['error'] = "Unauthorized"
+        response = json.dumps(response, indent=4, cls=JSONEncoder)
+        print("Token has expired::" + response)
+        r = make_response(response, 401)
+        return r
+
+
     res = processRequest(data)
 
     res = json.dumps(res, indent=4, cls=JSONEncoder)
@@ -583,6 +596,18 @@ def handle_message():
     return r
 
     
+
+def hasTokenExpired(req):
+    accessTokenFromRequest = req.get('originalRequest').get('user').get('accessToken')
+    print("accessTokenFromRequest:: "+ accessTokenFromRequest) 
+
+    if isTokenValid(accessTokenFromRequest) == True:
+        return False
+    else:
+        return True
+
+
+
 
 
 def processRequest(req):
