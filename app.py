@@ -273,7 +273,7 @@ class GoogleSignIn(OAuthSignIn):
                     tokenRecord = getTokenRecord(reqArgs['code'])
                     accessTokenId = self.generateSecretToken()
                     refreshTokenId = self.generateSecretToken()
-                    self.addAccessTokenToDb(accessTokenId, tokenRecord['userId'], getStrFutureDateAndTime(60))
+                    self.addAccessTokenToDb(accessTokenId, tokenRecord['userId'], getStrFutureDateAndTime(1))
                     self.addRefreshTokenToDb(refreshTokenId, tokenRecord['userId'])
                     response = {}
                     response['token_type'] = "bearer"
@@ -290,11 +290,11 @@ class GoogleSignIn(OAuthSignIn):
             elif grantType == 'refresh_token':
                 print("Inside only refresh token")
                 reqRefreshToken = reqArgs['refresh_token']
-                if isTokenValid(reqRefreshToken) == True:
+                if isRefreshTokenValid(reqRefreshToken) == True:
                     print("refresh token is valid")
                     refreshTokenRecord = getTokenRecord(reqRefreshToken)
                     accessTokenId = self.generateSecretToken()
-                    self.addAccessTokenToDb(accessTokenId, refreshTokenRecord['userId'], getStrFutureDateAndTime(60))
+                    self.addAccessTokenToDb(accessTokenId, refreshTokenRecord['userId'], getStrFutureDateAndTime(1))
                     response = {}
                     response['token_type'] = "bearer"
                     response['access_token'] = accessTokenId
@@ -1807,6 +1807,17 @@ def isTokenValid(id):
 
     dbDateTime = existing_token['expiresAt']
     return compareDateAndTime(getStrCurrentDateAndTime(), dbDateTime)
+
+def isRefreshTokenValid(id):
+    print("Inside isRefreshTokenValid")
+    tokens = mongo.db.tokens
+    existing_token = tokens.find_one({'_id' : id})
+
+    if not existing_token:
+        return False
+
+    return True
+
 '''
 Compares date time 1 with date time 2
 Returns True if 1 < 2
