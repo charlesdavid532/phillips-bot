@@ -598,7 +598,7 @@ def handle_message():
     
 
 def hasTokenExpired(req):
-    accessTokenFromRequest = req.get('originalRequest').get('user').get('accessToken')
+    accessTokenFromRequest = req.get('originalRequest').get('data').get('user').get('accessToken')
     print("accessTokenFromRequest:: "+ accessTokenFromRequest) 
 
     if isTokenValid(accessTokenFromRequest) == True:
