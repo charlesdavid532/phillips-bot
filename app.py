@@ -273,13 +273,13 @@ class GoogleSignIn(OAuthSignIn):
                     tokenRecord = getTokenRecord(reqArgs['code'])
                     accessTokenId = self.generateSecretToken()
                     refreshTokenId = self.generateSecretToken()
-                    self.addAccessTokenToDb(accessTokenId, tokenRecord['userId'], getStrFutureDateAndTime(1))
+                    self.addAccessTokenToDb(accessTokenId, tokenRecord['userId'], getStrFutureDateAndTime(60))
                     self.addRefreshTokenToDb(refreshTokenId, tokenRecord['userId'])
                     response = {}
                     response['token_type'] = "bearer"
                     response['access_token'] = accessTokenId
                     response['refresh_token'] = refreshTokenId
-                    response['expires_in'] = 60
+                    response['expires_in'] = 3600
                 else:
                     response = {}
                     response['error'] = "invalid_grant"
@@ -294,11 +294,11 @@ class GoogleSignIn(OAuthSignIn):
                     print("refresh token is valid")
                     refreshTokenRecord = getTokenRecord(reqRefreshToken)
                     accessTokenId = self.generateSecretToken()
-                    self.addAccessTokenToDb(accessTokenId, refreshTokenRecord['userId'], getStrFutureDateAndTime(1))
+                    self.addAccessTokenToDb(accessTokenId, refreshTokenRecord['userId'], getStrFutureDateAndTime(60))
                     response = {}
                     response['token_type'] = "bearer"
                     response['access_token'] = accessTokenId
-                    response['expires_in'] = 60
+                    response['expires_in'] = 3600
                 else:
                     response = {}
                     response['error'] = "invalid_grant"
