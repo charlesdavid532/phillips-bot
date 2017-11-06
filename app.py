@@ -620,7 +620,7 @@ def processRequest(req):
         res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
     elif req.get("result").get("action") == "free.delivery":
         parsedData = parseFreeDeliveryRequest(req.get("result"))
-        res = makePermissionsResult(parsedData["speech"], [], ["NAME", "DEVICE_PRECISE_LOCATION"])
+        res = makePermissionsResultV1(parsedData["speech"], [], ["NAME", "DEVICE_PRECISE_LOCATION"])
         #res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
     elif req.get("result").get("action") == "product.chart":
         res = generateProductChartController(req.get("result").get('parameters'))
@@ -696,6 +696,31 @@ def makePermissionsResult(speech, context, permissionList):
     inputValueDataDict["@type"] = "type.googleapis.com/google.actions.v2.PermissionValueSpec"
     inputValueDataDict["optContext"] = "To deliver your order"
     inputValueDataDict["permissions"] = permissionList
+
+    possibleIntents.append(permissionDict)
+
+    return {
+        "speech": speech,
+        "displayText": speech,
+        "possibleIntents": possibleIntents,
+        "contextOut": context,
+        "source": "phillips-bot"
+    }
+
+def makePermissionsResultV1(speech, context, permissionList):
+    possibleIntents = []
+
+    permissionDict = {}
+    permissionDict["intent"] = "assistant.intent.actions.PERMISSION"
+    permissionDict["input_value_spec"] = {}
+
+    inputValueSpecDict = permissionDict["input_value_spec"]
+    inputValueSpecDict["permission_value_spec"] = {}
+
+    permission_value_spec = inputValueSpecDict["permission_value_spec"]
+
+    permission_value_spec["optContext"] = "To deliver your order"
+    permission_value_spec["permissions"] = permissionList
 
     possibleIntents.append(permissionDict)
 
