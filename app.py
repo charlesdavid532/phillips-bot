@@ -702,7 +702,7 @@ def makePermissionsResult(speech, context, permissionList):
     return {
         "speech": speech,
         "displayText": speech,
-        "possibleIntents": possibleIntents 
+        "possibleIntents": possibleIntents,
         "contextOut": context,
         "source": "phillips-bot"
     }
