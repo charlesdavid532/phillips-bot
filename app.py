@@ -620,7 +620,7 @@ def processRequest(req):
         res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
     elif req.get("result").get("action") == "free.delivery":
         parsedData = parseFreeDeliveryRequest(req.get("result"))
-        res = makePermissionsResultV1(parsedData["speech"], [], ["NAME", "DEVICE_PRECISE_LOCATION"])
+        res = makePermissionsResult(parsedData["speech"], [], ["NAME", "DEVICE_PRECISE_LOCATION"])
         #res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
     elif req.get("result").get("action") == "product.chart":
         res = generateProductChartController(req.get("result").get('parameters'))
@@ -686,23 +686,31 @@ def makeContextWebhookResult(speech, context):
     }
 
 def makePermissionsResult(speech, context, permissionList):
-    possibleIntents = []
 
-    permissionDict = {}
+    dataJSON = {}
+    dataJSON["google"] = {}
+    googleJSON = dataJSON["google"]
+
+    googleJSON["expectUserResponse"] = True
+    googleJSON["systemIntent"] = {}
+
+    #possibleIntents = []
+
+    permissionDict = googleJSON["systemIntent"]
     permissionDict["intent"] = "actions.intent.PERMISSION"
-    permissionDict["inputValueData"] = {}
+    permissionDict["data"] = {}
 
-    inputValueDataDict = permissionDict["inputValueData"]
+    inputValueDataDict = permissionDict["data"]
     inputValueDataDict["@type"] = "type.googleapis.com/google.actions.v2.PermissionValueSpec"
     inputValueDataDict["optContext"] = "To deliver your order"
     inputValueDataDict["permissions"] = permissionList
 
-    possibleIntents.append(permissionDict)
+    #possibleIntents.append(permissionDict)
 
     return {
         "speech": speech,
         "displayText": speech,
-        "possibleIntents": possibleIntents,
+        "data": dataJSON,
         "contextOut": context,
         "source": "phillips-bot"
     }
