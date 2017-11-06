@@ -1002,10 +1002,10 @@ def compareDeliveryLocation(req):
     #Check to see if the permission has already been given
     if req.get('originalRequest').get('data').get('device') != None:
         devcoords = req.get('originalRequest').get('data').get('device').get('location').get('coordinates')
-        print("The latitude is::" + devcoords.get('latitude'))
-        print("The longitude is::" + devcoords.get('longitude'))
+        print("The latitude is::" + str(devcoords.get('latitude')))
+        print("The longitude is::" + str(devcoords.get('longitude')))
         return {
-            "speech" : "Yes you are at::" + devcoords.get('latitude') + " latitude and " + devcoords.get('longitude') + " longitude"
+            "speech" : "Yes you are at::" + str(devcoords.get('latitude')) + " latitude and " + str(devcoords.get('longitude')) + " longitude"
         }
 
     return {
