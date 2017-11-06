@@ -622,6 +622,9 @@ def processRequest(req):
         parsedData = parseFreeDeliveryRequest(req.get("result"))
         res = makePermissionsResult(parsedData["speech"], [], ["NAME", "DEVICE_PRECISE_LOCATION"])
         #res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
+    elif req.get("result").get("action") == "Freedelivery.response":
+        parsedData = parseFreeDeliveryResponse(req)
+        res = makeContextWebhookResult(parsedData["speech"], [])
     elif req.get("result").get("action") == "product.chart":
         res = generateProductChartController(req.get("result").get('parameters'))
         #res = generateProductChartController(req.get("result"))
@@ -995,6 +998,10 @@ def parseFreeDeliveryRequest(result):
         "speech" : "I need access to your device location to perform this task"
     }
 
+def parseFreeDeliveryResponse(req):
+    return {
+        "speech" : "Yes you are eligible"
+    }
 '''
 This function is a controller function and gateway for context which parses the context parameters and returns the sales amount
 '''
