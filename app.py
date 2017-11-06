@@ -618,6 +618,10 @@ def processRequest(req):
     elif req.get("result").get("action") == "detailed.statistics":
         parsedData = parseContextUserParametersGetSalesAmount(req.get("result"))
         res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
+    elif req.get("result").get("action") == "free.delivery":
+        parsedData = parseFreeDeliveryRequest(req.get("result"))
+        res = makePermissionsResult(parsedData["speech"], [], ["NAME", "DEVICE_PRECISE_LOCATION"])
+        #res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
     elif req.get("result").get("action") == "product.chart":
         res = generateProductChartController(req.get("result").get('parameters'))
         #res = generateProductChartController(req.get("result"))
@@ -680,6 +684,29 @@ def makeContextWebhookResult(speech, context):
         "contextOut": context,
         "source": "phillips-bot"
     }
+
+def makePermissionsResult(speech, context, permissionList):
+    possibleIntents = []
+
+    permissionDict = {}
+    permissionDict["intent"] = "actions.intent.PERMISSION"
+    permissionDict["inputValueData"] = {}
+
+    inputValueDataDict = permissionDict["inputValueData"]
+    inputValueDataDict["@type"] = "type.googleapis.com/google.actions.v2.PermissionValueSpec"
+    inputValueDataDict["optContext"] = "To deliver your order"
+    inputValueDataDict["permissions"] = permissionList
+
+    possibleIntents.append(permissionDict)
+
+    return {
+        "speech": speech,
+        "displayText": speech,
+        "possibleIntents": possibleIntents 
+        "contextOut": context,
+        "source": "phillips-bot"
+    }
+
     
 def itemSelected(app):
     # Get the user's selection
@@ -930,6 +957,10 @@ def saveResourceToAWS(img_data, img_name, content_type):
     print("Done")
 
 
+def parseFreeDeliveryRequest(result):
+    return {
+        "speech" : "I need access to your device location to perform this task"
+    }
 
 '''
 This function is a controller function and gateway for context which parses the context parameters and returns the sales amount
