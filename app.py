@@ -576,7 +576,7 @@ def handle_message():
 
     '''
     Checking if the token exists and if expired
-    '''
+    
     if hasTokenExpired(data) == True:
         response = {}
         response['error'] = "Unauthorized"
@@ -584,7 +584,7 @@ def handle_message():
         print("Token has expired::" + response)
         r = make_response(response, 401)
         return r
-
+    '''
 
     res = processRequest(data)
 
