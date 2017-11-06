@@ -619,11 +619,11 @@ def processRequest(req):
         parsedData = parseContextUserParametersGetSalesAmount(req.get("result"))
         res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
     elif req.get("result").get("action") == "free.delivery":
-        parsedData = parseFreeDeliveryRequest(req)
-        if parsedData["hasPermission"] == False:
-            res = makePermissionsResult(parsedData["speech"], [], ["NAME", "DEVICE_PRECISE_LOCATION"])
-        else:
-            res = makeContextWebhookResult(parsedData["speech"], [])
+        parsedData = parseFreeDeliveryRequest(req)        
+        res = makePermissionsResult(parsedData["speech"], [], ["NAME", "DEVICE_PRECISE_LOCATION"])        
+    elif req.get("result").get("action") == "compare.location":
+        parsedData = compareDeliveryLocation(req)
+        res = makeContextWebhookResult(parsedData["speech"], [])        
     elif req.get("result").get("action") == "product.chart":
         res = generateProductChartController(req.get("result").get('parameters'))
         #res = generateProductChartController(req.get("result"))
@@ -993,20 +993,24 @@ def saveResourceToAWS(img_data, img_name, content_type):
 
 
 def parseFreeDeliveryRequest(req):
+    
+    return {
+        "speech" : "I need access to your device location to perform this task"
+    }
+
+def compareDeliveryLocation(req):
     #Check to see if the permission has already been given
     if req.get('originalRequest').get('data').get('device') != None:
         devcoords = req.get('originalRequest').get('data').get('device').get('location').get('coordinates')
         print("The latitude is::" + devcoords.get('latitude'))
         print("The longitude is::" + devcoords.get('longitude'))
         return {
-            "speech" : "Yes you are at::" + devcoords.get('latitude') + " latitude and " + devcoords.get('longitude') + " longitude",
-            "hasPermission": True
+            "speech" : "Yes you are at::" + devcoords.get('latitude') + " latitude and " + devcoords.get('longitude') + " longitude"
         }
-    return {
-        "speech" : "I need access to your device location to perform this task",
-        "hasPermission": False
-    }
 
+    return {
+        "speech" : "Could not get your location"
+    }
 
 '''
 This function is a controller function and gateway for context which parses the context parameters and returns the sales amount
