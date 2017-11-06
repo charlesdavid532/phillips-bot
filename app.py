@@ -128,7 +128,7 @@ class GoogleSignIn(OAuthSignIn):
     def authorize(self):
         print("the request arguments are:"+ str(request.args))
         print("the authorization endpoint url is:"+str(self.service.get_authorize_url(
-            scope='email',
+            scope='email https://www.google.com/m8/feeds/',
             response_type='code',
             redirect_uri=self.get_callback_url())))
         print ("the callback url is:"+str(self.get_callback_url()))
@@ -182,7 +182,7 @@ class GoogleSignIn(OAuthSignIn):
         End of storing values
         '''
         return redirect(self.service.get_authorize_url(
-            scope='email',
+            scope='email https://www.google.com/m8/feeds/',
             response_type='code',
             redirect_uri=self.get_callback_url())
             )
@@ -576,7 +576,7 @@ def handle_message():
 
     '''
     Checking if the token exists and if expired
-    
+    '''
     if hasTokenExpired(data) == True:
         response = {}
         response['error'] = "Unauthorized"
@@ -584,7 +584,7 @@ def handle_message():
         print("Token has expired::" + response)
         r = make_response(response, 401)
         return r
-    '''
+    
 
     res = processRequest(data)
 
