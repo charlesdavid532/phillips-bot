@@ -89,7 +89,7 @@ class MainRequestController(object):
 		}
 
 
-	def makePermissionsResult(speech, context, permissionList):
+	def makePermissionsResult(self, speech, context, permissionList):
 
 	    dataJSON = {}
 	    dataJSON["google"] = {}
@@ -119,7 +119,7 @@ class MainRequestController(object):
 	        "source": "phillips-bot"
 	    }
 
-	def makePermissionsResultV1(speech, context, permissionList):
+	def makePermissionsResultV1(self, speech, context, permissionList):
 	    possibleIntents = []
 
 	    permissionDict = {}
@@ -145,13 +145,13 @@ class MainRequestController(object):
 	    }
 
 	    
-	def parseFreeDeliveryRequest(req):
+	def parseFreeDeliveryRequest(self, req):
 	    
 	    return {
 	        "speech" : "I need access to your device location to perform this task"
 	    }
 
-	def compareDeliveryLocation(req):
+	def compareDeliveryLocation(self, req):
 	    #Check to see if the permission has already been given
 	    if req.get('originalRequest').get('data').get('device') != None:
 	        devcoords = req.get('originalRequest').get('data').get('device').get('location').get('coordinates')
