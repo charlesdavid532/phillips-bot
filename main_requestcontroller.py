@@ -24,6 +24,12 @@ class MainRequestController(object):
 			salesRequestController.setIsContext(Constants.getStrDetailedSalesContext())
 			salesResponseData = salesRequestController.getSalesResponse()
 			self.responseData = self.makeContextWebhookResult(salesResponseData["speech"], salesResponseData["context-list"])
+		elif self.requestData.get("result").get("action") == "free.delivery":
+	        parsedData = self.parseFreeDeliveryRequest(self.requestData)        
+	        self.responseData = self.makePermissionsResult(parsedData["speech"], [], ["NAME", "DEVICE_PRECISE_LOCATION"])        
+	    elif self.requestData.get("result").get("action") == "compare.location":
+	        parsedData = self.compareDeliveryLocation(self.requestData)
+	        self.responseData = self.makeContextWebhookResult(parsedData["speech"], [])  
 		elif self.requestData.get("result").get("action") == "product.chart":
 			chartController = ChartController(self.requestData, self.mongo)
 			self.responseData = chartController.getChartResponse()
@@ -81,3 +87,80 @@ class MainRequestController(object):
 		    "contextOut": context,
 		    "source": "phillips-bot"
 		}
+
+
+	def makePermissionsResult(speech, context, permissionList):
+
+	    dataJSON = {}
+	    dataJSON["google"] = {}
+	    googleJSON = dataJSON["google"]
+
+	    googleJSON["expectUserResponse"] = True
+	    googleJSON["systemIntent"] = {}
+
+	    #possibleIntents = []
+
+	    permissionDict = googleJSON["systemIntent"]
+	    permissionDict["intent"] = "actions.intent.PERMISSION"
+	    permissionDict["data"] = {}
+
+	    inputValueDataDict = permissionDict["data"]
+	    inputValueDataDict["@type"] = "type.googleapis.com/google.actions.v2.PermissionValueSpec"
+	    inputValueDataDict["optContext"] = "To deliver your order"
+	    inputValueDataDict["permissions"] = permissionList
+
+	    #possibleIntents.append(permissionDict)
+
+	    return {
+	        "speech": speech,
+	        "displayText": speech,
+	        "data": dataJSON,
+	        "contextOut": context,
+	        "source": "phillips-bot"
+	    }
+
+	def makePermissionsResultV1(speech, context, permissionList):
+	    possibleIntents = []
+
+	    permissionDict = {}
+	    permissionDict["intent"] = "assistant.intent.actions.PERMISSION"
+	    permissionDict["input_value_spec"] = {}
+
+	    inputValueSpecDict = permissionDict["input_value_spec"]
+	    inputValueSpecDict["permission_value_spec"] = {}
+
+	    permission_value_spec = inputValueSpecDict["permission_value_spec"]
+
+	    permission_value_spec["optContext"] = "To deliver your order"
+	    permission_value_spec["permissions"] = permissionList
+
+	    possibleIntents.append(permissionDict)
+
+	    return {
+	        "speech": speech,
+	        "displayText": speech,
+	        "possibleIntents": possibleIntents,
+	        "contextOut": context,
+	        "source": "phillips-bot"
+	    }
+
+	    
+	def parseFreeDeliveryRequest(req):
+	    
+	    return {
+	        "speech" : "I need access to your device location to perform this task"
+	    }
+
+	def compareDeliveryLocation(req):
+	    #Check to see if the permission has already been given
+	    if req.get('originalRequest').get('data').get('device') != None:
+	        devcoords = req.get('originalRequest').get('data').get('device').get('location').get('coordinates')
+	        print("The latitude is::" + str(devcoords.get('latitude')))
+	        print("The longitude is::" + str(devcoords.get('longitude')))
+	        return {
+	            "speech" : "Yes you are at::" + str(devcoords.get('latitude')) + " latitude and " + str(devcoords.get('longitude')) + " longitude"
+	        }
+
+	    return {
+	        "speech" : "Could not get your location"
+	    }
