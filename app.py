@@ -352,7 +352,7 @@ class FacebookSignIn(OAuthSignIn):
         print ("In FB authorize the callback url is:"+str(self.get_callback_url()))
 
 
-        return redirect(self.service.get_authorize_url(
+        redirect(self.service.get_authorize_url(
             scope='email',
             response_type='code',
             redirect_uri=self.get_callback_url())
@@ -632,13 +632,13 @@ def handle_message():
     print("Request:")
     print(json.dumps(data, indent=4))
 
-    print("In authorize for facebook")
+    print("In webhook for facebook")
     oauth = OAuthSignIn.get_provider("facebook")
-    return oauth.authorize()
+    oauth.authorize()
 
     '''
     Checking if the token exists and if expired
-    '''
+    
     if hasTokenExpired(data) == True:
         response = {}
         response['error'] = "Unauthorized"
@@ -646,7 +646,7 @@ def handle_message():
         print("Token has expired::" + response)
         r = make_response(response, 401)
         return r
-        
+    '''    
     mainRequestControllerObj = MainRequestController(data, mongo)
     #res = processRequest(data)
     res = mainRequestControllerObj.processRequest()
