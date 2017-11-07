@@ -5,6 +5,7 @@ class PermissionResponse(object):
 		self.speech = speech
 		self.optContext = optContext
 		self.expectedUserResponse = True
+		self.outputContext = None
 		self.permissionList = []
 
 	def getPermissionResponseJSON(self):
