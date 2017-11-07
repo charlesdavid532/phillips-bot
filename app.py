@@ -1,11 +1,18 @@
 from __future__ import print_function
 import json
 import os, sys, json, requests
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, render_template, redirect, url_for, session
+from flask_bootstrap import Bootstrap
+from flask_wtf import FlaskForm 
+from wtforms import StringField, PasswordField, BooleanField, validators
+from wtforms.validators import InputRequired, Email, Length
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask import jsonify
 from flask.ext.pymongo import PyMongo
 from pymessenger import Bot
 from datetime import datetime as dt
+from datetime import timedelta
 from PIL import Image
 from bson.objectid import ObjectId
 import boto3
@@ -17,6 +24,10 @@ import matplotlib.pyplot as plt
 import io
 import uuid
 from main_requestcontroller import MainRequestController
+from rauth import OAuth2Service
+import urllib
+from urllib.request import urlopen
+import secrets
 
 try:
     import apiai
@@ -27,7 +38,11 @@ except ImportError:
     import apiai
 
 app = Flask(__name__)
-
+app.config['SECRET_KEY'] = os.environ['APP_SECRET']
+Bootstrap(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 ACCESS_KEY_ID = ''
 ACCESS_SECRET_KEY = ''
@@ -49,6 +64,13 @@ app.config['MONGO_DBNAME'] = 'phillips-sales-data'
 app.config['MONGO_URI'] = 'mongodb://admin:admin@ds123124.mlab.com:23124/phillips-sales-data'
 app.config['ASSIST_ACTIONS_ON_GOOGLE'] = True
 
+app.config['OAUTH_CREDENTIALS'] = {
+    'google': {
+            'id': os.environ['GOOGLE_LOGIN_CLIENT_ID'],
+            'secret': os.environ['GOOGLE_LOGIN_CLIENT_SECRET']
+    }
+}
+
 mongo = PyMongo(app)
 
 
@@ -58,6 +80,294 @@ class JSONEncoder(json.JSONEncoder):
             return str(o)
         return json.JSONEncoder.default(self, o)
 
+
+
+class OAuthSignIn(object):
+    providers = None
+
+    def __init__(self, provider_name):
+        self.provider_name = provider_name
+        credentials = app.config['OAUTH_CREDENTIALS'][provider_name]
+        self.consumer_id = credentials['id']
+        self.consumer_secret = credentials['secret']
+
+    def authorize(self):
+        pass
+
+    def callback(self):
+        pass
+
+    def get_callback_url(self):
+        return url_for('oauth_callback', provider=self.provider_name,
+                        _external=True)
+
+    @classmethod
+    def get_provider(self, provider_name):
+        if self.providers is None:
+            self.providers={}
+            for provider_class in self.__subclasses__():
+                provider = provider_class()
+                self.providers[provider.provider_name] = provider
+        return self.providers[provider_name]
+
+class GoogleSignIn(OAuthSignIn):
+    def __init__(self):
+        super(GoogleSignIn, self).__init__('google')
+        #TODO this is an external file. Need to host it on my server        
+        googleinfo = urlopen('https://accounts.google.com/.well-known/openid-configuration')
+        google_params = json.load(googleinfo)
+        self.service = OAuth2Service(
+                name='google',
+                client_id=self.consumer_id,
+                client_secret=self.consumer_secret,
+                authorize_url=google_params.get('authorization_endpoint'),
+                base_url=google_params.get('userinfo_endpoint'),
+                access_token_url=google_params.get('token_endpoint')
+        )
+
+    def authorize(self):
+        print("the request arguments are:"+ str(request.args))
+        print("the authorization endpoint url is:"+str(self.service.get_authorize_url(
+            scope='email https://www.google.com/m8/feeds/',
+            response_type='code',
+            redirect_uri=self.get_callback_url())))
+        print ("the callback url is:"+str(self.get_callback_url()))
+        '''
+        Storing all the values
+        '''
+        if 'scope' in request.args:
+            self.scope = request.args['scope']
+            print("scope::"+self.scope)
+
+
+        if 'client_id' in request.args:
+            self.client_id = request.args['client_id']
+            print("client_id::"+self.client_id)
+            #Checking if the client id passed is the same as the one registered with google
+            if self.consumer_id != self.client_id:
+                print("The consumer and client ids do not match")
+                return '' #TODO:this return statement should be modified to fail gracefully
+
+        else:
+            return '' #TODO:this return statement should be modified to fail gracefully
+
+
+        if 'redirect_uri' in request.args:
+            self.redirect_uri = request.args['redirect_uri']
+            session['redirect_uri'] = request.args['redirect_uri']
+            print("redirect_uri::"+self.redirect_uri)
+            #Checking if the redirect uri passed is the same as the one registered with google
+            if self.redirect_uri != os.environ['GOOGLE_REDIRECT_URI']:
+                print("The redirect uri does not match with the one registered on google")
+                return '' #TODO:this return statement should be modified to fail gracefully                
+        else:
+            return '' #TODO:this return statement should be modified to fail gracefully
+
+        if 'state' in request.args:
+            self.state = request.args['state']
+            session['state'] = request.args['state']
+            print("state::"+self.state)
+
+
+        if 'response_type' in request.args:
+            self.response_type = request.args['response_type']
+            print("response_type::"+self.response_type)
+            #Checking if the redirect uri passed is the same as the one registered with google
+            if self.response_type != 'code':
+                print("The response type is not code")
+                return '' #TODO:this return statement should be modified to fail gracefully                   
+        else:
+            return '' #TODO:this return statement should be modified to fail gracefully
+        '''
+        End of storing values
+        '''
+        return redirect(self.service.get_authorize_url(
+            scope='email https://www.google.com/m8/feeds/',
+            response_type='code',
+            redirect_uri=self.get_callback_url())
+            )
+
+    def callback(self):
+        print("the request arguments are:"+ str(request.args))
+        if 'code' not in request.args:
+            return None, None, None
+        print("the code request arguments are:"+ str(request.args['code']))
+        oauth_session = self.service.get_auth_session(
+                data={'code': request.args['code'],
+                      'grant_type': 'authorization_code',
+                      'redirect_uri': self.get_callback_url()
+                     },
+                decoder = json.loads
+        )
+        me = oauth_session.get('').json()
+        print("The me is:"+ str(me))
+        return (me['name'],
+                me['email'])
+
+    def getCallbackURI(self, email, expiryTime):
+
+        if session['redirect_uri'] != os.environ['GOOGLE_REDIRECT_URI']:
+                print("The redirect uri does not match with the one registered on google")
+                return '' #TODO:this return statement should be modified to fail gracefully 
+
+        secureAuthCode = self.generateSecretToken()
+        self.addSecretTokenToDb(secureAuthCode, email, expiryTime)
+        print("the secret auth code is::"+secureAuthCode) 
+        #getVars = {'code': 'abcdefgh','state': session['state']}
+        getVars = {'code': secureAuthCode,'state': session['state']}
+        callbackURI = session['redirect_uri'] + '?' + urllib.parse.urlencode(getVars)
+        print('callback uri is::'+callbackURI)
+        print("Adding comment")
+        return callbackURI
+
+    def generateSecretToken(self):
+        return secrets.token_hex(32)
+
+    def addSecretTokenToDb(self, id, email, expiryTime):
+        tokenCodes = mongo.db.tokens
+        tokenCodes.insert({'_id' : id, 'type' : 'AUTH_CODE',
+                            'userId': email,'clientId': 'google',
+                            'expiresAt': expiryTime})
+
+    def addRefreshTokenToDb(self, id, email):
+        tokenCodes = mongo.db.tokens
+        tokenCodes.insert({'_id' : id, 'type' : 'REFRESH',
+                            'userId': email,'clientId': 'google'})
+
+    def addAccessTokenToDb(self, id, email, expiryTime):
+        tokenCodes = mongo.db.tokens
+        tokenCodes.insert({'_id' : id, 'type' : 'ACCESS',
+                            'userId': email,'clientId': 'google',
+                            'expiresAt': expiryTime})
+
+    def getTokenResponse(self):
+        print("Inside get token response")
+
+        print("In token request args are::::::")
+        print(str(list(request.form)))
+        reqArgs = request.form
+        print("the req args are:"+ str(reqArgs))
+
+        if 'client_id' in reqArgs:
+            #Checking if the client id passed is the same as the one registered with google
+            if self.consumer_id != reqArgs['client_id']:
+                print("The consumer and client ids do not match")
+                return '' #TODO:this return statement should be modified to fail gracefully
+        else:
+            return '' #TODO:this return statement should be modified to fail gracefully
+
+
+        if 'client_secret' in reqArgs:
+            #Checking if the client secret passed is the same as the one registered with google
+            if self.consumer_secret != reqArgs['client_secret']:
+                print("The consumer and client secrets do not match")
+                return '' #TODO:this return statement should be modified to fail gracefully
+        else:
+            return '' #TODO:this return statement should be modified to fail gracefully
+
+        if 'grant_type' in reqArgs:
+            grantType = reqArgs['grant_type']
+            if grantType == 'authorization_code':
+                if isTokenValid(reqArgs['code']) == True:
+                    print("Token is valid")
+                    tokenRecord = getTokenRecord(reqArgs['code'])
+                    accessTokenId = self.generateSecretToken()
+                    refreshTokenId = self.generateSecretToken()
+                    self.addAccessTokenToDb(accessTokenId, tokenRecord['userId'], getStrFutureDateAndTime(60))
+                    self.addRefreshTokenToDb(refreshTokenId, tokenRecord['userId'])
+                    response = {}
+                    response['token_type'] = "bearer"
+                    response['access_token'] = accessTokenId
+                    response['refresh_token'] = refreshTokenId
+                    response['expires_in'] = 3600
+                else:
+                    response = {}
+                    response['error'] = "invalid_grant"
+                    response = json.dumps(response, indent=4, cls=JSONEncoder)
+                    print(response)
+                    r = make_response(response, 400)
+                    return r
+            elif grantType == 'refresh_token':
+                print("Inside only refresh token")
+                reqRefreshToken = reqArgs['refresh_token']
+                if isRefreshTokenValid(reqRefreshToken) == True:
+                    print("refresh token is valid")
+                    refreshTokenRecord = getTokenRecord(reqRefreshToken)
+                    accessTokenId = self.generateSecretToken()
+                    self.addAccessTokenToDb(accessTokenId, refreshTokenRecord['userId'], getStrFutureDateAndTime(60))
+                    response = {}
+                    response['token_type'] = "bearer"
+                    response['access_token'] = accessTokenId
+                    response['expires_in'] = 3600
+                else:
+                    response = {}
+                    response['error'] = "invalid_grant"
+                    response = json.dumps(response, indent=4, cls=JSONEncoder)
+                    print(response)
+                    r = make_response(response, 400)
+                    return r
+            else:
+                return ''#TODO:this return statement should be modified to fail gracefully
+        else:
+            return '' #TODO:this return statement should be modified to fail gracefully
+
+        '''
+        response = {}
+        response['token_type'] = "bearer"
+        response['access_token'] = "1234"
+        response['expires_in'] = 100000
+        '''
+        print("response::")
+        print(str(response))
+        response = json.dumps(response, indent=4, cls=JSONEncoder)
+        print(response)
+        r = make_response(response)
+        r.headers['Content-Type'] = 'application/json'
+
+        return r
+
+class User():
+
+    def __init__(self, username):
+        self.username = username
+        self.email = None
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return self.username
+
+    @staticmethod
+    def validate_login(password_hash, password):
+        return check_password_hash(password_hash, password)
+
+@login_manager.user_loader
+def load_user(username):
+    u = mongo.db.users.find_one({"username": username})
+    #u = mongo.db.users.find_one({"_id": ObjectId(username)})
+    #u = mongo.db.users.find_one({"_id": username['_id']})
+    if not u:
+        return None
+    #return User(u['_id'])
+    return User(u['username'])
+
+class LoginForm(FlaskForm):
+    username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
+    password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
+    remember = BooleanField('remember me')
+
+class RegisterForm(FlaskForm):
+    #email = StringField('email', validators=[InputRequired(), Length(max=50)])
+    email = StringField('email', validators=[InputRequired(), validators.Email(message = 'Invalid email'), Length(max=50)])
+    username = StringField('username', validators=[InputRequired(), Length(min=4, max=15)])
+    password = PasswordField('password', validators=[InputRequired(), Length(min=8, max=80)])
 '''
 @app.route('/')
 def index():
@@ -65,7 +375,7 @@ def index():
 '''
 
 @app.route('/', methods=['GET'])
-def verify():
+def index():
     print ("Hellow world")
 	# Webhook verification
     if request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
@@ -73,6 +383,186 @@ def verify():
             return "Verification token mismatch", 403
         return request.args["hub.challenge"], 200
     return "Hello world I am Charles", 200
+
+
+@app.route('/temp', methods=['GET'])
+@login_required
+def verifyTemp():
+    print ("Hellow world")
+    return "Hello world this is the login protected page", 200
+
+
+@app.route('/authorize/<provider>')
+def oauth_authorize(provider):
+    # Flask-Login function
+    '''
+    if not current_user.is_anonymous():
+        return redirect(url_for('index'))
+    '''
+    print("In authorize for google")
+    oauth = OAuthSignIn.get_provider(provider)
+    return oauth.authorize()
+
+@app.route('/callback/<provider>')
+def oauth_callback(provider):
+    '''
+    if not current_user.is_anonymous():
+        return redirect(url_for('index'))
+    '''
+    print("In callback for google")
+    oauth = OAuthSignIn.get_provider(provider)
+    username, email = oauth.callback()
+    print("the username is:"+username)
+    print("the email is:"+email)
+    if email is None:
+        # I need a valid email address for my user identification
+        print('Authentication failed')
+        #flash('Authentication failed.')
+        return redirect(url_for('index'))
+    # Look if the user already exists
+    users = mongo.db.users
+    loginUser = users.find_one({'username' : email})
+    
+    #user=User.query.filter_by(email=email).first()
+    if not loginUser:
+        # Create the user. Try and use their name returned by Google,
+        # but if it is not set, split the email address at the @.
+        '''
+        nickname = username
+        if nickname is None or nickname == "":
+            nickname = email.split('@')[0]
+        '''
+        # We can do more work here to ensure a unique nickname, if you 
+        # require that.
+        '''
+        user=User(nickname=nickname, email=email)
+        db.session.add(user)
+        db.session.commit()
+        '''
+        user_obj = User(email)
+    else:
+        user_obj = User(loginUser['username'])
+    # Log in the user, by default remembering them for their next visit
+    # unless they log out.
+    '''
+    login_user(user, remember=True)
+    '''
+    login_user(user_obj)
+    #return redirect(url_for('index'))
+    gCallbackURI = oauth.getCallbackURI(email, getStrFutureDateAndTime(10))
+    return redirect(gCallbackURI)
+
+'''
+@app.route('/token/<provider>')
+def oauth_token(provider):
+    print("In token exchange for google")
+    oauth = OAuthSignIn.get_provider(provider)
+    print("In token request args are:::::"+ str(request.args))
+    return redirect(url_for('index'))
+'''
+@app.route('/token/<provider>',methods=['POST'])
+def oauth_token(provider):
+    '''
+    if not current_user.is_anonymous():
+        return redirect(url_for('index'))
+    '''
+    print("In token exchange for google")
+    #oauth = OAuthSignIn.get_provider(provider)
+    #data = request.get_json(force=True)
+    '''
+    print("In token request args are::::::")
+    print(str(list(request.form)))
+    reqArgs = request.form
+    print("the req args are:"+ str(reqArgs))
+    '''
+    #print(json.dumps(data, indent=4))
+    #print(json.loads(data))
+
+    #Creating the oauth class
+    oauth = OAuthSignIn.get_provider(provider)
+    r = oauth.getTokenResponse()
+
+    '''
+    response = {}
+    response['token_type'] = "bearer"
+    response['access_token'] = "1234"
+    response['expires_in'] = 100000
+    print("response::")
+    print(str(response))
+    response = json.dumps(response, indent=4, cls=JSONEncoder)
+    print(response)
+    r = make_response(response)
+    r.headers['Content-Type'] = 'application/json'
+    '''
+    print("End token exchange")
+    #return redirect(url_for('index'))
+    return r
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        users = mongo.db.users
+        loginUser = users.find_one({'username' : form.username.data})
+        if loginUser:
+            if check_password_hash(loginUser['password'], form.password.data):
+                #session['username'] = form.username.data
+                #user_obj = loginUser['_id']
+                user_obj = User(loginUser['username'])
+                #user_obj = login_user['username']
+                login_user(user_obj)
+                return redirect(url_for('verifyTemp'))
+
+        return 'Invalid username/password combination'
+        '''
+        user = User.query.filter_by(username=form.username.data).first()
+        if user:
+            if check_password_hash(user.password, form.password.data):
+                login_user(user, remember=form.remember.data)
+                return redirect(url_for('dashboard'))
+
+        return '<h1>Invalid username or password</h1>'
+        '''
+        #return '<h1>' + form.username.data + ' ' + form.password.data + '</h1>'
+
+    return render_template('login.html', form=form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return 'You are now logged out'
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    form = RegisterForm()
+
+    if form.validate_on_submit():
+        users = mongo.db.users
+        existing_user = users.find_one({'username' : form.username.data})
+        if existing_user is None:
+            #hashpass = bcrypt.hashpw(request.form['pass'].encode('utf-8'), bcrypt.gensalt())
+            hashed_password = generate_password_hash(form.password.data, method='sha256')
+            users.insert({'username' : form.username.data, 'password' : hashed_password})
+            user_obj = User(form.username.data)
+            login_user(user_obj)
+            #return '<h1>New user has been created!</h1>'
+            return redirect(url_for('verifyTemp'))
+        
+        return 'That username already exists!'
+        '''
+        hashed_password = generate_password_hash(form.password.data, method='sha256')
+        new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+
+        return '<h1>New user has been created!</h1>'
+        '''
+        #return '<h1>' + form.username.data + ' ' + form.email.data + ' ' + form.password.data + '</h1>'
+
+    return render_template('signup.html', form=form)
+
 
 
 
@@ -83,7 +573,18 @@ def handle_message():
     data = request.get_json()
     print("Request:")
     print(json.dumps(data, indent=4))
-    
+
+    '''
+    Checking if the token exists and if expired
+    '''
+    if hasTokenExpired(data) == True:
+        response = {}
+        response['error'] = "Unauthorized"
+        response = json.dumps(response, indent=4, cls=JSONEncoder)
+        print("Token has expired::" + response)
+        r = make_response(response, 401)
+        return r
+        
     mainRequestControllerObj = MainRequestController(data, mongo)
     #res = processRequest(data)
     res = mainRequestControllerObj.processRequest()
@@ -96,6 +597,234 @@ def handle_message():
     print("Before final return")
     return r
 
+
+def hasTokenExpired(req):
+    accessTokenFromRequest = req.get('originalRequest').get('data').get('user').get('accessToken')
+    print("accessTokenFromRequest:: "+ accessTokenFromRequest) 
+
+    if isTokenValid(accessTokenFromRequest) == True:
+        return False
+    else:
+        return True
+
+
+
+
+
+def processRequest(req):
+    print('hi')
+    if req.get("result").get("action") == "sales.statistics":
+        parsedData = parseUserParametersGetSalesAmount(req.get("result").get('parameters'))
+        res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
+    elif req.get("result").get("action") == "detailed.statistics":
+        parsedData = parseContextUserParametersGetSalesAmount(req.get("result"))
+        res = makeContextWebhookResult(parsedData["speech"], createDetailedSalesAndChartOutputContext(parsedData["context"], parsedData["draw-chart-context"]))
+    elif req.get("result").get("action") == "free.delivery":
+        parsedData = parseFreeDeliveryRequest(req)        
+        res = makePermissionsResult(parsedData["speech"], [], ["NAME", "DEVICE_PRECISE_LOCATION"])        
+    elif req.get("result").get("action") == "compare.location":
+        parsedData = compareDeliveryLocation(req)
+        res = makeContextWebhookResult(parsedData["speech"], [])        
+    elif req.get("result").get("action") == "product.chart":
+        res = generateProductChartController(req.get("result").get('parameters'))
+        #res = generateProductChartController(req.get("result"))
+        #parsedData = generateProductChartController(req.get("result").get('parameters'))
+        #res = makeContextWebhookResult(parsedData["speech"], parsedData["context"])
+        '''
+        res = createCardResponse([parsedData["speech"]], ["Show digital employees", "Bye doctor dashboard"],
+            "Dr. Dashboard", "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting", "", 
+            parsedData["awsImageFileName"], "Default accessibility text", [], [], True, parsedData["context"])
+        '''
+    elif req.get("result").get("action") == "detailed.chart":
+        res = parseContextGenerateProductChartController(req.get("result"))
+    elif req.get("result").get("action") == "convert.chart":
+        res = convertTextToProductChartController(req.get("result"))
+    elif req.get("result").get("action") == "send.customEmail":
+        res = generateEmailController(req.get("result"))
+    elif req.get("result").get("action") == "welcome.intent":
+        res = showWelcomeIntent(req)
+    elif req.get("result").get("action") == "showAllUsers":
+        res = makeListOfAllUsers(req)
+    elif req.get("result").get("action") == "detailed.bio":
+        res = showDetailedBio(req)
+    elif req.get("result").get("action") == "application.close":
+        res = closeApplication(req)    
+    elif req.get("result").get("action") == "time.timeperiod":
+        ''' TODO REMOVE temp
+        myCustomResult = getDummyParameters(req)
+        res = makeWebhookResult(myCustomResult)
+        '''
+        return {}
+    else:
+        return {}
+    return res
+'''
+This is a very temp function. It is used to just create a sample response in JSON format
+'''
+def makeWebhookResult(data):
+    speech = data
+    '''
+    print("Response:")
+    print(speech)
+    '''
+    return {
+        "speech": speech,
+        "displayText": speech,
+        # "data": data,
+        # "contextOut": [],
+        "source": "phillips-bot"
+    }
+
+'''
+This is a very temp function. It is used to just create a sample response in JSON format
+'''
+def makeContextWebhookResult(speech, context):
+    
+    return {
+        "speech": speech,
+        "displayText": speech,
+        # "data": data,
+        "contextOut": context,
+        "source": "phillips-bot"
+    }
+
+def makePermissionsResult(speech, context, permissionList):
+
+    dataJSON = {}
+    dataJSON["google"] = {}
+    googleJSON = dataJSON["google"]
+
+    googleJSON["expectUserResponse"] = True
+    googleJSON["systemIntent"] = {}
+
+    #possibleIntents = []
+
+    permissionDict = googleJSON["systemIntent"]
+    permissionDict["intent"] = "actions.intent.PERMISSION"
+    permissionDict["data"] = {}
+
+    inputValueDataDict = permissionDict["data"]
+    inputValueDataDict["@type"] = "type.googleapis.com/google.actions.v2.PermissionValueSpec"
+    inputValueDataDict["optContext"] = "To deliver your order"
+    inputValueDataDict["permissions"] = permissionList
+
+    #possibleIntents.append(permissionDict)
+
+    return {
+        "speech": speech,
+        "displayText": speech,
+        "data": dataJSON,
+        "contextOut": context,
+        "source": "phillips-bot"
+    }
+
+def makePermissionsResultV1(speech, context, permissionList):
+    possibleIntents = []
+
+    permissionDict = {}
+    permissionDict["intent"] = "assistant.intent.actions.PERMISSION"
+    permissionDict["input_value_spec"] = {}
+
+    inputValueSpecDict = permissionDict["input_value_spec"]
+    inputValueSpecDict["permission_value_spec"] = {}
+
+    permission_value_spec = inputValueSpecDict["permission_value_spec"]
+
+    permission_value_spec["optContext"] = "To deliver your order"
+    permission_value_spec["permissions"] = permissionList
+
+    possibleIntents.append(permissionDict)
+
+    return {
+        "speech": speech,
+        "displayText": speech,
+        "possibleIntents": possibleIntents,
+        "contextOut": context,
+        "source": "phillips-bot"
+    }
+
+    
+def parseFreeDeliveryRequest(req):
+    
+    return {
+        "speech" : "I need access to your device location to perform this task"
+    }
+
+def compareDeliveryLocation(req):
+    #Check to see if the permission has already been given
+    if req.get('originalRequest').get('data').get('device') != None:
+        devcoords = req.get('originalRequest').get('data').get('device').get('location').get('coordinates')
+        print("The latitude is::" + str(devcoords.get('latitude')))
+        print("The longitude is::" + str(devcoords.get('longitude')))
+        return {
+            "speech" : "Yes you are at::" + str(devcoords.get('latitude')) + " latitude and " + str(devcoords.get('longitude')) + " longitude"
+        }
+
+    return {
+        "speech" : "Could not get your location"
+    }
+
+def getCurrentDateAndTime():
+    return dt.now()
+
+def getStrCurrentDateAndTime():
+    return getCurrentDateAndTime().strftime("%Y-%m-%d %H:%M:%S")
+
+def getFutureDateAndTime(mins):
+    #print("The current date time now is::" + str(getCurrentDateAndTime()))
+    #print("The current string date time is::" + getStrCurrentDateAndTime())
+    return getCurrentDateAndTime() + timedelta(minutes=mins)
+
+def getStrFutureDateAndTime(mins):
+    #print("the future date time is:"+ getFutureDateAndTime(mins).strftime("%Y-%m-%d %H:%M:%S"))
+    return getFutureDateAndTime(mins).strftime("%Y-%m-%d %H:%M:%S")
+
+'''
+Returns the record from the db containing the token id
+'''
+def getTokenRecord(id):
+    print("Inside getTokenRecord")
+    tokens = mongo.db.tokens
+    existing_token = tokens.find_one({'_id' : id})
+
+    if not existing_token:
+        return 'Token does not exist in db'
+
+    return existing_token
+'''
+Checks and returns whether the token is valid or not
+'''
+def isTokenValid(id):
+    print("Inside isTokenValid")
+    tokens = mongo.db.tokens
+    existing_token = tokens.find_one({'_id' : id})
+
+    if not existing_token:
+        return 'Token does not exist in db'
+
+    dbDateTime = existing_token['expiresAt']
+    return compareDateAndTime(getStrCurrentDateAndTime(), dbDateTime)
+
+def isRefreshTokenValid(id):
+    print("Inside isRefreshTokenValid")
+    tokens = mongo.db.tokens
+    existing_token = tokens.find_one({'_id' : id})
+
+    if not existing_token:
+        return False
+
+    return True
+
+'''
+Compares date time 1 with date time 2
+Returns True if 1 < 2
+Else False
+'''
+def compareDateAndTime(dateTime1, dateTime2):
+    if dt.strptime(dateTime1, "%Y-%m-%d %H:%M:%S")  < dt.strptime(dateTime2, "%Y-%m-%d %H:%M:%S"):
+        return True
+    else:
+        return False
 
 def closeApplication(req):
     print("closing application")
