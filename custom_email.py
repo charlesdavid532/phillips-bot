@@ -6,6 +6,7 @@ from email import encoders
 import os
 import boto3
 from botocore.client import Config
+from amazon_s3 import AmazonS3
 
 BUCKET_NAME = 'tonibot-bucket'
 
@@ -53,7 +54,7 @@ class Email(object):
 			#attachment = open(self.attachmentPath, "rb")
 			print("The attached filename is:" + filename)
 			print("The bucket name is:" + BUCKET_NAME)
-
+			'''
 			s3 = boto3.resource(
 		        's3',
 		        aws_access_key_id=os.environ['S3_KEY'],
@@ -61,10 +62,14 @@ class Email(object):
 		        config=Config(signature_version='s3v4')
 		        )
 			attachment = s3.Object(BUCKET_NAME, filename)
-
+			'''
+			myAmazonS3 = AmazonS3(BUCKET_NAME)
+			attachmentObject = myAmazonS3.readS3Object(BUCKET_NAME, filename)
 			part = MIMEBase('application', 'octet-stream')
-			#part.set_payload((attachment).read())
+			'''
 			part.set_payload((attachment).get()['Body'].read())
+			'''
+			part.set_payload(attachmentObject)
 			encoders.encode_base64(part)
 			part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
 			 
