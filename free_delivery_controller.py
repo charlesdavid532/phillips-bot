@@ -16,7 +16,7 @@ class FreeDeliveryController(object):
 
 	def getPermissionJSON(self):
 		speech = self.parseFreeDeliveryRequest()
-		return self.makePermissionsResult(speech, []) 
+		return self.makePermissionsResult(speech["speech"], []) 
 
 
 
