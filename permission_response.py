@@ -15,35 +15,35 @@ class PermissionResponse(object):
 		permissionJSON["data"] = {}
 
 		dataJSON = permissionJSON["data"]
-	    dataJSON["google"] = {}
-	    googleJSON = dataJSON["google"]
+		dataJSON["google"] = {}
+		googleJSON = dataJSON["google"]
 
-	    googleJSON["expectUserResponse"] = self.expectedUserResponse
-	    googleJSON["systemIntent"] = {}
+		googleJSON["expectUserResponse"] = self.expectedUserResponse
+		googleJSON["systemIntent"] = {}
 
-	    #possibleIntents = []
+		#possibleIntents = []
 
-	    permissionDict = googleJSON["systemIntent"]
-	    permissionDict["intent"] = "actions.intent.PERMISSION"
-	    permissionDict["data"] = {}
+		permissionDict = googleJSON["systemIntent"]
+		permissionDict["intent"] = "actions.intent.PERMISSION"
+		permissionDict["data"] = {}
 
-	    inputValueDataDict = permissionDict["data"]
-	    inputValueDataDict["@type"] = "type.googleapis.com/google.actions.v2.PermissionValueSpec"
-	    inputValueDataDict["optContext"] = self.optContext
-	    inputValueDataDict["permissions"] = self.permissionList
+		inputValueDataDict = permissionDict["data"]
+		inputValueDataDict["@type"] = "type.googleapis.com/google.actions.v2.PermissionValueSpec"
+		inputValueDataDict["optContext"] = self.optContext
+		inputValueDataDict["permissions"] = self.permissionList
 
-	    #Adding context
+		#Adding context
 		if self.outputContext == None or self.outputContext == "":
 			outputContext = []
 		else:
 			outputContext = self.outputContext
 			print("The length of context list in permission response is:"+str(len(outputContext)))
 
-	    #possibleIntents.append(permissionDict)
-	    permissionJSON["contextOut"] = outputContext
-	    permissionJSON["source"] = "phillips-bot"
+		#possibleIntents.append(permissionDict)
+		permissionJSON["contextOut"] = outputContext
+		permissionJSON["source"] = "phillips-bot"
 
-	    return permissionJSON
+		return permissionJSON
 
 	def addOutputContext(self, outputContext):
 		self.outputContext = outputContext
