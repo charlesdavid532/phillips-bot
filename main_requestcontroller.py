@@ -25,11 +25,11 @@ class MainRequestController(object):
 			salesResponseData = salesRequestController.getSalesResponse()
 			self.responseData = self.makeContextWebhookResult(salesResponseData["speech"], salesResponseData["context-list"])
 		elif self.requestData.get("result").get("action") == "free.delivery":
-	        parsedData = self.parseFreeDeliveryRequest(self.requestData)        
-	        self.responseData = self.makePermissionsResult(parsedData["speech"], [], ["NAME", "DEVICE_PRECISE_LOCATION"])        
-	    elif self.requestData.get("result").get("action") == "compare.location":
-	        parsedData = self.compareDeliveryLocation(self.requestData)
-	        self.responseData = self.makeContextWebhookResult(parsedData["speech"], [])  
+			parsedData = self.parseFreeDeliveryRequest(self.requestData)        
+			self.responseData = self.makePermissionsResult(parsedData["speech"], [], ["NAME", "DEVICE_PRECISE_LOCATION"])        
+		elif self.requestData.get("result").get("action") == "compare.location":
+			parsedData = self.compareDeliveryLocation(self.requestData)
+			self.responseData = self.makeContextWebhookResult(parsedData["speech"], [])  
 		elif self.requestData.get("result").get("action") == "product.chart":
 			chartController = ChartController(self.requestData, self.mongo)
 			self.responseData = chartController.getChartResponse()
