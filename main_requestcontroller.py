@@ -3,6 +3,7 @@ from sales_requestcontroller import SalesRequestController
 from constants import Constants
 from chart_controller import ChartController
 from email_request_controller import EmailRequestController
+from free_delivery_controller import FreeDeliveryController
 class MainRequestController(object):
 	"""Handles the request from api.ai"""
 	def __init__(self, data, mongo):
@@ -25,11 +26,17 @@ class MainRequestController(object):
 			salesResponseData = salesRequestController.getSalesResponse()
 			self.responseData = self.makeContextWebhookResult(salesResponseData["speech"], salesResponseData["context-list"])
 		elif self.requestData.get("result").get("action") == "free.delivery":
+			freeDelControllerObj = FreeDeliveryController(self.requestData, self.mongo)
+			self.responseData = freeDelControllerObj.getPermissionJSON()
+			'''
 			parsedData = self.parseFreeDeliveryRequest(self.requestData)        
 			self.responseData = self.makePermissionsResult(parsedData["speech"], [], ["NAME", "DEVICE_PRECISE_LOCATION"])        
+			'''
 		elif self.requestData.get("result").get("action") == "compare.location":
-			parsedData = self.compareDeliveryLocation(self.requestData)
-			self.responseData = self.makeContextWebhookResult(parsedData["speech"], [])  
+			freeDelControllerObj = FreeDeliveryController(self.requestData, self.mongo)
+			freeDelControllerObj.setIsPermissionGiven(True)
+			compareLocationData = freeDelControllerObj.compareDeliveryLocation()
+			self.responseData = self.makeContextWebhookResult(compareLocationData["speech"], [])  
 		elif self.requestData.get("result").get("action") == "product.chart":
 			chartController = ChartController(self.requestData, self.mongo)
 			self.responseData = chartController.getChartResponse()
@@ -89,78 +96,9 @@ class MainRequestController(object):
 		}
 
 
-	def makePermissionsResult(self, speech, context, permissionList):
 
-	    dataJSON = {}
-	    dataJSON["google"] = {}
-	    googleJSON = dataJSON["google"]
-
-	    googleJSON["expectUserResponse"] = True
-	    googleJSON["systemIntent"] = {}
-
-	    #possibleIntents = []
-
-	    permissionDict = googleJSON["systemIntent"]
-	    permissionDict["intent"] = "actions.intent.PERMISSION"
-	    permissionDict["data"] = {}
-
-	    inputValueDataDict = permissionDict["data"]
-	    inputValueDataDict["@type"] = "type.googleapis.com/google.actions.v2.PermissionValueSpec"
-	    inputValueDataDict["optContext"] = "To deliver your order"
-	    inputValueDataDict["permissions"] = permissionList
-
-	    #possibleIntents.append(permissionDict)
-
-	    return {
-	        "speech": speech,
-	        "displayText": speech,
-	        "data": dataJSON,
-	        "contextOut": context,
-	        "source": "phillips-bot"
-	    }
-
-	def makePermissionsResultV1(self, speech, context, permissionList):
-	    possibleIntents = []
-
-	    permissionDict = {}
-	    permissionDict["intent"] = "assistant.intent.actions.PERMISSION"
-	    permissionDict["input_value_spec"] = {}
-
-	    inputValueSpecDict = permissionDict["input_value_spec"]
-	    inputValueSpecDict["permission_value_spec"] = {}
-
-	    permission_value_spec = inputValueSpecDict["permission_value_spec"]
-
-	    permission_value_spec["optContext"] = "To deliver your order"
-	    permission_value_spec["permissions"] = permissionList
-
-	    possibleIntents.append(permissionDict)
-
-	    return {
-	        "speech": speech,
-	        "displayText": speech,
-	        "possibleIntents": possibleIntents,
-	        "contextOut": context,
-	        "source": "phillips-bot"
-	    }
 
 	    
-	def parseFreeDeliveryRequest(self, req):
-	    
-	    return {
-	        "speech" : "I need access to your device location to perform this task"
-	    }
+	
 
-	def compareDeliveryLocation(self, req):
-	    #Check to see if the permission has already been given
-	    if req.get('originalRequest').get('data').get('device') != None:
-	        devcoords = req.get('originalRequest').get('data').get('device').get('location').get('coordinates')
-	        print("The latitude is::" + str(devcoords.get('latitude')))
-	        print("The longitude is::" + str(devcoords.get('longitude')))
-	        return {
-	            "speech" : "Yes you are at::" + str(devcoords.get('latitude')) + " latitude and " + str(devcoords.get('longitude')) + " longitude"
-	        }
-
-	    return {
-	        "speech" : "Could not get your location"
-	    }
+	
