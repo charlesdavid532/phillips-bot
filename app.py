@@ -387,6 +387,30 @@ class FacebookSignIn(OAuthSignIn):
             me.get('email')
         )
 
+    def getCallbackURI(self, email, expiryTime):
+        print("In get callback URI of facebook")
+        secureAuthCode = self.generateSecretToken()
+        self.addSecretTokenToDb(secureAuthCode, email, expiryTime)
+        print("the secret auth code is::"+secureAuthCode) 
+        #getVars = {'code': 'abcdefgh','state': session['state']}
+        #getVars = {'code': secureAuthCode,'state': session['state']}
+        getVars = {'grant_type':'fb_exchange_token','client_id':self.consumer_id,
+                    'client_secret':self.consumer_secret,'fb_exchange_token': secureAuthCode}
+        callbackURI = 'https://graph.facebook.com/oauth/access_token' + '?' + urllib.parse.urlencode(getVars)
+        print('callback uri is::'+callbackURI)
+        print("Adding comment")
+        return callbackURI
+
+
+    def generateSecretToken(self):
+        return secrets.token_hex(32)
+
+    def addSecretTokenToDb(self, id, email, expiryTime):
+        tokenCodes = mongo.db.tokens
+        tokenCodes.insert({'_id' : id, 'type' : 'AUTH_CODE',
+                            'userId': email,'clientId': 'facebook',
+                            'expiresAt': expiryTime})
+
 class User():
 
     def __init__(self, username):
@@ -472,46 +496,54 @@ def oauth_callback(provider):
     '''
     print("In callback for google")
     oauth = OAuthSignIn.get_provider(provider)
-    username, email = oauth.callback()
-    print("the username is:"+username)
-    print("the email is:"+email)
-    if email is None:
-        # I need a valid email address for my user identification
-        print('Authentication failed')
-        #flash('Authentication failed.')
-        return redirect(url_for('index'))
-    # Look if the user already exists
-    users = mongo.db.users
-    loginUser = users.find_one({'username' : email})
-    
-    #user=User.query.filter_by(email=email).first()
-    if not loginUser:
-        # Create the user. Try and use their name returned by Google,
-        # but if it is not set, split the email address at the @.
-        '''
-        nickname = username
-        if nickname is None or nickname == "":
-            nickname = email.split('@')[0]
-        '''
-        # We can do more work here to ensure a unique nickname, if you 
-        # require that.
-        '''
-        user=User(nickname=nickname, email=email)
-        db.session.add(user)
-        db.session.commit()
-        '''
-        user_obj = User(email)
+    if provider == "facebook":
+        myId, username, email = oauth.callback()
+        print("the id is:"+myId)
+        print("the username is:"+username)
+        print("the email is:"+email)
+        gCallbackURI = oauth.getCallbackURI(email, getStrFutureDateAndTime(10))
+        return redirect(gCallbackURI)
     else:
-        user_obj = User(loginUser['username'])
-    # Log in the user, by default remembering them for their next visit
-    # unless they log out.
-    '''
-    login_user(user, remember=True)
-    '''
-    login_user(user_obj)
-    #return redirect(url_for('index'))
-    gCallbackURI = oauth.getCallbackURI(email, getStrFutureDateAndTime(10))
-    return redirect(gCallbackURI)
+        username, email = oauth.callback()
+        print("the username is:"+username)
+        print("the email is:"+email)
+        if email is None:
+            # I need a valid email address for my user identification
+            print('Authentication failed')
+            #flash('Authentication failed.')
+            return redirect(url_for('index'))
+        # Look if the user already exists
+        users = mongo.db.users
+        loginUser = users.find_one({'username' : email})
+        
+        #user=User.query.filter_by(email=email).first()
+        if not loginUser:
+            # Create the user. Try and use their name returned by Google,
+            # but if it is not set, split the email address at the @.
+            '''
+            nickname = username
+            if nickname is None or nickname == "":
+                nickname = email.split('@')[0]
+            '''
+            # We can do more work here to ensure a unique nickname, if you 
+            # require that.
+            '''
+            user=User(nickname=nickname, email=email)
+            db.session.add(user)
+            db.session.commit()
+            '''
+            user_obj = User(email)
+        else:
+            user_obj = User(loginUser['username'])
+        # Log in the user, by default remembering them for their next visit
+        # unless they log out.
+        '''
+        login_user(user, remember=True)
+        '''
+        login_user(user_obj)
+        #return redirect(url_for('index'))
+        gCallbackURI = oauth.getCallbackURI(email, getStrFutureDateAndTime(10))
+        return redirect(gCallbackURI)
 
 '''
 @app.route('/token/<provider>')
