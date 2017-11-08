@@ -354,7 +354,7 @@ class FacebookSignIn(OAuthSignIn):
         print ("In FB authorize the callback url is:"+str(self.get_callback_url()))
 
 
-        redirect(self.service.get_authorize_url(
+        return redirect(self.service.get_authorize_url(
             scope='email',
             response_type='code',
             redirect_uri=self.get_callback_url())
