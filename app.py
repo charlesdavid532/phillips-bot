@@ -653,7 +653,12 @@ def handle_message():
         myCard.addLinkBtn('Share on Facebook', 'https://phillipsbot.herokuapp.com/authorize/facebook')        
         myCard.addExpectedUserResponse()
 
-        return myCard.getCardResponse()
+        res = myCard.getCardResponse()
+
+    else:
+        mainRequestControllerObj = MainRequestController(data, mongo)
+        #res = processRequest(data)
+        res = mainRequestControllerObj.processRequest()
 
     '''
     print("In webhook for facebook")
@@ -671,10 +676,11 @@ def handle_message():
         r = make_response(response, 401)
         return r
     '''    
+    '''
     mainRequestControllerObj = MainRequestController(data, mongo)
     #res = processRequest(data)
     res = mainRequestControllerObj.processRequest()
-
+    '''
 
     res = json.dumps(res, indent=4, cls=JSONEncoder)
     print(res)
