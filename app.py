@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 import io
 import uuid
 from main_requestcontroller import MainRequestController
-from constant import Constants
+from constants import Constants
 from rauth import OAuth2Service
 import urllib
 from urllib.request import urlopen
