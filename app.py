@@ -375,7 +375,8 @@ class FacebookSignIn(OAuthSignIn):
             decoder=decode_json
         )
         me = oauth_session.get('me?fields=id,email').json()
-
+        print("The users id is:::" + str(me.get('id')))
+        print("The users name is:::" + str(me.get('email').split('@')[0]))
         print("The users email is:::" + str(me.get('email')))
 
         return (
