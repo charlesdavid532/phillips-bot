@@ -394,8 +394,12 @@ class FacebookSignIn(OAuthSignIn):
         print("the secret auth code is::"+secureAuthCode) 
         #getVars = {'code': 'abcdefgh','state': session['state']}
         #getVars = {'code': secureAuthCode,'state': session['state']}
+        '''
         getVars = {'grant_type':'fb_exchange_token','client_id':self.consumer_id,
                     'client_secret':self.consumer_secret,'fb_exchange_token': secureAuthCode}
+        '''
+        getVars = {'grant_type':'client_credentials','client_id':self.consumer_id,
+                    'client_secret':self.consumer_secret}
         callbackURI = 'https://graph.facebook.com/oauth/access_token' + '?' + urllib.parse.urlencode(getVars)
         print('callback uri is::'+callbackURI)
         print("Adding comment")
