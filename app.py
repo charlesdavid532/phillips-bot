@@ -632,10 +632,32 @@ def handle_message():
     print("Request:")
     print(json.dumps(data, indent=4))
 
+
+    if data.get("result").get("action") == "free.delivery":
+        simpleResponse = []
+        simpleResponse.append("This is your coupon code")
+        sugList = []
+        sugList.append("Show digital employees")
+        sugList.append("Bye doctor dashboard")
+
+        title = "Dr. Dashboard"
+        formattedText = "Coupon code"
+        imgURL = Constants.getBlueBotURL()
+        imgAccText = "Default accessibility text"
+
+        myCard = Card(simpleResponse, formattedText, imgURL, imgAccText)
+        myCard.addTitle(title)
+        myCard.addSugTitles(sugList)
+        myCard.addLinkBtn('Share on Facebook', 'https://phillipsbot.herokuapp.com/authorize/facebook')        
+        myCard.addExpectedUserResponse()
+
+        return myCard.getCardResponse()
+
+    '''
     print("In webhook for facebook")
     oauth = OAuthSignIn.get_provider("facebook")
     oauth.authorize()
-
+    '''
     '''
     Checking if the token exists and if expired
     
