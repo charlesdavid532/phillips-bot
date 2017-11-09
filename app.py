@@ -406,6 +406,9 @@ class FacebookSignIn(OAuthSignIn):
         getVars = {'code': session['facebook_code'],'client_id':self.consumer_id,
                     'client_secret':self.consumer_secret, 'redirect_uri': self.get_callback_url()}
         callbackURI = 'https://graph.facebook.com/oauth/access_token' + '?' + urllib.parse.urlencode(getVars)
+        # Getting the token
+        tokenResponse = urllib.urlopen(callbackURI).read()
+        print("The token response in getCallbackURI" + str(tokenResponse))
         print('callback uri is::'+callbackURI)
         print("Adding comment")
         return callbackURI
@@ -497,7 +500,7 @@ def oauth_authorize(provider):
     oauth = OAuthSignIn.get_provider(provider)
     return oauth.authorize()
 
-@app.route('/callback/<provider>', methods=['GET'])
+@app.route('/callback/<provider>', methods=['GET', 'POST'])
 def oauth_callback(provider):
     '''
     if not current_user.is_anonymous():
