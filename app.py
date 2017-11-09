@@ -554,6 +554,14 @@ def oauth_callback(provider):
         gCallbackURI = oauth.getCallbackURI(email, getStrFutureDateAndTime(10))
         return redirect(gCallbackURI)
 
+@app.route('/callback/<provider>',methods=['POST'])
+def oauth_callback_token(provider):
+    print("In token callback for facebook")
+    oauth = OAuthSignIn.get_provider(provider)
+    print(str(list(request.form)))
+    reqArgs = request.form
+    print("the req args are:"+ str(reqArgs))
+
 '''
 @app.route('/token/<provider>')
 def oauth_token(provider):
