@@ -407,7 +407,7 @@ class FacebookSignIn(OAuthSignIn):
                     'client_secret':self.consumer_secret, 'redirect_uri': self.get_callback_url()}
         callbackURI = 'https://graph.facebook.com/oauth/access_token' + '?' + urllib.parse.urlencode(getVars)
         # Getting the token
-        tokenResponse = urlopen(callbackURI).read()
+        tokenResponse = urlopen(callbackURI)
         token_params = json.load(tokenResponse)
         print("The token response in getCallbackURI" + str(token_params))
         print('callback uri is::'+callbackURI)
