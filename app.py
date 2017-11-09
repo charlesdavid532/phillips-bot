@@ -404,7 +404,7 @@ class FacebookSignIn(OAuthSignIn):
                     'client_secret':self.consumer_secret}
         '''
         getVars = {'code': session['facebook_code'],'client_id':self.consumer_id,
-                    'client_secret':self.consumer_secret, 'redirect_uri': 'https://phillipsbot.herokuapp.com/token/facebook/'}
+                    'client_secret':self.consumer_secret, 'redirect_uri': self.get_callback_url()}
         callbackURI = 'https://graph.facebook.com/oauth/access_token' + '?' + urllib.parse.urlencode(getVars)
         print('callback uri is::'+callbackURI)
         print("Adding comment")
