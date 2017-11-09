@@ -497,7 +497,7 @@ def oauth_authorize(provider):
     oauth = OAuthSignIn.get_provider(provider)
     return oauth.authorize()
 
-@app.route('/callback/<provider>')
+@app.route('/callback/<provider>', methods=['GET'])
 def oauth_callback(provider):
     '''
     if not current_user.is_anonymous():
