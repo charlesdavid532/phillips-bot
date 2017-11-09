@@ -368,6 +368,7 @@ class FacebookSignIn(OAuthSignIn):
 
         if 'code' not in request.args:
             return None, None, None
+        session['facebook_code'] = request.args['code']
         oauth_session = self.service.get_auth_session(
             data={'code': request.args['code'],
                   'grant_type': 'authorization_code',
@@ -398,8 +399,12 @@ class FacebookSignIn(OAuthSignIn):
         getVars = {'grant_type':'fb_exchange_token','client_id':self.consumer_id,
                     'client_secret':self.consumer_secret,'fb_exchange_token': secureAuthCode}
         '''
+        '''
         getVars = {'grant_type':'client_credentials','client_id':self.consumer_id,
                     'client_secret':self.consumer_secret}
+        '''
+        getVars = {'code': session['facebook_code'],'client_id':self.consumer_id,
+                    'client_secret':self.consumer_secret, 'redirect_uri': 'https://phillipsbot.herokuapp.com/token/facebook'}
         callbackURI = 'https://graph.facebook.com/oauth/access_token' + '?' + urllib.parse.urlencode(getVars)
         print('callback uri is::'+callbackURI)
         print("Adding comment")
