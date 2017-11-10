@@ -30,6 +30,7 @@ from rauth import OAuth2Service
 import urllib
 from urllib.request import urlopen
 import secrets
+from facepy import GraphAPI
 
 try:
     import apiai
@@ -348,14 +349,14 @@ class FacebookSignIn(OAuthSignIn):
 
         print("In FB authorize the request arguments are:"+ str(request.args))
         print("In FB authorize the authorization endpoint url is:"+str(self.service.get_authorize_url(
-            scope='email',
+            scope='email publish_actions',
             response_type='code',
             redirect_uri=self.get_callback_url())))
         print ("In FB authorize the callback url is:"+str(self.get_callback_url()))
 
 
         return redirect(self.service.get_authorize_url(
-            scope='email',
+            scope='email publish_actions',
             response_type='code',
             redirect_uri=self.get_callback_url())
         )
@@ -379,6 +380,8 @@ class FacebookSignIn(OAuthSignIn):
         print("The users id is:::" + str(me.get('id')))
         print("The users name is:::" + str(me.get('email').split('@')[0]))
         print("The users email is:::" + str(me.get('email')))
+
+        session['profile_id'] = me.get('id')
 
         return (
             'facebook$' + me['id'],
@@ -411,6 +414,15 @@ class FacebookSignIn(OAuthSignIn):
         token_params = json.load(tokenResponse)
         print("The token response in getCallbackURI" + str(token_params))
         print('callback uri is::'+callbackURI)
+
+        #Posting to wall
+        access_token = token_params['access_token']
+        graph = GraphAPI(access_token)
+        og_path = "%d/feed" %session['profile_id']
+        #og_path = session['profile_id'] + "/feed" 
+
+        graph.post( path = og_path, message = "Because office parties rarely disappoint" )
+
         print("Adding comment")
         return callbackURI
 
