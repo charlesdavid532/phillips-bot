@@ -418,7 +418,7 @@ class FacebookSignIn(OAuthSignIn):
             token_params = json.load(tokenResponse)
             print("The token response in getCallbackURI" + str(token_params))
             print('callback uri is::'+callbackURI)
-        except urllib.HTTPError as error:
+        except urllib.error.HTTPError as error:
             contents = error.read()
             print("error contents are::" + str(contents))
 
