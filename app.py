@@ -425,13 +425,13 @@ class FacebookSignIn(OAuthSignIn):
 
         #Posting to wall
         
-        '''
+        
         graph = GraphAPI(access_token)
         og_path = "%d/feed" %session['profile_id']
         #og_path = session['profile_id'] + "/feed" 
 
         graph.post( path = og_path, message = "Because office parties rarely disappoint" )
-        '''
+        
         print("Adding comment")
         return callbackURI
 
