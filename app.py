@@ -349,14 +349,14 @@ class FacebookSignIn(OAuthSignIn):
 
         print("In FB authorize the request arguments are:"+ str(request.args))
         print("In FB authorize the authorization endpoint url is:"+str(self.service.get_authorize_url(
-            scope='email publish_actions',
+            scope='email',
             response_type='code',
             redirect_uri=self.get_callback_url())))
         print ("In FB authorize the callback url is:"+str(self.get_callback_url()))
 
 
         return redirect(self.service.get_authorize_url(
-            scope='email publish_actions',
+            scope='email',
             response_type='code',
             redirect_uri=self.get_callback_url())
         )
@@ -425,13 +425,13 @@ class FacebookSignIn(OAuthSignIn):
 
         #Posting to wall
         
-        
+        '''
         graph = GraphAPI(access_token)
-        og_path = "%d/feed" %session['profile_id']
-        #og_path = session['profile_id'] + "/feed" 
+        #og_path = "%d/feed" %session['profile_id']
+        og_path = session['profile_id'] + "/feed" 
 
         graph.post( path = og_path, message = "Because office parties rarely disappoint" )
-        
+        '''
         print("Adding comment")
         return callbackURI
 
