@@ -411,17 +411,19 @@ class FacebookSignIn(OAuthSignIn):
         callbackURI = 'https://graph.facebook.com/oauth/access_token' + '?' + urllib.parse.urlencode(getVars)
         print("the callback uri is::"+ callbackURI)
         # Getting the token
-        '''
-        tokenReq = urllib.request.Request(callbackURI)
-        tokenResponse = urlopen(tokenReq).read()
-        #tokenResponse = urlopen(callbackURI)
-        token_params = json.load(tokenResponse)
-        print("The token response in getCallbackURI" + str(token_params))
-        print('callback uri is::'+callbackURI)
+        try:
+            #tokenReq = urllib.request.Request(callbackURI)
+            #tokenResponse = urlopen(tokenReq).read()
+            tokenResponse = urlopen(callbackURI)
+            token_params = json.load(tokenResponse)
+            print("The token response in getCallbackURI" + str(token_params))
+            print('callback uri is::'+callbackURI)
+        except urllib.HTTPError, error:
+            contents = error.read()
+            print("error contents are::" + str(contents))
 
         #Posting to wall
         access_token = token_params['access_token']
-        '''
         '''
         graph = GraphAPI(access_token)
         og_path = "%d/feed" %session['profile_id']
