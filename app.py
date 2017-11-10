@@ -418,12 +418,13 @@ class FacebookSignIn(OAuthSignIn):
             token_params = json.load(tokenResponse)
             print("The token response in getCallbackURI" + str(token_params))
             print('callback uri is::'+callbackURI)
+            access_token = token_params['access_token']
         except urllib.error.HTTPError as error:
             contents = error.read()
             print("error contents are::" + str(contents))
 
         #Posting to wall
-        access_token = token_params['access_token']
+        
         '''
         graph = GraphAPI(access_token)
         og_path = "%d/feed" %session['profile_id']
