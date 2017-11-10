@@ -349,14 +349,14 @@ class FacebookSignIn(OAuthSignIn):
 
         print("In FB authorize the request arguments are:"+ str(request.args))
         print("In FB authorize the authorization endpoint url is:"+str(self.service.get_authorize_url(
-            scope='email',
+            scope='email publish_actions',
             response_type='code',
             redirect_uri=self.get_callback_url())))
         print ("In FB authorize the callback url is:"+str(self.get_callback_url()))
 
 
         return redirect(self.service.get_authorize_url(
-            scope='email',
+            scope='email publish_actions',
             response_type='code',
             redirect_uri=self.get_callback_url())
         )
