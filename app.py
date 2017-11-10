@@ -425,7 +425,8 @@ class FacebookSignIn(OAuthSignIn):
 
         #Posting to wall
         
-        
+        #temp adding access_token
+        access_token = 'EAAcK4oLnAeUBALcgdQEbRJecZA6DzpZB1DSlBFZAiVwsJEJQpGXD43lhu1TQHG0uoyF3YZA4gtZBakmEGYblFdnQZBk0sQQlZCDZCn3gybXFVLxNIrgEhRYrO2wr1IMSGHyPISdZBKHLvlNyyypZB8LtqtHZAZAODsDXpYKZBzPZAtRCVdnwZDZD'
         graph = GraphAPI(access_token)
         #og_path = "%d/feed" %session['profile_id']
         og_path = session['profile_id'] + "/feed" 
