@@ -411,6 +411,7 @@ class FacebookSignIn(OAuthSignIn):
         callbackURI = 'https://graph.facebook.com/oauth/access_token' + '?' + urllib.parse.urlencode(getVars)
         print("the callback uri is::"+ callbackURI)
         # Getting the token
+        '''
         tokenReq = urllib.request.Request(callbackURI)
         tokenResponse = urlopen(tokenReq).read()
         #tokenResponse = urlopen(callbackURI)
@@ -420,6 +421,7 @@ class FacebookSignIn(OAuthSignIn):
 
         #Posting to wall
         access_token = token_params['access_token']
+        '''
         '''
         graph = GraphAPI(access_token)
         og_path = "%d/feed" %session['profile_id']
