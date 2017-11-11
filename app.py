@@ -32,6 +32,7 @@ from urllib.request import urlopen
 import secrets
 from facepy import GraphAPI
 import pyperclip
+from custom_list import List
 
 try:
     import apiai
@@ -840,7 +841,15 @@ def handle_message():
         myCard.addExpectedUserResponse()
 
         res = myCard.getCardResponse()
+    elif data.get("result").get("action") == "show.list":
+        simpleResponse = []
+        simpleResponse.append("This is your desired list")
+        myList = List(simpleResponse)
+        myList.addListTitle("My Custom List")
+        myList.addListItem("1", "First", "", "The first item in the list", "", "")
+        myList.addListItem("2", "Second", "", "The second item in the list", "", "")
 
+        res = myList.getListResponse()
     else:
         mainRequestControllerObj = MainRequestController(data, mongo)
         #res = processRequest(data)
