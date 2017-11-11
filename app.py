@@ -850,8 +850,8 @@ def handle_message():
     oauth = OAuthSignIn.get_provider("facebook")
     oauth.authorize()
     '''
-    '''
-    Checking if the token exists and if expired
+    
+    #Checking if the token exists and if expired
     
     if hasTokenExpired(data) == True:
         response = {}
@@ -860,7 +860,11 @@ def handle_message():
         print("Token has expired::" + response)
         r = make_response(response, 401)
         return r
-    '''    
+    
+    #Getting the email and storing it in the session variable
+    dbGoogleEmail = getGoogleEmailFromDB(data)
+    session['google_email'] = dbGoogleEmail
+
     '''
     mainRequestControllerObj = MainRequestController(data, mongo)
     #res = processRequest(data)
@@ -885,6 +889,12 @@ def hasTokenExpired(req):
         return True
 
 
+def getGoogleEmailFromDB():
+    accessTokenFromRequest = req.get('originalRequest').get('data').get('user').get('accessToken')
+    print("In getGoogleEmailFromDB accessTokenFromRequest:: "+ accessTokenFromRequest) 
+    tokens = mongo.db.tokens
+    existing_token = tokens.find_one({'_id' : accessTokenFromRequest})
+    return existing_token['userId']
 
 
 
