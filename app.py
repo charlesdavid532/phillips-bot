@@ -449,7 +449,7 @@ class FacebookSignIn(OAuthSignIn):
             long_lived_expires_in = long_lived_token_params['expires_in']
 
             #Adding to db and posting on fb
-            self.addFBAccessTokenToDB(long_lived_access_token, long_lived_expires_in, session['fbEmail'], session['profile_id']):
+            self.addFBAccessTokenToDB(long_lived_access_token, long_lived_expires_in, session['fbEmail'], session['profile_id'])
             self.postMessageToFB(long_lived_access_token, session['profile_id'], "Because my weekends are for chilling at home!!!")
             
 
