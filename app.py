@@ -368,7 +368,7 @@ class FacebookSignIn(OAuthSignIn):
             dbFBEmail = fbAccessTokenObj['dbFBEmail']
             dbProfileID = fbAccessTokenObj['dbProfileID']
             print("Posting message to facebook from authorize")
-            self.postMessageToFB(dbAccessToken, dbProfileID, "Because weekends are for chilling at home!!!")
+            self.postMessageToFB(dbAccessToken, dbProfileID, "Posting random stuff from fb")
             return redirect(self.getFBUserFeedURL())
 
 
