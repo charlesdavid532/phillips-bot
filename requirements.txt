@@ -45,6 +45,7 @@ docutils==0.14
 jmespath==0.9.3
 matplotlib==2.0.2
 pyparsing==2.2.0
+pyperclip==1.6.0
 python-dateutil==2.6.1
 s3transfer==0.1.11
 uuid==1.30

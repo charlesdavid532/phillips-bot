@@ -31,6 +31,7 @@ import urllib
 from urllib.request import urlopen
 import secrets
 from facepy import GraphAPI
+import pyperclip
 
 try:
     import apiai
@@ -870,7 +871,8 @@ def handle_message():
     #res = processRequest(data)
     res = mainRequestControllerObj.processRequest()
     '''
-
+    #Copying to clipboard
+    pyperclip.copy("Hello world")
     res = json.dumps(res, indent=4, cls=JSONEncoder)
     print(res)
     r = make_response(res)
