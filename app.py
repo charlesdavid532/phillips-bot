@@ -872,7 +872,7 @@ def handle_message():
     res = mainRequestControllerObj.processRequest()
     '''
     #Copying to clipboard
-    pyperclip.copy("Hello world")
+    #pyperclip.copy("Hello world")
     res = json.dumps(res, indent=4, cls=JSONEncoder)
     print(res)
     r = make_response(res)
