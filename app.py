@@ -889,7 +889,7 @@ def hasTokenExpired(req):
         return True
 
 
-def getGoogleEmailFromDB():
+def getGoogleEmailFromDB(req):
     accessTokenFromRequest = req.get('originalRequest').get('data').get('user').get('accessToken')
     print("In getGoogleEmailFromDB accessTokenFromRequest:: "+ accessTokenFromRequest) 
     tokens = mongo.db.tokens
