@@ -65,6 +65,13 @@ class MainRequestController(object):
 			self.responseData = showDetailedBio(self.requestData)
 		elif self.requestData.get("result").get("action") == "application.close":
 			self.responseData = closeApplication(self.requestData)    
+		elif self.requestData.get("result").get("action") == "detailed.list":
+			firstInput = self.requestData["originalRequest"]["data"]["inputs"][0]
+		    if 'arguments' in firstInput:
+		        optionVal = firstInput["arguments"][0]["textValue"]
+		        print("The option chosen:::")
+		        print(optionVal)
+			self.responseData = self.makeContextWebhookResult("The option chosen:::"+optionVal, [])    
 		elif self.requestData.get("result").get("action") == "time.timeperiod":	        
 			return {}
 		else:
