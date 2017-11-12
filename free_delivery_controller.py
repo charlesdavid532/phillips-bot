@@ -117,7 +117,7 @@ class FreeDeliveryController(object):
 		for s in storeLoc:
 			print ("inside store location store is:" + s["name"])
 		storeLocList = list(storeLoc)
-		print("the length of store location is:::" + len(storeLocList))
+		print("the length of store location is:::" + str(len(storeLocList)))
 		locationParserObj = LocationParser()
 		locationParserObj.setBaseLocation(latitude, longitude)
 		locationParserObj.setObjectLocations(storeLocList)
