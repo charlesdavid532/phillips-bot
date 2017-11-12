@@ -113,14 +113,16 @@ class FreeDeliveryController(object):
 
 	def getFreeDeliveryResponse(self, latitude, longitude):
 		stores = self.mongo.db.stores
-		storeLoc = stores.find()
+		storeLoc = list(stores.find())
+		'''
 		for s in storeLoc:
 			print ("inside store location store is:" + s["name"])
 		storeLocList = list(storeLoc)
-		print("the length of store location is:::" + str(len(storeLocList)))
+		'''
+		print("the length of store location is:::" + str(len(storeLoc)))
 		locationParserObj = LocationParser()
 		locationParserObj.setBaseLocation(latitude, longitude)
-		locationParserObj.setObjectLocations(storeLocList)
+		locationParserObj.setObjectLocations(storeLoc)
 		nearestStore = locationParserObj.getNNearestLocations(1)
 		print("The nearest store distance in kms is:::" + nearestStore["distance"])
 		return "Yes you have free delivery since you are only " + nearestStore["distance"] + " km away"
