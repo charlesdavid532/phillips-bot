@@ -124,6 +124,6 @@ class FreeDeliveryController(object):
 		locationParserObj.setBaseLocation(latitude, longitude)
 		locationParserObj.setObjectLocations(storeLoc)
 		nearestStore = locationParserObj.getNNearestLocations(1)
-		print("The nearest store distance in kms is:::" + nearestStore["distance"])
-		return "Yes you have free delivery since you are only " + nearestStore["distance"] + " km away"
+		print("The nearest store distance in kms is:::" + str(nearestStore["distance"]))
+		return "Yes you have free delivery since you are only " + str(nearestStore["distance"]) + " km away"
 		
