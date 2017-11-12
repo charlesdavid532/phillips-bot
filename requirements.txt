@@ -10,6 +10,7 @@ Flask-Bootstrap==3.3.7.1
 Flask-PyMongo==0.5.1
 Flask-Login==0.4.0
 Flask-WTF==0.14.2
+geopy==1.11.0
 get==0.0.21
 gunicorn==19.7.1
 idna==2.5

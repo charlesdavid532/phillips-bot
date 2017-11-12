@@ -821,7 +821,7 @@ def handle_message():
     print("Request:")
     print(json.dumps(data, indent=4))
 
-
+    '''
     if data.get("result").get("action") == "free.delivery":
         simpleResponse = []
         simpleResponse.append("This is your coupon code")
@@ -854,7 +854,7 @@ def handle_message():
         mainRequestControllerObj = MainRequestController(data, mongo)
         #res = processRequest(data)
         res = mainRequestControllerObj.processRequest()
-
+    '''
     '''
     print("In webhook for facebook")
     oauth = OAuthSignIn.get_provider("facebook")
@@ -875,11 +875,11 @@ def handle_message():
     dbGoogleEmail = getGoogleEmailFromDB(data)
     session['google_email'] = dbGoogleEmail
 
-    '''
+    
     mainRequestControllerObj = MainRequestController(data, mongo)
     #res = processRequest(data)
     res = mainRequestControllerObj.processRequest()
-    '''
+    
     #Copying to clipboard
     #pyperclip.copy("Hello world")
     res = json.dumps(res, indent=4, cls=JSONEncoder)

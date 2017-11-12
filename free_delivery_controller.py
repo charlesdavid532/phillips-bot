@@ -1,4 +1,5 @@
 from permission_response import PermissionResponse
+from location_parser import LocationParser
 class FreeDeliveryController(object):
 	"""docstring for FreeDeliveryController"""
 	def __init__(self, requestData, mongo):
@@ -95,11 +96,27 @@ class FreeDeliveryController(object):
 		    devcoords = self.requestData.get('originalRequest').get('data').get('device').get('location').get('coordinates')
 		    print("The latitude is::" + str(devcoords.get('latitude')))
 		    print("The longitude is::" + str(devcoords.get('longitude')))
+		    #Code to get the nearest delivery location store
+		    freeDeliverySpeech = self.getFreeDeliveryResponse(devcoords.get('latitude'), devcoords.get('longitude'))
+		    '''
 		    return {
 		        "speech" : "Yes you are at::" + str(devcoords.get('latitude')) + " latitude and " + str(devcoords.get('longitude')) + " longitude"
+		    }
+		    '''
+		    return {
+		    	"speech" : freeDeliverySpeech
 		    }
 
 		return {
 		    "speech" : "Could not get your location"
 		}
+
+	def getFreeDeliveryResponse(self, latitude, longitude):
+		stores = self.mongo.db.stores
+		locationParserObj = LocationParser()
+		locationParserObj.setBaseLocation(latitude, longitude)
+		locationParserObj.setObjectLocations(stores)
+		nearestStore = locationParserObj.getNNearestLocations(1)
+		print("The nearest store distance in kms is:::" + nearestStore["distance"])
+		return "Yes you have free delivery since you are only " + nearestStore["distance"] + " km away"
 		
