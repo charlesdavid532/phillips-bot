@@ -112,7 +112,7 @@ class FreeDeliveryController(object):
 		}
 
 	def getFreeDeliveryResponse(self, latitude, longitude):
-		stores = self.mongo.db.stores
+		stores = list(self.mongo.db.stores.find())
 		locationParserObj = LocationParser()
 		locationParserObj.setBaseLocation(latitude, longitude)
 		locationParserObj.setObjectLocations(stores)
