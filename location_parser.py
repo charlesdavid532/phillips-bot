@@ -33,7 +33,7 @@ class LocationParser(object):
 			print("The distance is:::" + str(distance))
 			self.objectLocations[i]["distance"] = distance
 
-		sortedList = self.objectLocations.sort(key=lamda x:x["distance"])
+		sortedList = self.objectLocations.sort(key=lambda x:x["distance"])
 		
 		#Just for checking if logic is correct
 		for i in range(0, len(sortedList)):
