@@ -846,8 +846,8 @@ def handle_message():
         simpleResponse.append("This is your desired list")
         myList = List(simpleResponse)
         myList.addListTitle("My Custom List")
-        myList.addListItem("1", "First", "", "The first item in the list", "", "Default acc text")
-        myList.addListItem("2", "Second", "", "The second item in the list", "", "Default acc text")
+        myList.addListItem("1", "First", "", "The first item in the list", "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/cdavid.jpg", "Default acc text")
+        myList.addListItem("2", "Second", "", "The second item in the list", "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/charlesdavid531.jpg", "Default acc text")
 
         res = myList.getListResponse()
     else:
