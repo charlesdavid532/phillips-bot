@@ -24,10 +24,15 @@ import matplotlib.pyplot as plt
 import io
 import uuid
 from main_requestcontroller import MainRequestController
+from constants import Constants
+from card import Card
 from rauth import OAuth2Service
 import urllib
 from urllib.request import urlopen
 import secrets
+from facepy import GraphAPI
+import pyperclip
+from custom_list import List
 
 try:
     import apiai
@@ -68,6 +73,10 @@ app.config['OAUTH_CREDENTIALS'] = {
     'google': {
             'id': os.environ['GOOGLE_LOGIN_CLIENT_ID'],
             'secret': os.environ['GOOGLE_LOGIN_CLIENT_SECRET']
+    },
+    'facebook': {
+        'id': os.environ['FACEBOOK_LOGIN_CLIENT_ID'],
+        'secret': os.environ['FACEBOOK_LOGIN_CLIENT_SECRET']
     }
 }
 
@@ -326,6 +335,226 @@ class GoogleSignIn(OAuthSignIn):
 
         return r
 
+class FacebookSignIn(OAuthSignIn):
+    def __init__(self):
+        super(FacebookSignIn, self).__init__('facebook')
+        self.service = OAuth2Service(
+            name='facebook',
+            client_id=self.consumer_id,
+            client_secret=self.consumer_secret,
+            authorize_url='https://graph.facebook.com/oauth/authorize',
+            access_token_url='https://graph.facebook.com/oauth/access_token',
+            base_url='https://graph.facebook.com/'
+        )
+
+    def authorize(self):
+
+        #TODO:::: Check if this user already has a long lived user access token in the db and it has not expired
+        fbAccessTokenObj = self.hasFBAccessToken()
+        if fbAccessTokenObj == False:
+            print("In FB authorize the request arguments are:"+ str(request.args))
+            print("In FB authorize the authorization endpoint url is:"+str(self.service.get_authorize_url(
+                scope='email publish_actions',
+                response_type='code',
+                redirect_uri=self.get_callback_url())))
+            print ("In FB authorize the callback url is:"+str(self.get_callback_url()))
+
+
+            return redirect(self.service.get_authorize_url(
+                scope='email publish_actions',
+                response_type='code',
+                redirect_uri=self.get_callback_url())
+            )
+        else:
+            dbAccessToken = fbAccessTokenObj['dbAccessToken']
+            dbFBEmail = fbAccessTokenObj['dbFBEmail']
+            dbProfileID = fbAccessTokenObj['dbProfileID']
+            print("Posting message to facebook from authorize")
+            self.postMessageToFB(dbAccessToken, dbProfileID, "Posting random stuff from fb")
+            return redirect(self.getFBUserFeedURL())
+
+
+    def callback(self):
+        def decode_json(payload):
+            return json.loads(payload.decode('utf-8'))
+
+        print("IN  FB callback the request arguments are:"+ str(request.args))
+
+        if 'code' not in request.args:
+            return None, None, None
+        session['facebook_code'] = request.args['code']
+        oauth_session = self.service.get_auth_session(
+            data={'code': request.args['code'],
+                  'grant_type': 'authorization_code',
+                  'redirect_uri': self.get_callback_url()},
+            decoder=decode_json
+        )
+        me = oauth_session.get('me?fields=id,email').json()
+        print("The users id is:::" + str(me.get('id')))
+        print("The users name is:::" + str(me.get('email').split('@')[0]))
+        print("The users email is:::" + str(me.get('email')))
+
+        session['profile_id'] = me.get('id')
+        session['fbEmail'] = me.get('email')
+
+        return (
+            'facebook$' + me['id'],
+            me.get('email').split('@')[0],  # Facebook does not provide
+                                            # username, so the email's user
+                                            # is used instead
+            me.get('email')
+        )
+
+    def getCallbackURI(self, email, expiryTime):
+        print("In get callback URI of facebook")
+        '''
+        secureAuthCode = self.generateSecretToken()
+        self.addSecretTokenToDb(secureAuthCode, email, expiryTime)
+        print("the secret auth code is::"+secureAuthCode) 
+        '''
+        #getVars = {'code': 'abcdefgh','state': session['state']}
+        #getVars = {'code': secureAuthCode,'state': session['state']}
+        '''
+        getVars = {'grant_type':'fb_exchange_token','client_id':self.consumer_id,
+                    'client_secret':self.consumer_secret,'fb_exchange_token': secureAuthCode}
+        '''
+        '''
+        getVars = {'grant_type':'client_credentials','client_id':self.consumer_id,
+                    'client_secret':self.consumer_secret}
+        '''
+        getVars = {'code': session['facebook_code'],'client_id':self.consumer_id,
+                    'client_secret':self.consumer_secret, 'redirect_uri': self.get_callback_url()}
+        callbackURI = 'https://graph.facebook.com/oauth/access_token' + '?' + urllib.parse.urlencode(getVars)
+        print("the callback uri is::"+ callbackURI)
+        # Getting the token
+        try:
+            #tokenReq = urllib.request.Request(callbackURI)
+            #tokenResponse = urlopen(tokenReq).read()
+            tokenResponse = urlopen(callbackURI)
+            token_params = json.load(tokenResponse)
+            print("The token response in getCallbackURI" + str(token_params))
+            print('callback uri is::'+callbackURI)
+            access_token = token_params['access_token']
+            expires_in = token_params['expires_in']
+
+            #Exchanging for long term access token
+            longLivedTokenVars = {'grant_type': 'fb_exchange_token', 'client_id':self.consumer_id,
+                    'client_secret':self.consumer_secret, 'fb_exchange_token': access_token  }
+
+            longLivedCallbackURI = 'https://graph.facebook.com/oauth/access_token' + '?' + urllib.parse.urlencode(longLivedTokenVars)
+
+            longLivedTokenResponse = urlopen(longLivedCallbackURI)
+            long_lived_token_params = json.load(longLivedTokenResponse)
+            print("The long lived token response in getCallbackURI" + str(long_lived_token_params))
+            print('long lived callback uri is::'+longLivedCallbackURI)
+            long_lived_access_token = long_lived_token_params['access_token']
+            long_lived_expires_in = long_lived_token_params['expires_in']
+
+            #Adding to db and posting on fb
+            self.addFBAccessTokenToDB(long_lived_access_token, long_lived_expires_in, session['fbEmail'], session['profile_id'])
+            self.postMessageToFB(long_lived_access_token, session['profile_id'], "Because my weekends are for chilling at home!!!")
+            
+
+        except urllib.error.HTTPError as error:
+            contents = error.read()
+            print("error contents are::" + str(contents))
+        '''
+        #Posting to wall
+        
+        #temp adding access_token
+        #access_token = 'EAAcK4oLnAeUBALcgdQEbRJecZA6DzpZB1DSlBFZAiVwsJEJQpGXD43lhu1TQHG0uoyF3YZA4gtZBakmEGYblFdnQZBk0sQQlZCDZCn3gybXFVLxNIrgEhRYrO2wr1IMSGHyPISdZBKHLvlNyyypZB8LtqtHZAZAODsDXpYKZBzPZAtRCVdnwZDZD'
+        graph = GraphAPI(access_token)
+        #og_path = "%d/feed" %session['profile_id']
+        og_path = session['profile_id'] + "/feed" 
+
+        graph.post( path = og_path, message = "Because office parties rarely disappoint!!!!" )
+        '''
+        print("Adding comment")
+        #return callbackURI
+        return self.getFBUserFeedURL()
+
+
+    def postMessageToFB(self, accessToken, profileID, message):
+        graph = GraphAPI(accessToken)
+        #og_path = "%d/feed" %session['profile_id']
+        og_path = profileID + "/feed" 
+
+        graph.post( path = og_path, message = message)
+
+    def getFBUserFeedURL(self):
+        return 'https://www.facebook.com/'
+
+
+
+    def generateSecretToken(self):
+        return secrets.token_hex(32)
+
+    def addSecretTokenToDb(self, id, email, expiryTime):
+        tokenCodes = mongo.db.tokens
+        tokenCodes.insert({'_id' : id, 'type' : 'AUTH_CODE',
+                            'userId': email,'clientId': 'facebook',
+                            'expiresAt': expiryTime})
+
+    '''
+    Returns False if does not have token in db or if expired
+    '''
+    def hasFBAccessToken(self):
+        print("Inside has FBAccess Token")
+        tokens = mongo.db.tokens
+        existing_token = tokens.find_one({'userId': session['google_email'],'clientId': 'facebook','type' : 'ACCESS'})
+
+        if not existing_token:
+            return False
+
+        dbDateTime = existing_token['expiresAt']
+        dbAccessToken = existing_token['_id']
+        dbFBEmail = existing_token['fbEmail']
+        dbProfileID = existing_token['profileID']
+
+        if self.compareDateAndTime(self.getStrCurrentDateAndTime(), dbDateTime) == True:
+            return {
+                'dbAccessToken': dbAccessToken,
+                'dbFBEmail': dbFBEmail,
+                'dbProfileID': dbProfileID
+            }
+        else:
+            return False
+
+    def addFBAccessTokenToDB(self, accessToken, secondsForExpiry, fbEmail, profileID):
+        tokenCodes = mongo.db.tokens
+        tokenCodes.insert({'_id' : accessToken, 'type' : 'ACCESS',
+                            'userId': session['google_email'],'clientId': 'facebook',
+                            'expiresAt': self.getStrFutureDateAndTime(secondsForExpiry), 'fbEmail': fbEmail, 'profileID': profileID})
+
+
+    def getCurrentDateAndTime(self):
+        return dt.now()
+
+    def getStrCurrentDateAndTime(self):
+        return self.getCurrentDateAndTime().strftime("%Y-%m-%d %H:%M:%S")
+
+    def getFutureDateAndTime(self, secs):
+        #print("The current date time now is::" + str(getCurrentDateAndTime()))
+        #print("The current string date time is::" + getStrCurrentDateAndTime())
+        return self.getCurrentDateAndTime() + timedelta(seconds=secs)
+
+    def getStrFutureDateAndTime(self, secs):
+        #print("the future date time is:"+ getFutureDateAndTime(mins).strftime("%Y-%m-%d %H:%M:%S"))
+        return self.getFutureDateAndTime(secs).strftime("%Y-%m-%d %H:%M:%S")
+
+
+    '''
+    Compares date time 1 with date time 2
+    Returns True if 1 < 2
+    Else False
+    '''
+    def compareDateAndTime(self, dateTime1, dateTime2):
+        if dt.strptime(dateTime1, "%Y-%m-%d %H:%M:%S")  < dt.strptime(dateTime2, "%Y-%m-%d %H:%M:%S"):
+            return True
+        else:
+            return False
+
+
 class User():
 
     def __init__(self, username):
@@ -403,7 +632,7 @@ def oauth_authorize(provider):
     oauth = OAuthSignIn.get_provider(provider)
     return oauth.authorize()
 
-@app.route('/callback/<provider>')
+@app.route('/callback/<provider>', methods=['GET', 'POST'])
 def oauth_callback(provider):
     '''
     if not current_user.is_anonymous():
@@ -411,46 +640,64 @@ def oauth_callback(provider):
     '''
     print("In callback for google")
     oauth = OAuthSignIn.get_provider(provider)
-    username, email = oauth.callback()
-    print("the username is:"+username)
-    print("the email is:"+email)
-    if email is None:
-        # I need a valid email address for my user identification
-        print('Authentication failed')
-        #flash('Authentication failed.')
-        return redirect(url_for('index'))
-    # Look if the user already exists
-    users = mongo.db.users
-    loginUser = users.find_one({'username' : email})
-    
-    #user=User.query.filter_by(email=email).first()
-    if not loginUser:
-        # Create the user. Try and use their name returned by Google,
-        # but if it is not set, split the email address at the @.
-        '''
-        nickname = username
-        if nickname is None or nickname == "":
-            nickname = email.split('@')[0]
-        '''
-        # We can do more work here to ensure a unique nickname, if you 
-        # require that.
-        '''
-        user=User(nickname=nickname, email=email)
-        db.session.add(user)
-        db.session.commit()
-        '''
-        user_obj = User(email)
+    if provider == "facebook":
+        myId, username, email = oauth.callback()
+        print("the id is:"+myId)
+        print("the username is:"+username)
+        print("the email is:"+email)
+        gCallbackURI = oauth.getCallbackURI(email, getStrFutureDateAndTime(10))
+        return redirect(gCallbackURI)
     else:
-        user_obj = User(loginUser['username'])
-    # Log in the user, by default remembering them for their next visit
-    # unless they log out.
-    '''
-    login_user(user, remember=True)
-    '''
-    login_user(user_obj)
-    #return redirect(url_for('index'))
-    gCallbackURI = oauth.getCallbackURI(email, getStrFutureDateAndTime(10))
-    return redirect(gCallbackURI)
+        username, email = oauth.callback()
+        print("the username is:"+username)
+        print("the email is:"+email)
+        if email is None:
+            # I need a valid email address for my user identification
+            print('Authentication failed')
+            #flash('Authentication failed.')
+            return redirect(url_for('index'))
+        # Look if the user already exists
+        users = mongo.db.users
+        loginUser = users.find_one({'username' : email})
+
+        #user=User.query.filter_by(email=email).first()
+        if not loginUser:
+            # Create the user. Try and use their name returned by Google,
+            # but if it is not set, split the email address at the @.
+            '''
+            nickname = username
+            if nickname is None or nickname == "":
+                nickname = email.split('@')[0]
+            '''
+            # We can do more work here to ensure a unique nickname, if you 
+            # require that.
+            '''
+            user=User(nickname=nickname, email=email)
+            db.session.add(user)
+            db.session.commit()
+            '''
+            user_obj = User(email)
+        else:
+            user_obj = User(loginUser['username'])
+        # Log in the user, by default remembering them for their next visit
+        # unless they log out.
+        '''
+        login_user(user, remember=True)
+        '''
+        login_user(user_obj)
+        # TODO:::: Add email to session['google_email']
+        session['google_email'] = email
+        #return redirect(url_for('index'))
+        gCallbackURI = oauth.getCallbackURI(email, getStrFutureDateAndTime(10))
+        return redirect(gCallbackURI)
+
+@app.route('/callback/<provider>',methods=['POST'])
+def oauth_callback_token(provider):
+    print("In token callback for facebook")
+    oauth = OAuthSignIn.get_provider(provider)
+    print(str(list(request.form)))
+    reqArgs = request.form
+    print("the req args are:"+ str(reqArgs))
 
 '''
 @app.route('/token/<provider>')
@@ -575,8 +822,47 @@ def handle_message():
     print(json.dumps(data, indent=4))
 
     '''
-    Checking if the token exists and if expired
+    if data.get("result").get("action") == "free.delivery":
+        simpleResponse = []
+        simpleResponse.append("This is your coupon code")
+        sugList = []
+        sugList.append("Show digital employees")
+        sugList.append("Bye doctor dashboard")
+
+        title = "Dr. Dashboard"
+        formattedText = "Coupon code"
+        imgURL = Constants.getBlueBotURL()
+        imgAccText = "Default accessibility text"
+
+        myCard = Card(simpleResponse, formattedText, imgURL, imgAccText)
+        myCard.addTitle(title)
+        myCard.addSugTitles(sugList)
+        myCard.addLinkBtn('Share on Facebook', 'https://phillipsbot.herokuapp.com/authorize/facebook')        
+        myCard.addExpectedUserResponse()
+
+        res = myCard.getCardResponse()
+    elif data.get("result").get("action") == "show.list":
+        simpleResponse = []
+        simpleResponse.append("This is your desired list")
+        myList = List(simpleResponse)
+        myList.addListTitle("My Custom List")
+        myList.addListItem("1", "First", "abc", "The first item in the list", "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/cdavid.jpg", "Default acc text")
+        myList.addListItem("2", "Second", "def", "The second item in the list", "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/charlesdavid531.jpg", "Default acc text")
+
+        res = myList.getListResponse()
+    else:
+        mainRequestControllerObj = MainRequestController(data, mongo)
+        #res = processRequest(data)
+        res = mainRequestControllerObj.processRequest()
     '''
+    '''
+    print("In webhook for facebook")
+    oauth = OAuthSignIn.get_provider("facebook")
+    oauth.authorize()
+    '''
+    
+    #Checking if the token exists and if expired
+    
     if hasTokenExpired(data) == True:
         response = {}
         response['error'] = "Unauthorized"
@@ -584,12 +870,18 @@ def handle_message():
         print("Token has expired::" + response)
         r = make_response(response, 401)
         return r
-        
+    
+    #Getting the email and storing it in the session variable
+    dbGoogleEmail = getGoogleEmailFromDB(data)
+    session['google_email'] = dbGoogleEmail
+
+    
     mainRequestControllerObj = MainRequestController(data, mongo)
     #res = processRequest(data)
     res = mainRequestControllerObj.processRequest()
-
-
+    
+    #Copying to clipboard
+    #pyperclip.copy("Hello world")
     res = json.dumps(res, indent=4, cls=JSONEncoder)
     print(res)
     r = make_response(res)
@@ -608,6 +900,12 @@ def hasTokenExpired(req):
         return True
 
 
+def getGoogleEmailFromDB(req):
+    accessTokenFromRequest = req.get('originalRequest').get('data').get('user').get('accessToken')
+    print("In getGoogleEmailFromDB accessTokenFromRequest:: "+ accessTokenFromRequest) 
+    tokens = mongo.db.tokens
+    existing_token = tokens.find_one({'_id' : accessTokenFromRequest})
+    return existing_token['userId']
 
 
 

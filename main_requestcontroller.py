@@ -4,6 +4,7 @@ from constants import Constants
 from chart_controller import ChartController
 from email_request_controller import EmailRequestController
 from free_delivery_controller import FreeDeliveryController
+from selected_list_item import SelectedListItem
 class MainRequestController(object):
 	"""Handles the request from api.ai"""
 	def __init__(self, data, mongo):
@@ -65,6 +66,19 @@ class MainRequestController(object):
 			self.responseData = showDetailedBio(self.requestData)
 		elif self.requestData.get("result").get("action") == "application.close":
 			self.responseData = closeApplication(self.requestData)    
+		elif self.requestData.get("result").get("action") == "detailed.list":
+			'''
+			firstInput = self.requestData["originalRequest"]["data"]["inputs"][0]
+			if 'arguments' in firstInput:
+				optionVal = firstInput["arguments"][0]["textValue"]
+				print("The option chosen:::")
+				print(optionVal)
+			'''
+			selectedListItemObj = SelectedListItem(self.requestData)
+			optionVal = selectedListItemObj.getSelectedListItem()
+			if optionVal == False:
+				optionVal = "Could not find option chosen"
+			self.responseData = self.makeContextWebhookResult("The option chosen:::"+optionVal, [])    
 		elif self.requestData.get("result").get("action") == "time.timeperiod":	        
 			return {}
 		else:

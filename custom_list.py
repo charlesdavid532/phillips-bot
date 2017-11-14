@@ -4,6 +4,7 @@ class List(object):
 	"""creates and returns a JSON response for List"""
 	def __init__(self, simpleResponse):
 		super(List, self).__init__()
+		print("Inside custom list")
 		self.simpleResponse = simpleResponse
 		self.listTitle = None
 		self.expectedUserResponse = True
