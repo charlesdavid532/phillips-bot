@@ -80,7 +80,7 @@ class MainRequestController(object):
 			if optionVal == False:
 				optionVal = "Could not find option chosen"
 			self.responseData = self.makeContextWebhookResult("The option chosen:::"+optionVal, [])
-		elif data.get("result").get("action") == "show.list":
+		elif self.requestData.get("result").get("action") == "show.list":
 			simpleResponse = []
 			simpleResponse.append("This is your desired carousel")
 			myCarousel = Carousel(simpleResponse)
