@@ -81,13 +81,13 @@ class MainRequestController(object):
 				optionVal = "Could not find option chosen"
 			self.responseData = self.makeContextWebhookResult("The option chosen:::"+optionVal, [])
 		elif data.get("result").get("action") == "show.list":
-	        simpleResponse = []
-	        simpleResponse.append("This is your desired carousel")
-	        myCarousel = Carousel(simpleResponse)
-	        myCarousel.addCarouselItem("1", "First", "abc", "The first item in the list", "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/cdavid.jpg", "Default acc text")
-	        myCarousel.addCarouselItem("2", "Second", "def", "The second item in the list", "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/charlesdavid531.jpg", "Default acc text")
+			simpleResponse = []
+			simpleResponse.append("This is your desired carousel")
+			myCarousel = Carousel(simpleResponse)
+			myCarousel.addCarouselItem("1", "First", "abc", "The first item in the list", "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/cdavid.jpg", "Default acc text")
+			myCarousel.addCarouselItem("2", "Second", "def", "The second item in the list", "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/charlesdavid531.jpg", "Default acc text")
 
-	        res = myCarousel.getCarouselResponse()
+			self.responseData = myCarousel.getCarouselResponse()
    
 		elif self.requestData.get("result").get("action") == "time.timeperiod":	        
 			return {}
