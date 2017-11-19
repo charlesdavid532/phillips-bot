@@ -6,6 +6,7 @@ from email_request_controller import EmailRequestController
 from free_delivery_controller import FreeDeliveryController
 from selected_list_item import SelectedListItem
 from carousel import Carousel
+from fb_share_dialog_controller import FBShareDialogController
 class MainRequestController(object):
 	"""Handles the request from api.ai"""
 	def __init__(self, data, mongo):
@@ -38,7 +39,10 @@ class MainRequestController(object):
 			freeDelControllerObj = FreeDeliveryController(self.requestData, self.mongo)
 			freeDelControllerObj.setIsPermissionGiven(True)
 			compareLocationData = freeDelControllerObj.compareDeliveryLocation()
-			self.responseData = self.makeContextWebhookResult(compareLocationData["speech"], [])  
+			self.responseData = self.makeContextWebhookResult(compareLocationData["speech"], []) 
+		elif self.requestData.get("result").get("action") == "show.fb.dialog":
+			fbShareDialogControllerObj = FBShareDialogController()			
+			self.responseData = fbShareDialogControllerObj.getJSONResponse()
 		elif self.requestData.get("result").get("action") == "product.chart":
 			chartController = ChartController(self.requestData, self.mongo)
 			self.responseData = chartController.getChartResponse()
