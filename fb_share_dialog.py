@@ -25,10 +25,10 @@ class FBShareDialog(object):
 
 	def showDialog(self):
 		#Creating the params
-        paramVars = {'app_id': self.appId, 'display':self.displayType,
-                'caption':self.caption, 'link': self.link, 'redirect_uri': self.redirectURI  }
+		paramVars = {'app_id': self.appId, 'display':self.displayType,
+		        'caption':self.caption, 'link': self.link, 'redirect_uri': self.redirectURI  }
 
-        FBShareDialogCallbackURI = 'https://www.facebook.com/dialog/feed' + '?' + urllib.parse.urlencode(paramVars)
+		FBShareDialogCallbackURI = 'https://www.facebook.com/dialog/feed' + '?' + urllib.parse.urlencode(paramVars)
 
-        return redirect(FBShareDialogCallbackURI)
+		return redirect(FBShareDialogCallbackURI)
 		
