@@ -880,6 +880,7 @@ def handle_message():
     #res = processRequest(data)
     res = mainRequestControllerObj.processRequest()
     
+    
     #Copying to clipboard
     #pyperclip.copy("Hello world")
     res = json.dumps(res, indent=4, cls=JSONEncoder)
