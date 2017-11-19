@@ -880,6 +880,9 @@ def handle_message():
     #res = processRequest(data)
     res = mainRequestControllerObj.processRequest()
     
+    if res.get("redirect-data") != None:
+        print("inside the redirect url part")
+        return res.get("redirect-data")
     #Copying to clipboard
     #pyperclip.copy("Hello world")
     res = json.dumps(res, indent=4, cls=JSONEncoder)
