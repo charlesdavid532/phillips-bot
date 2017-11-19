@@ -1,4 +1,5 @@
 from flask import redirect
+import urllib
 class FBShareDialog(object):
 	"""docstring for FBShareDialog"""
 	def __init__(self, appId):
