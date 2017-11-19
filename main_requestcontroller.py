@@ -42,8 +42,7 @@ class MainRequestController(object):
 			self.responseData = self.makeContextWebhookResult(compareLocationData["speech"], []) 
 		elif self.requestData.get("result").get("action") == "show.fb.dialog":
 			fbShareDialogControllerObj = FBShareDialogController()
-			self.responseData = {}	
-			self.responseData["redirect-data"] = fbShareDialogControllerObj.getJSONResponse()
+			self.responseData = fbShareDialogControllerObj.getJSONResponse()
 		elif self.requestData.get("result").get("action") == "product.chart":
 			chartController = ChartController(self.requestData, self.mongo)
 			self.responseData = chartController.getChartResponse()
