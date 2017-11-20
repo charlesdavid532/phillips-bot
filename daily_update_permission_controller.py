@@ -32,6 +32,7 @@ class DailyUpdatePermissionController(object):
 
 		
 		dailyUpdatePermissionResponse["speech"] = "Some dummy speech"
+		dailyUpdatePermissionResponse["displayText"] = "Some dummy speech"
 		dailyUpdatePermissionResponse["data"] = {}
 		#carouselResponse["source"] = "phillips-bot"
 		dataDict = dailyUpdatePermissionResponse["data"]
