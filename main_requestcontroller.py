@@ -7,6 +7,7 @@ from free_delivery_controller import FreeDeliveryController
 from selected_list_item import SelectedListItem
 from carousel import Carousel
 from fb_share_dialog_controller import FBShareDialogController
+from daily_update_permission_controller import DailyUpdatePermissionController
 class MainRequestController(object):
 	"""Handles the request from api.ai"""
 	def __init__(self, data, mongo):
@@ -43,6 +44,15 @@ class MainRequestController(object):
 		elif self.requestData.get("result").get("action") == "show.fb.dialog":
 			fbShareDialogControllerObj = FBShareDialogController()
 			self.responseData = fbShareDialogControllerObj.getJSONResponse()
+		elif self.requestData.get("result").get("action") == "daily.offer.permission":
+			dailyUpdatePermissionControllerObj = DailyUpdatePermissionController()
+			dailyUpdatePermissionControllerObj.setIntentName("show-daily-offer")
+			self.responseData = dailyUpdatePermissionControllerObj.getRequestPermissionJSON()
+		elif self.requestData.get("result").get("action") == "finish.update.setup":
+			dailyUpdatePermissionControllerObj = DailyUpdatePermissionController()
+			dailyUpdatePermissionControllerObj.setResultText("Ok we will send you daily offers")
+			permissionResponseData = dailyUpdatePermissionControllerObj.getResultPermissionJSON()
+			self.responseData = self.makeContextWebhookResult(permissionResponseData, []) 
 		elif self.requestData.get("result").get("action") == "product.chart":
 			chartController = ChartController(self.requestData, self.mongo)
 			self.responseData = chartController.getChartResponse()

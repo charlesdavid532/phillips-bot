@@ -16,6 +16,7 @@ class WelcomeResponse(object):
 		sugList = []
 		sugList.append("Show digital employees")
 		sugList.append("Bye doctor dashboard")
+		sugList.append("Receive daily offers")
 		title = "Dr. Dashboard"
 		formattedText = "Phillips bot a.k.a. Dr. Dashboard is designed for voice enabled financial reporting"
 		imgURL = Constants.getBlueBotURL()
