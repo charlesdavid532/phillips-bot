@@ -40,6 +40,20 @@ class DailyUpdatePermissionController(object):
 		dataDict["google"] = {}
 		googleDict = dataDict["google"]
 		googleDict["expect_user_response"] = True
+
+		googleDict["rich_response"] = {}
+
+
+		richResponseDict = googleDict["rich_response"]
+		richResponseDict["items"] = []
+
+		itemsDict = {}
+		itemsDict["simpleResponse"] = {}
+		simpleResponseDict = itemsDict["simpleResponse"]
+		simpleResponseDict["textToSpeech"] = "Some dummy speech"
+
+		itemList = richResponseDict["items"]
+		itemList.append(itemsDict)
 		
 
 		googleDict["systemIntent"] = self.getInteriorRequestPermissionResponse()
