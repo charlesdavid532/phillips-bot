@@ -39,7 +39,7 @@ class DailyUpdatePermissionController(object):
 
 		dataDict["google"] = {}
 		googleDict = dataDict["google"]
-		googleDict["expectUserResponse"] = True
+		googleDict["expect_user_response"] = True
 		
 
 		googleDict["systemIntent"] = self.getInteriorRequestPermissionResponse()
