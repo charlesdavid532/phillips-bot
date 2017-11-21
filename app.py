@@ -887,7 +887,7 @@ def handle_message():
     print(res)
     r = make_response(res)
     r.headers['Content-Type'] = 'application/json'
-    r.headers['Google-Assistant-API-Version'] = 'v2'
+    r.headers['Google-Actions-API-Version'] = '2'
     print("Before final return")
     return r
 
