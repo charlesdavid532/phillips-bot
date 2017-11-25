@@ -862,23 +862,28 @@ def handle_message():
     '''
     
     #Checking if the token exists and if expired
-    
-    if hasTokenExpired(data) == True:
-        response = {}
-        response['error'] = "Unauthorized"
-        response = json.dumps(response, indent=4, cls=JSONEncoder)
-        print("Token has expired::" + response)
-        r = make_response(response, 401)
-        return r
-    
-    #Getting the email and storing it in the session variable
-    dbGoogleEmail = getGoogleEmailFromDB(data)
-    session['google_email'] = dbGoogleEmail
+    if isFacebookRequest(data) == False:
+        if hasTokenExpired(data) == True:
+            response = {}
+            response['error'] = "Unauthorized"
+            response = json.dumps(response, indent=4, cls=JSONEncoder)
+            print("Token has expired::" + response)
+            r = make_response(response, 401)
+            return r
+        
+        #Getting the email and storing it in the session variable
+        dbGoogleEmail = getGoogleEmailFromDB(data)
+        session['google_email'] = dbGoogleEmail
+        mainRequestControllerObj = MainRequestController(data, mongo)
+        #res = processRequest(data)
+        res = mainRequestControllerObj.processRequest()
+    else:
+        mainRequestControllerObj = MainRequestController(data, mongo)
+        mainRequestControllerObj.setSourceAsFacebook()
+        res = mainRequestControllerObj.processRequest()
 
     
-    mainRequestControllerObj = MainRequestController(data, mongo)
-    #res = processRequest(data)
-    res = mainRequestControllerObj.processRequest()
+    
     
     
     #Copying to clipboard
@@ -891,6 +896,12 @@ def handle_message():
     print("Before final return")
     return r
 
+
+def isFacebookRequest(req):
+    if req.get('originalRequest').get('source') == 'facebook':
+        return True
+    else:
+        return False
 
 def hasTokenExpired(req):
     accessTokenFromRequest = req.get('originalRequest').get('data').get('user').get('accessToken')

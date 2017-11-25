@@ -15,6 +15,7 @@ class MainRequestController(object):
 		self.requestData = data
 		self.responseData = None
 		self.mongo = mongo
+		self.setSourceAsGoogle()
 
 
 
@@ -118,17 +119,47 @@ class MainRequestController(object):
 	def getResponseData(self):
 		return self.responseData
 
+	def setSourceAsFacebook(self):
+		self.source = 'facebook'
 
+	def setSourceAsGoogle(self):
+		self.source = 'google'
 
+	def getSource(self):
+		return self.source
+
+	def isSourceFacebook(self):
+		if self.source == 'facebook':
+			return True
+		else:
+			return False
 	'''
 	This is a very temp function. It is used to just create a sample response in JSON format
 	'''
 	def makeContextWebhookResult(self, speech, context):
 
+		if self.isSourceFacebook():
+			return self.FBmakeContextWebhookResult(speech, context)
+
 		return {
 		    "speech": speech,
 		    "displayText": speech,
 		    # "data": data,
+		    "contextOut": context,
+		    "source": "phillips-bot"
+		}
+
+
+	def FBmakeContextWebhookResult(self, speech, context):
+
+		return {
+			"speech": speech,
+		    "displayText": speech,
+		    "data": {
+		    	"facebook": {
+		    		"text": speech
+		    	}
+		    },
 		    "contextOut": context,
 		    "source": "phillips-bot"
 		}
