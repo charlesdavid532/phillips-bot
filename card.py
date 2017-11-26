@@ -65,7 +65,7 @@ class Card(object):
 		if self.providers is None:
 			self.providers={}
 			for provider_class in self.__subclasses__():
-				provider = provider_class()
+				provider = provider_class(simpleResponse, formattedText, imgURL, imgAccText)
 				self.providers[provider.provider_name] = provider
 		return self.providers[provider_name]
 
