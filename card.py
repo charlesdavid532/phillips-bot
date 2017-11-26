@@ -2,7 +2,7 @@ from suggestion_list import SuggestionList
 
 class Card(object):
 	"""creates and returns a JSON response for Card"""
-	def __init__(self, simpleResponse, formattedText, imgURL, imgAccText):
+	def __init__(self, provider_name, simpleResponse, formattedText, imgURL, imgAccText):
 		super(Card, self).__init__()
 		print("In Card Class")
 		self.simpleResponse = simpleResponse
@@ -55,6 +55,26 @@ class Card(object):
 	def addExpectedUserResponse(self):
 		self.expectedUserResponse = True
 
+
+	def getCardResponse(self):
+		pass
+
+	@classmethod
+    def get_provider(self, provider_name):
+        if self.providers is None:
+            self.providers={}
+            for provider_class in self.__subclasses__():
+                provider = provider_class()
+                self.providers[provider.provider_name] = provider
+        return self.providers[provider_name]
+
+
+class GoogleCard(Card):
+	"""docstring for GoogleCard"""
+	def __init__(self, simpleResponse, formattedText, imgURL, imgAccText):
+		super(GoogleCard, self).__init__('google', simpleResponse, formattedText, imgURL, imgAccText)
+		
+		
 
 	def getCardResponse(self):
 		cardResponse = {}
@@ -153,5 +173,3 @@ class Card(object):
 		openUrlActionDict["url"] = self.linkUrl
 
 		return btnDict
-
-		

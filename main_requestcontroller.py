@@ -75,6 +75,7 @@ class MainRequestController(object):
 			#self.responseData = generateEmailController(self.requestData.get("result"))
 		elif self.requestData.get("result").get("action") == "welcome.intent":
 			welcomeResponseObj = WelcomeResponse(self.requestData)
+			welcomeResponseObj.setSource(self.source)
 			self.responseData = welcomeResponseObj.getWelcomeResponse()
 		elif self.requestData.get("result").get("action") == "showAllUsers":
 			self.responseData = makeListOfAllUsers(self.requestData)
