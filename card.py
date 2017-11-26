@@ -6,6 +6,7 @@ class Card(object):
 	def __init__(self, provider_name, simpleResponse, formattedText, imgURL, imgAccText):
 		super(Card, self).__init__()
 		print("In Card Class")
+		self.provider_name = provider_name
 		self.simpleResponse = simpleResponse
 		self.formattedText = formattedText
 		self.imgURL = imgURL
