@@ -1,6 +1,7 @@
 from suggestion_list import SuggestionList
 
 class Card(object):
+	providers = None
 	"""creates and returns a JSON response for Card"""
 	def __init__(self, provider_name, simpleResponse, formattedText, imgURL, imgAccText):
 		super(Card, self).__init__()
