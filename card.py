@@ -206,12 +206,14 @@ class FacebookCard(Card):
 		dataDict["facebook"] = {}
 		facebookDict = dataDict["facebook"]
 
-		facebookDict["message"] = {}
+		#facebookDict["message"] = {}
 
-		messageFacebook = facebookDict["message"]
-		messageFacebook["attachment"] = {}
+		#messageFacebook = facebookDict["message"]
+		#messageFacebook["attachment"] = {}
+		facebookDict["attachment"] = {}
 
-		attachmentMessage = messageFacebook["attachment"]
+		#attachmentMessage = messageFacebook["attachment"]
+		attachmentMessage = facebookDict["attachment"]
 		attachmentMessage["type"] = "template"
 		attachmentMessage["payload"] = {}
 
@@ -225,7 +227,8 @@ class FacebookCard(Card):
 		if self.sugTitles != "" and self.sugTitles != None:
 			mySuggestionList = SuggestionList(self.sugTitles)
 			mySuggestionList.setSource(self.provider_name)
-			messageFacebook["quick_replies"] = mySuggestionList.getSuggestionListResponse()
+			#messageFacebook["quick_replies"] = mySuggestionList.getSuggestionListResponse()
+			facebookDict["quick_replies"] = mySuggestionList.getSuggestionListResponse()
 
 
 
