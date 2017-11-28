@@ -125,7 +125,7 @@ class GoogleCard(Card):
 
 
 		if self.sugTitles != "" and self.sugTitles != None:
-			mySuggestionList = SuggestionList(self.sugTitles)
+			mySuggestionList = SuggestionList(self.sugTitles, self.source)
 			richResponseDict["suggestions"] = mySuggestionList.getSuggestionListResponse()
 
 
@@ -173,5 +173,103 @@ class GoogleCard(Card):
 
 		openUrlActionDict = btnDict["openUrlAction"]
 		openUrlActionDict["url"] = self.linkUrl
+
+		return btnDict
+
+
+
+
+
+class FacebookCard(Card):
+	"""docstring for FacebookCard"""
+	def __init__(self, simpleResponse, formattedText, imgURL, imgAccText):
+		super(FacebookCard, self).__init__('facebook', simpleResponse, formattedText, imgURL, imgAccText)
+
+
+	def getCardResponse(self):
+		cardResponse = {}
+
+		cardResponse["data"] = {}
+		cardResponse["source"] = "phillips-bot"
+
+		#Adding context
+		if self.outputContext == None or self.outputContext == "":
+			outputContext = []
+		else:
+			outputContext = self.outputContext
+			print("The length of context list in card response is:"+str(len(outputContext)))
+
+		cardResponse["contextOut"] = outputContext
+
+		dataDict = cardResponse["data"]
+		dataDict["facebook"] = {}
+		facebookDict = dataDict["facebook"]
+
+		facebookDict["message"] = {}
+
+		messageFacebook = facebookDict["message"]
+		messageFacebook["attachment"] = {}
+
+		attachmentMessage = messageFacebook["attachment"]
+		attachmentMessage["type"] = "template"
+		attachmentMessage["payload"] = {}
+
+		payload = attachmentMessage["payload"]
+		payload["template_type"] = "generic"
+		payload["elements"] = []
+
+		elementsPayload = payload["elements"]
+		elementsPayload.append(self.getInteriorCardResponse())
+
+		if self.sugTitles != "" and self.sugTitles != None:
+			mySuggestionList = SuggestionList(self.sugTitles, self.source)
+			messageFacebook["quick_replies"] = mySuggestionList.getSuggestionListResponse()
+
+
+
+		return cardResponse
+
+
+
+	def getInteriorCardResponse(self):
+		basicCard = {}
+
+		if self.title != "" and self.title != None:
+			basicCard["title"] = self.title
+
+		'''
+		if self.hasText == True:
+			basicCard["formattedText"] = self.formattedText
+		'''
+
+		#Note: Added the formatted text to the subtitle
+		if self.subtitle != "" and self.subtitle != None and self.hasText == True:
+			basicCard["subtitle"] = self.subtitle + '' + self.formattedText
+		elif self.hasText == True:
+			basicCard["subtitle"] = self.formattedText
+		elif self.subtitle != "" and self.subtitle != None:
+			basicCard["subtitle"] = self.subtitle
+
+		if self.hasImage == True:
+			basicCard["image_url"] = self.imgURL			
+
+
+		if self.linkTitle != '' and self.linkTitle != None and self.linkTitle != []:
+			basicCard["buttons"] = []
+
+			buttonsList = basicCard["buttons"]
+			buttonsList.append(self.getButtonResponse())
+
+		return basicCard
+
+
+
+	def getButtonResponse(self):
+		btnDict = {}
+
+		#Note: By Default added the button as web_url. This can also be a postback button
+		btnDict["type"] = "web_url"
+		btnDict["title"] = self.linkTitle
+		btnDict["url"] = self.linkUrl
 
 		return btnDict
