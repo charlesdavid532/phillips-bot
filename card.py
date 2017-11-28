@@ -190,6 +190,11 @@ class FacebookCard(Card):
 	def getCardResponse(self):
 		cardResponse = {}
 
+		itemsDict = {}
+		itemsDict["simpleResponse"] = {}
+		simpleResponseDict = itemsDict["simpleResponse"]
+		simpleResponseDict["textToSpeech"] = self.simpleResponse[0]
+
 		cardResponse["data"] = {}
 		cardResponse["source"] = "phillips-bot"
 
@@ -223,6 +228,24 @@ class FacebookCard(Card):
 
 		elementsPayload = payload["elements"]
 		elementsPayload.append(self.getInteriorCardResponse())
+
+
+		#Attaching the response
+		facebookDict["rich_response"] = {}
+
+
+		richResponseDict = facebookDict["rich_response"]
+		richResponseDict["items"] = []
+
+		itemList = richResponseDict["items"]
+		itemList.append(itemsDict)
+
+		if len(self.simpleResponse) > 1:
+			secondItemsDict = {}
+			secondItemsDict["simpleResponse"] = {}
+			secondSimpleResponseDict = secondItemsDict["simpleResponse"]
+			secondSimpleResponseDict["textToSpeech"] = simpleResponse[1]
+			itemList.append(secondItemsDict)
 
 		if self.sugTitles != "" and self.sugTitles != None:
 			mySuggestionList = SuggestionList(self.sugTitles)
