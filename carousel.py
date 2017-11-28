@@ -228,6 +228,7 @@ class FacebookCarousel(Carousel):
 		carouselResponse["source"] = "phillips-bot"
 
 		#Adding context
+		'''
 		if self.outputContext == None or self.outputContext == "":
 			outputContext = []
 		else:
@@ -235,7 +236,8 @@ class FacebookCarousel(Carousel):
 			print("The length of context list in card response is:"+str(len(outputContext)))
 
 		carouselResponse["contextOut"] = outputContext
-
+		'''
+		
 		dataDict = carouselResponse["data"]
 		dataDict["facebook"] = {}
 		facebookDict = dataDict["facebook"]
