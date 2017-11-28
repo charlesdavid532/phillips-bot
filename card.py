@@ -208,7 +208,7 @@ class FacebookCard(Card):
 		facebookDict = dataDict["facebook"]
 
 		#Adding the simple response as text
-		facebookDict["text"] = self.simpleResponse[0]
+		#facebookDict["text"] = self.simpleResponse[0]
 
 		#facebookDict["message"] = {}
 
