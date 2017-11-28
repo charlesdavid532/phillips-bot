@@ -99,7 +99,8 @@ class MainRequestController(object):
 		elif self.requestData.get("result").get("action") == "show.list":
 			simpleResponse = []
 			simpleResponse.append("This is your desired carousel")
-			myCarousel = Carousel(simpleResponse)
+			#myCarousel = Carousel(simpleResponse)
+			myCarousel = Carousel.get_provider(self.source, simpleResponse)
 			myCarousel.addCarouselItem("1", "First", "abc", "The first item in the list", "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/cdavid.jpg", "Default acc text")
 			myCarousel.addCarouselItem("2", "Second", "def", "The second item in the list", "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/charlesdavid531.jpg", "Default acc text")
 
