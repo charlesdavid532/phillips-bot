@@ -17,8 +17,6 @@ class SuggestionList(object):
 			#mySuggestion = Suggestion(self.titleList[index])
 			Suggestion.set_provider_none()
 			mySuggestion = Suggestion.get_provider(self.source, self.titleList[index])
-			print("The suggestion title is::" + str(self.titleList[index]))
-			print("The suggestion response is::" + str(mySuggestion.getSuggestionResponse()))
 			suggestionList.append(mySuggestion.getSuggestionResponse())
 
 		return suggestionList
