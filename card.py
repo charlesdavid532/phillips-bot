@@ -125,7 +125,8 @@ class GoogleCard(Card):
 
 
 		if self.sugTitles != "" and self.sugTitles != None:
-			mySuggestionList = SuggestionList(self.sugTitles, self.provider_name)
+			mySuggestionList = SuggestionList(self.sugTitles)
+			mySuggestionList.setSource(self.provider_name)
 			richResponseDict["suggestions"] = mySuggestionList.getSuggestionListResponse()
 
 
@@ -222,7 +223,8 @@ class FacebookCard(Card):
 		elementsPayload.append(self.getInteriorCardResponse())
 
 		if self.sugTitles != "" and self.sugTitles != None:
-			mySuggestionList = SuggestionList(self.sugTitles, self.provider_name)
+			mySuggestionList = SuggestionList(self.sugTitles)
+			mySuggestionList.setSource(self.provider_name)
 			messageFacebook["quick_replies"] = mySuggestionList.getSuggestionListResponse()
 
 
