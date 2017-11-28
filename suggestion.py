@@ -1,9 +1,10 @@
 class Suggestion(object):
 	providers = None
 	"""Creates and Returns a suggestion response in JSON format"""
-	def __init__(self, provider_name):		
+	def __init__(self, provider_name, title):		
 		super(Suggestion, self).__init__()
 		self.provider_name = provider_name
+		self.title = title
 		#return self.getSuggestionResponse()
 
 	def getSuggestionResponse(self):
@@ -14,6 +15,10 @@ class Suggestion(object):
 
 	def getSuggestionTitle(self):
 		return self.title
+
+	@classmethod
+	def set_provider_none(self):
+		self.providers = None
 
 	@classmethod
 	def get_provider(self, provider_name, title):
