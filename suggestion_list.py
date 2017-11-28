@@ -15,6 +15,7 @@ class SuggestionList(object):
 		for index in range(0, len(self.titleList)):
 			#mySuggestion = Suggestion(self.titleList[index])
 			mySuggestion = Suggestion.get_provider(self.source, self.titleList[index])
+			print("The suggestion title is::" + str(self.titleList[index]))
 			print("The suggestion response is::" + str(mySuggestion.getSuggestionResponse()))
 			suggestionList.append(mySuggestion.getSuggestionResponse())
 
