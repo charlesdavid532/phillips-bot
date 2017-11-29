@@ -1,4 +1,5 @@
 from suggestion_list import SuggestionList
+from button_template import ButtonTemplate
 
 class SuggestionChip(object):
 	providers = None
@@ -127,6 +128,22 @@ class FacebookSuggestionChip(SuggestionChip):
 		
 
 	def getSuggestionChipResponse(self):
+		#If link out suggestion then create a Button template with this button as link button and the remaining chips as quick replies
+		if self.linkOutSuggestion != "" and self.linkOutSuggestion != None:
+			btnTemplateObj = ButtonTemplate()
+			btnTemplateObj.setSource(self.provider_name)
+			btnTemplateObj.addText(self.response[0])
+			btnTemplateObj.addSugTitles(self.sugTitles)
+			btnTemplateObj.addOutputContext(self.outputContext)
+			btnTemplateObj.addLinkButton(self.linkOutSuggestion["destinationName"], self.linkOutSuggestion["url"])
+			return btnTemplateObj.getButtonTemplateJSON()
+			'''
+			facebookDict["buttons"] = []
+			buttonsFB = facebookDict["buttons"]
+			buttonsFB.append(self.getButtonResponse(self.linkOutSuggestion["destinationName"], self.linkOutSuggestion["url"]))
+			'''
+
+
 		suggestionChipResponse = {}
 
 
@@ -149,13 +166,6 @@ class FacebookSuggestionChip(SuggestionChip):
 		facebookDict = dataDict["facebook"]
 
 		facebookDict["text"] = self.simpleResponse[0]
-
-		#Adding link out suggestion
-		if self.linkOutSuggestion != "" and self.linkOutSuggestion != None:
-			facebookDict["buttons"] = []
-			buttonsFB = facebookDict["buttons"]
-			buttonsFB.append(self.getButtonResponse(self.linkOutSuggestion["destinationName"], self.linkOutSuggestion["url"]))
-
 
 		if self.sugTitles != "" and self.sugTitles != None:
 			mySuggestionList = SuggestionList(self.sugTitles)
