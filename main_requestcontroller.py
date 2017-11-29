@@ -6,6 +6,7 @@ from email_request_controller import EmailRequestController
 from free_delivery_controller import FreeDeliveryController
 from selected_list_item import SelectedListItem
 from carousel import Carousel
+from custom_list import List
 from fb_share_dialog_controller import FBShareDialogController
 from daily_update_permission_controller import DailyUpdatePermissionController
 class MainRequestController(object):
@@ -99,6 +100,7 @@ class MainRequestController(object):
 				optionVal = "Could not find option chosen"
 			self.responseData = self.makeContextWebhookResult("The option chosen:::"+optionVal, [])
 		elif self.requestData.get("result").get("action") == "show.list":
+			'''
 			simpleResponse = []
 			simpleResponse.append("This is your desired carousel")
 			#myCarousel = Carousel(simpleResponse)
@@ -108,6 +110,15 @@ class MainRequestController(object):
 			myCarousel.addCarouselItem("2", "Second", "def", "The second item in the list", "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/charlesdavid531.jpg", "Default acc text")
 
 			self.responseData = myCarousel.getCarouselResponse()
+			'''
+			simpleResponse = []
+			simpleResponse.append("This is your desired list")
+			List.set_provider_none()
+			myList = List.get_provider(self.source, simpleResponse)
+			myList.addListItem("1", "First", "abc", "The first item in the list", "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/cdavid.jpg", "Default acc text")
+			myList.addListItem("2", "Second", "def", "The second item in the list", "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/charlesdavid531.jpg", "Default acc text")
+
+			self.responseData = myList.getListResponse()
    
 		elif self.requestData.get("result").get("action") == "time.timeperiod":	        
 			return {}
