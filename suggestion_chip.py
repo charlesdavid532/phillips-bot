@@ -86,6 +86,7 @@ class GoogleSuggestionChip(SuggestionChip):
 
 		if self.sugTitles != "" and self.sugTitles != None:
 			mySuggestionList = SuggestionList(self.sugTitles)
+			mySuggestionList.setSource(self.provider_name)
 			richResponseDict["suggestions"] = mySuggestionList.getSuggestionListResponse()
 
 
