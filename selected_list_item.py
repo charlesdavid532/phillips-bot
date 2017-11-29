@@ -46,8 +46,11 @@ class FacebookSelectedItem(SelectedListItem):
 
 
 	def getSelectedListItem(self):
+		print("The request data is ::" + str(self.requestData))
 		selectedItemData = self.requestData.get("originalRequest").get("data")
+		print("selectedItemData::" + str(selectedItemData))
 		if 'postback' in selectedItemData:
+			print("inside postback")
 			postbackData = selectedItemData.get('postback')
 			if 'payload' in postbackData:
 				optionVal = postbackData.get('payload')
