@@ -7,6 +7,7 @@ from free_delivery_controller import FreeDeliveryController
 from selected_list_item import SelectedListItem
 from carousel import Carousel
 from custom_list import List
+from suggestion_chip import SuggestionChip
 from fb_share_dialog_controller import FBShareDialogController
 from daily_update_permission_controller import DailyUpdatePermissionController
 class MainRequestController(object):
@@ -119,6 +120,20 @@ class MainRequestController(object):
 			myList.addListItem("2", "Second", "def", "The second item in the list", "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/charlesdavid531.jpg", "Default acc text")
 
 			self.responseData = myList.getListResponse()
+
+		elif self.requestData.get("result").get("action") == "show.chip":			
+			simpleResponse = []
+			simpleResponse.append("This is your desired suggestion chip")
+			sugList = []
+			sugList.append("Show digital employees")
+			sugList.append("Bye doctor dashboard")
+			sugList.append("Receive daily offers")
+
+			SuggestionChip.set_provider_none()
+			mySuggestionChip = SuggestionChip.get_provider(self.source, simpleResponse)
+			mySuggestionChip.addSugTitles(sugList)			
+
+			self.responseData = mySuggestionChip.getSuggestionChipResponse()
    
 		elif self.requestData.get("result").get("action") == "time.timeperiod":	        
 			return {}
