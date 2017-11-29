@@ -199,7 +199,8 @@ class FacebookCarousel(Carousel):
 		buttonsList = basicCarousel["buttons"]
 
 		#Adding the default btn type
-		buttonsList.append(self.getButtonResponse("postback", title, "", key))
+		#buttonsList.append(self.getButtonResponse("postback", title, "", key))
+		buttonsList.append(self.getButtonResponse("postback", "Tap to view", "", key))
 
 		return basicCarousel
 
