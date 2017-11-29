@@ -52,7 +52,7 @@ class ButtonTemplate(object):
 
 		btnResponse["contextOut"] = outputContext
 
-		dataDict = cardResponse["data"]
+		dataDict = btnResponse["data"]
 		dataDict["facebook"] = {}
 		facebookDict = dataDict["facebook"]
 
