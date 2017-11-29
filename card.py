@@ -197,6 +197,8 @@ class FacebookCard(Card):
 
 		cardResponse["data"] = {}
 		cardResponse["source"] = "phillips-bot"
+		cardResponse["speech"] = self.simpleResponse[0]
+		cardResponse["displayText"] = self.simpleResponse[0]
 
 		#Adding context
 		if self.outputContext == None or self.outputContext == "":
