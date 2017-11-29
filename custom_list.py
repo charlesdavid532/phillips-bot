@@ -69,7 +69,7 @@ class List(object):
 
 class GoogleList(List):
 	"""docstring for GoogleList"""
-	def __init__(self, arg):
+	def __init__(self, simpleResponse):
 		super(GoogleList, self).__init__('google', simpleResponse)
 
 
@@ -170,7 +170,7 @@ class GoogleList(List):
 
 class FacebookList(List):
 	"""docstring for FacebookList"""
-	def __init__(self, arg):
+	def __init__(self, simpleResponse):
 		super(FacebookList, self).__init__('facebook', simpleResponse)
 
 
