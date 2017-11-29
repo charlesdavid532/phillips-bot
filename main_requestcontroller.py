@@ -131,7 +131,15 @@ class MainRequestController(object):
 
 			SuggestionChip.set_provider_none()
 			mySuggestionChip = SuggestionChip.get_provider(self.source, simpleResponse)
-			mySuggestionChip.addSugTitles(sugList)			
+			mySuggestionChip.addSugTitles(sugList)
+
+			paramVars = {}
+			paramVars['selectedCouponCode'] = "abcd"
+			FBShareDialogURI = "https://phillipsbot.herokuapp.com/facebook/share" + '?' + urllib.parse.urlencode(paramVars)
+			'''
+			mySuggestionChipResponse.addLinkOutSuggestion("Share on Facebook", "https://flobots.herokuapp.com/facebook/share")
+			'''
+			mySuggestionChip.addLinkOutSuggestion("Share on Facebook", FBShareDialogURI)			
 
 			self.responseData = mySuggestionChip.getSuggestionChipResponse()
    
