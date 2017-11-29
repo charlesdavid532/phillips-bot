@@ -91,7 +91,8 @@ class MainRequestController(object):
 				print("The option chosen:::")
 				print(optionVal)
 			'''
-			selectedListItemObj = SelectedListItem(self.requestData)
+			#selectedListItemObj = SelectedListItem(self.requestData)
+			selectedListItemObj = SelectedListItem.get_provider(self.source, self.requestData)
 			optionVal = selectedListItemObj.getSelectedListItem()
 			if optionVal == False:
 				optionVal = "Could not find option chosen"
