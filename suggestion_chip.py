@@ -132,7 +132,7 @@ class FacebookSuggestionChip(SuggestionChip):
 		if self.linkOutSuggestion != "" and self.linkOutSuggestion != None:
 			btnTemplateObj = ButtonTemplate()
 			btnTemplateObj.setSource(self.provider_name)
-			btnTemplateObj.addText(self.response[0])
+			btnTemplateObj.addText(self.simpleResponse[0])
 			btnTemplateObj.addSugTitles(self.sugTitles)
 			btnTemplateObj.addOutputContext(self.outputContext)
 			btnTemplateObj.addLinkButton(self.linkOutSuggestion["destinationName"], self.linkOutSuggestion["url"])
