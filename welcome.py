@@ -25,6 +25,7 @@ class WelcomeResponse(object):
 
 
 		#myCard = Card(simpleResponse, formattedText, imgURL, imgAccText)
+		Card.set_provider_none()
 		myCard = Card.get_provider(self.source, simpleResponse, formattedText, imgURL, imgAccText)
 		myCard.addTitle(title)
 		myCard.addSugTitles(sugList)

@@ -92,6 +92,7 @@ class MainRequestController(object):
 				print(optionVal)
 			'''
 			#selectedListItemObj = SelectedListItem(self.requestData)
+			SelectedListItem.set_provider_none()
 			selectedListItemObj = SelectedListItem.get_provider(self.source, self.requestData)
 			optionVal = selectedListItemObj.getSelectedListItem()
 			if optionVal == False:
@@ -101,6 +102,7 @@ class MainRequestController(object):
 			simpleResponse = []
 			simpleResponse.append("This is your desired carousel")
 			#myCarousel = Carousel(simpleResponse)
+			Carousel.set_provider_none()
 			myCarousel = Carousel.get_provider(self.source, simpleResponse)
 			myCarousel.addCarouselItem("1", "First", "abc", "The first item in the list", "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/cdavid.jpg", "Default acc text")
 			myCarousel.addCarouselItem("2", "Second", "def", "The second item in the list", "https://s3.ap-south-1.amazonaws.com/tonibot-bucket/charlesdavid531.jpg", "Default acc text")

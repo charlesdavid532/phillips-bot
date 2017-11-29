@@ -62,6 +62,10 @@ class Card(object):
 		pass
 
 	@classmethod
+	def set_provider_none(self):
+		self.providers = None
+
+	@classmethod
 	def get_provider(self, provider_name, simpleResponse, formattedText, imgURL, imgAccText):
 		if self.providers is None:
 			self.providers={}
