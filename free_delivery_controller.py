@@ -7,6 +7,7 @@ class FreeDeliveryController(object):
 		self.requestData = requestData
 		self.mongo = mongo
 		self.isPermissionGiven = False
+		self.source = None
 
 
 	def setIsPermissionGiven(self, isPermissionGiven):
@@ -19,7 +20,8 @@ class FreeDeliveryController(object):
 		speech = self.parseFreeDeliveryRequest()
 		return self.makePermissionsResult(speech["speech"], []) 
 
-
+	def setSource(self, source):
+		self.source = source
 
 	def parseFreeDeliveryRequest(self):
 	    
@@ -29,7 +31,8 @@ class FreeDeliveryController(object):
 
 	def makePermissionsResult(self, speech, context):
 
-		permissionResObj = PermissionResponse(speech, "To deliver your order")
+		#permissionResObj = PermissionResponse(speech, "To deliver your order")
+		permissionResObj = PermissionResponse.get_provider(self.source, speech, "To deliver your order")
 		permissionResObj.addNamePermission()
 		permissionResObj.addPreciseLocationPermission()
 		return permissionResObj.getPermissionResponseJSON()

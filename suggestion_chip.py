@@ -1,5 +1,6 @@
 from suggestion_list import SuggestionList
 from button_template import ButtonTemplate
+from suggestion import Suggestion
 
 class SuggestionChip(object):
 	providers = None
@@ -115,6 +116,10 @@ class FacebookSuggestionChip(SuggestionChip):
 	"""docstring for FacebookSuggestionChip"""
 	def __init__(self, simpleResponse):
 		super(FacebookSuggestionChip, self).__init__('facebook', simpleResponse)
+		self.isLocationChip = False
+
+	def setLocationChip(self):
+		self.isLocationChip = True
 
 	def getButtonResponse(self, linkTitle, linkUrl):
 		btnDict = {}
@@ -167,7 +172,15 @@ class FacebookSuggestionChip(SuggestionChip):
 
 		facebookDict["text"] = self.simpleResponse[0]
 
-		if self.sugTitles != "" and self.sugTitles != None:
+		#Added check to see if it is a location Quick Reply
+		if self.isLocationChip == True:
+			Suggestion.set_provider_none()
+			mySuggestion = Suggestion.get_provider(self.provider_name, 'dummy text')
+			mySuggestion.setLocationQuickReply()
+			facebookDict["quick_replies"] = []
+			facebookQuickReplies = facebookDict["quick_replies"]
+			facebookQuickReplies.append(mySuggestion.getSuggestionResponse())
+		elif self.sugTitles != "" and self.sugTitles != None:			
 			mySuggestionList = SuggestionList(self.sugTitles)
 			mySuggestionList.setSource(self.provider_name)
 			#messageFacebook["quick_replies"] = mySuggestionList.getSuggestionListResponse()

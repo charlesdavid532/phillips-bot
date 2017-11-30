@@ -1,12 +1,56 @@
+from suggestion_list import SuggestionList
+
 class PermissionResponse(object):
+	providers = None
 	"""docstring for PermissionResponse"""
-	def __init__(self, speech, optContext):
+	def __init__(self, provider_name, speech, optContext):
 		super(PermissionResponse, self).__init__()
+		self.provider_name = provider_name
 		self.speech = speech
 		self.optContext = optContext
 		self.expectedUserResponse = True
 		self.outputContext = None
 		self.permissionList = []
+
+	def getPermissionResponseJSON(self):
+		pass
+
+	def addOutputContext(self, outputContext):
+		self.outputContext = outputContext
+
+
+	def removeExpectedUserResponse(self):
+		self.expectedUserResponse = False
+
+	def addExpectedUserResponse(self):
+		self.expectedUserResponse = True
+
+	def addNamePermission(self):
+		self.permissionList.append("NAME")
+
+	def addPreciseLocationPermission(self):
+		self.permissionList.append("DEVICE_PRECISE_LOCATION")
+		
+
+	@classmethod
+	def set_provider_none(self):
+		self.providers = None
+
+	@classmethod
+	def get_provider(self, provider_name, speech, optContext):
+		if self.providers is None:
+			self.providers={}
+			for provider_class in self.__subclasses__():
+				provider = provider_class(speech, optContext)
+				self.providers[provider.provider_name] = provider
+		return self.providers[provider_name]
+
+
+class GooglePermissionResponse(PermissionResponse):
+	"""docstring for GooglePermissionResponse"""
+	def __init__(self, speech, optContext):
+		super(GooglePermissionResponse, self).__init__('google', speech, optContext)
+		
 
 	def getPermissionResponseJSON(self):
 
@@ -46,19 +90,21 @@ class PermissionResponse(object):
 
 		return permissionJSON
 
-	def addOutputContext(self, outputContext):
-		self.outputContext = outputContext
 
-
-	def removeExpectedUserResponse(self):
-		self.expectedUserResponse = False
-
-	def addExpectedUserResponse(self):
-		self.expectedUserResponse = True
-
-	def addNamePermission(self):
-		self.permissionList.append("NAME")
-
-	def addPreciseLocationPermission(self):
-		self.permissionList.append("DEVICE_PRECISE_LOCATION")
+class FacebookPermissionResponse(PermissionResponse):
+	"""docstring for FacebookPermissionResponse"""
+	def __init__(self, speech, optContext):
+		super(FacebookPermissionResponse, self).__init__('facebook', speech, optContext)
 		
+	'''
+	Intended just for FB location response
+	'''
+	def getPermissionResponseJSON(self):
+		simpleResponse = []
+		simpleResponse.append(self.speech)
+
+		SuggestionChip.set_provider_none()
+		mySuggestionChip = SuggestionChip.get_provider(self.provider_name, simpleResponse)
+		mySuggestionChip.setLocationChip()					
+
+		return mySuggestionChip.getSuggestionChipResponse()

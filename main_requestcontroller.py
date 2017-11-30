@@ -35,6 +35,7 @@ class MainRequestController(object):
 			self.responseData = self.makeContextWebhookResult(salesResponseData["speech"], salesResponseData["context-list"])
 		elif self.requestData.get("result").get("action") == "free.delivery":
 			freeDelControllerObj = FreeDeliveryController(self.requestData, self.mongo)
+			freeDelControllerObj.setSource(self.source)
 			self.responseData = freeDelControllerObj.getPermissionJSON()
 			'''
 			parsedData = self.parseFreeDeliveryRequest(self.requestData)        

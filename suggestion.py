@@ -46,13 +46,21 @@ class FacebookSuggestion(Suggestion):
 	"""docstring for FacebookSuggestion"""
 	def __init__(self, title):
 		super(FacebookSuggestion, self).__init__('facebook', title)
+		self.isLocationQuickReply = False
+
+	def setLocationQuickReply(self):
+		self.isLocationQuickReply = True
 
 
 	def getSuggestionResponse(self):
 		suggestionDict = {}
-		suggestionDict["content_type"] = "text"
-		suggestionDict["title"] = self.title
-		suggestionDict["payload"] = self.title
+		#If condition used in SuggestionChip directly to access instead of via SuggestionList
+		if self.isLocationQuickReply == True:
+			suggestionDict["content_type"] = "location"
+		else:
+			suggestionDict["content_type"] = "text"
+			suggestionDict["title"] = self.title
+			suggestionDict["payload"] = self.title
 		return suggestionDict
 		
 		
