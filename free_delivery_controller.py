@@ -106,9 +106,6 @@ class FreeDeliveryController(object):
 			geoLat = devcoords.get('lat')
 			geoLong = devcoords.get('long')
 
-		print("The latitude is::" + str(geoLat))
-		print("The longitude is::" + str(geoLong))
-
 		#Check to see if the permission has already been given
 		if geoLat != None:
 		    #devcoords = self.requestData.get('originalRequest').get('data').get('device').get('location').get('coordinates')
