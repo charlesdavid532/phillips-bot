@@ -96,13 +96,13 @@ class FreeDeliveryController(object):
 	def compareDeliveryLocation(self):
 		devcoords, geoLat, geoLong = None
 		if self.requestData.get('originalRequest').get('data').get('device') != None:
-		    devcoords = self.requestData.get('originalRequest').get('data').get('device').get('location').get('coordinates')
-		    geoLat = devcoords.get('latitude')
-		    geoLong = devcoords.get('longitude')
-	    elif self.requestData.get('originalRequest').get('data').get('postback') != None:
-	    	devcoords = self.requestData.get('originalRequest').get('data').get('postback').get('data')
-	    	geoLat = devcoords.get('lat')
-		    geoLong = devcoords.get('long')
+			devcoords = self.requestData.get('originalRequest').get('data').get('device').get('location').get('coordinates')
+			geoLat = devcoords.get('latitude')
+			geoLong = devcoords.get('longitude')
+		elif self.requestData.get('originalRequest').get('data').get('postback') != None:
+			devcoords = self.requestData.get('originalRequest').get('data').get('postback').get('data')
+			geoLat = devcoords.get('lat')
+			geoLong = devcoords.get('long')
 
 
 
