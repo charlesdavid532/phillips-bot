@@ -94,13 +94,28 @@ class FreeDeliveryController(object):
 
 
 	def compareDeliveryLocation(self):
-		#Check to see if the permission has already been given
+		devcoords, geoLat, geoLong = None
 		if self.requestData.get('originalRequest').get('data').get('device') != None:
 		    devcoords = self.requestData.get('originalRequest').get('data').get('device').get('location').get('coordinates')
-		    print("The latitude is::" + str(devcoords.get('latitude')))
-		    print("The longitude is::" + str(devcoords.get('longitude')))
+		    geoLat = devcoords.get('latitude')
+		    geoLong = devcoords.get('longitude')
+	    elif self.requestData.get('originalRequest').get('data').get('postback') != None:
+	    	devcoords = self.requestData.get('originalRequest').get('data').get('postback').get('data')
+	    	geoLat = devcoords.get('lat')
+		    geoLong = devcoords.get('long')
+
+
+
+		#Check to see if the permission has already been given
+		if geoLat != None:
+		    #devcoords = self.requestData.get('originalRequest').get('data').get('device').get('location').get('coordinates')
+		    #print("The latitude is::" + str(devcoords.get('latitude')))
+		    #print("The longitude is::" + str(devcoords.get('longitude')))
+		    print("The latitude is::" + str(geoLat))
+		    print("The longitude is::" + str(geoLong))
 		    #Code to get the nearest delivery location store
-		    freeDeliverySpeech = self.getFreeDeliveryResponse(devcoords.get('latitude'), devcoords.get('longitude'))
+		    #freeDeliverySpeech = self.getFreeDeliveryResponse(devcoords.get('latitude'), devcoords.get('longitude'))
+		    freeDeliverySpeech = self.getFreeDeliveryResponse(geoLat, geoLong)
 		    '''
 		    return {
 		        "speech" : "Yes you are at::" + str(devcoords.get('latitude')) + " latitude and " + str(devcoords.get('longitude')) + " longitude"
