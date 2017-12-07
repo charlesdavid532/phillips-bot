@@ -463,10 +463,10 @@ class FacebookSignIn(OAuthSignIn):
             print("The long lived token response in getCallbackURI" + str(long_lived_token_params))
             print('long lived callback uri is::'+longLivedCallbackURI)
             long_lived_access_token = long_lived_token_params['access_token']
-            long_lived_expires_in = long_lived_token_params['expires_in']
+            #long_lived_expires_in = long_lived_token_params['expires_in']
 
             #Adding to db and posting on fb
-            self.addFBAccessTokenToDB(long_lived_access_token, long_lived_expires_in, session['fbEmail'], session['profile_id'])
+            self.addFBAccessTokenToDB(long_lived_access_token, session['fbEmail'], session['profile_id'])
             return long_lived_access_token
             #self.postMessageToFB(long_lived_access_token, session['profile_id'], "Because my weekends are for chilling at home!!!")
             
@@ -573,11 +573,10 @@ class FacebookSignIn(OAuthSignIn):
         else:
             return False
 
-    def addFBAccessTokenToDB(self, accessToken, secondsForExpiry, fbEmail, profileID):
+    def addFBAccessTokenToDB(self, accessToken, fbEmail, profileID):
         tokenCodes = mongo.db.tokens
         tokenCodes.insert({'_id' : accessToken, 'type' : 'ACCESS',
-                            'clientId': 'facebook',
-                            'expiresAt': self.getStrFutureDateAndTime(secondsForExpiry), 'fbEmail': fbEmail, 'profileID': profileID})
+                            'clientId': 'facebook', 'fbEmail': fbEmail, 'profileID': profileID})
 
     def addFBPageAccessToken(self, accessToken, fbEmail, profileID):
         tokenCodes = mongo.db.tokens
