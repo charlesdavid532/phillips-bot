@@ -350,13 +350,13 @@ class FacebookSignIn(OAuthSignIn):
 
     def authorize(self):
         print("In FB authorize the request arguments are:"+ str(request.args))
-        
+        '''
         print("In FB authorize the authorization endpoint url is:"+str(self.service.get_authorize_url(
             scope='email manage_pages',
             response_type='code',
             redirect_uri=self.get_callback_url())))
         print ("In FB authorize the callback url is:"+str(self.get_callback_url()))
-
+        '''
 
         if 'redirect_uri' in request.args:
             self.redirect_uri = request.args['redirect_uri']
@@ -450,7 +450,7 @@ class FacebookSignIn(OAuthSignIn):
             print("The token response in getCallbackURI" + str(token_params))
             print('callback uri is::'+callbackURI)
             access_token = token_params['access_token']
-            expires_in = token_params['expires_in']
+            #expires_in = token_params['expires_in']
 
             #Exchanging for long term access token
             longLivedTokenVars = {'grant_type': 'fb_exchange_token', 'client_id':self.consumer_id,
