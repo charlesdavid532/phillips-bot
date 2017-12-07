@@ -32,7 +32,7 @@ class UserDataModel(object):
 			'geolocation' : '',
 			'offerSubscribed': False})
 
-	def setDefaultFacebookPermissions(self, email):
+	def setDefaultFacebookPermissions(self, psid):
 		userdatacollection = self.mongo.db.fbuserdata
 		user = userdatacollection.find_one({'psid' : psid})
 
