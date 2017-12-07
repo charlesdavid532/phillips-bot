@@ -144,6 +144,8 @@ class MainRequestController(object):
 			'''
 			mySuggestionChip.addLinkOutSuggestion("Share on Facebook", FBShareDialogURI)			
 
+			mySuggestionChip.addLoginBtn("https://phillipsbot.herokuapp.com/facebook/authorize")
+
 			self.responseData = mySuggestionChip.getSuggestionChipResponse()
    
 		elif self.requestData.get("result").get("action") == "time.timeperiod":	        

@@ -36,6 +36,12 @@ class ButtonTemplate(object):
 		postbackBtn["postback"] = postback
 		self.btnArr.append(postbackBtn)
 
+	def addLoginButton(self, url):
+		loginBtn = {}
+		loginBtn["type"] = "account_link"
+		loginBtn["url"] = url
+		self.btnArr.append(loginBtn)
+
 	def getButtonTemplateJSON(self):
 		btnResponse = {}
 

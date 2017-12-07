@@ -14,6 +14,7 @@ class SuggestionChip(object):
 		self.sugTitles = None
 		self.outputContext = None
 		self.linkOutSuggestion = None
+		self.loginBtnUrl = None
 
 	def addSugTitles(self, sugTitles):
 		self.sugTitles = sugTitles
@@ -22,6 +23,9 @@ class SuggestionChip(object):
 		self.linkOutSuggestion = {}
 		self.linkOutSuggestion["destinationName"] = destinationName
 		self.linkOutSuggestion["url"] = url
+
+	def addLoginBtn(self, url):
+		self.loginBtnUrl = url
 
 	def addOutputContext(self, outputContext):
 		self.outputContext = outputContext
@@ -141,12 +145,23 @@ class FacebookSuggestionChip(SuggestionChip):
 			btnTemplateObj.addSugTitles(self.sugTitles)
 			btnTemplateObj.addOutputContext(self.outputContext)
 			btnTemplateObj.addLinkButton(self.linkOutSuggestion["destinationName"], self.linkOutSuggestion["url"])
+			if self.loginBtnUrl != "" and self.loginBtnUrl != None:
+				btnTemplateObj.addLoginButton(self.loginBtnUrl)
 			return btnTemplateObj.getButtonTemplateJSON()
 			'''
 			facebookDict["buttons"] = []
 			buttonsFB = facebookDict["buttons"]
 			buttonsFB.append(self.getButtonResponse(self.linkOutSuggestion["destinationName"], self.linkOutSuggestion["url"]))
 			'''
+
+		if self.loginBtnUrl != "" and self.loginBtnUrl != None:
+			btnTemplateObj = ButtonTemplate()
+			btnTemplateObj.setSource(self.provider_name)
+			btnTemplateObj.addText(self.simpleResponse[0])
+			btnTemplateObj.addSugTitles(self.sugTitles)
+			btnTemplateObj.addOutputContext(self.outputContext)
+			btnTemplateObj.addLoginButton(self.loginBtnUrl)
+			return btnTemplateObj.getButtonTemplateJSON()
 
 
 		suggestionChipResponse = {}

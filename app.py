@@ -348,30 +348,55 @@ class FacebookSignIn(OAuthSignIn):
         )
 
     def authorize(self):
+        print("In FB authorize the request arguments are:"+ str(request.args))
+        
+        print("In FB authorize the authorization endpoint url is:"+str(self.service.get_authorize_url(
+            scope='email publish_actions',
+            response_type='code',
+            redirect_uri=self.get_callback_url())))
+        print ("In FB authorize the callback url is:"+str(self.get_callback_url()))
+
+
+        if 'redirect_uri' in request.args:
+            self.redirect_uri = request.args['redirect_uri']
+            session['redirect_uri'] = request.args['redirect_uri']
+            print("redirect_uri::"+self.redirect_uri)                       
+        else:
+            return '' #TODO:this return statement should be modified to fail gracefully
+
+
+        if 'account_linking_token' in request.args:
+            self.account_linking_token = request.args['account_linking_token']
+            session['account_linking_token'] = request.args['account_linking_token']
+            print("account_linking_token::"+self.account_linking_token)                            
+        else:
+            return '' #TODO:this return statement should be modified to fail gracefully
+
+        '''
+        return redirect(self.service.get_authorize_url(
+                scope='email',
+                response_type='code',
+                redirect_uri=self.get_callback_url())
+            )
+        '''
+        '''
 
         #TODO:::: Check if this user already has a long lived user access token in the db and it has not expired
         fbAccessTokenObj = self.hasFBAccessToken()
         if fbAccessTokenObj == False:
-            print("In FB authorize the request arguments are:"+ str(request.args))
-            print("In FB authorize the authorization endpoint url is:"+str(self.service.get_authorize_url(
-                scope='email publish_actions',
-                response_type='code',
-                redirect_uri=self.get_callback_url())))
-            print ("In FB authorize the callback url is:"+str(self.get_callback_url()))
-
-
             return redirect(self.service.get_authorize_url(
-                scope='email publish_actions',
+                scope='email',
                 response_type='code',
                 redirect_uri=self.get_callback_url())
             )
         else:
+            print("Already has access token redirecting without authorizing")
             dbAccessToken = fbAccessTokenObj['dbAccessToken']
             dbFBEmail = fbAccessTokenObj['dbFBEmail']
             dbProfileID = fbAccessTokenObj['dbProfileID']
-            print("Posting message to facebook from authorize")
-            self.postMessageToFB(dbAccessToken, dbProfileID, "Posting random stuff from fb")
-            return redirect(self.getFBUserFeedURL())
+            callbackURI = self.getFBCallbackURI(dbAccessToken)         
+            return redirect(callbackURI)
+        '''
 
 
     def callback(self):
@@ -397,6 +422,8 @@ class FacebookSignIn(OAuthSignIn):
         session['profile_id'] = me.get('id')
         session['fbEmail'] = me.get('email')
 
+
+        #TODO: Retrieve the PSID from the endpoint and return it back so that that can be inserted in the db
         return (
             'facebook$' + me['id'],
             me.get('email').split('@')[0],  # Facebook does not provide
@@ -406,84 +433,20 @@ class FacebookSignIn(OAuthSignIn):
         )
 
     def getCallbackURI(self, email, expiryTime):
-        print("In get callback URI of facebook")
-        '''
+        print("In get callback URI of facebook")         
+
         secureAuthCode = self.generateSecretToken()
         self.addSecretTokenToDb(secureAuthCode, email, expiryTime)
         print("the secret auth code is::"+secureAuthCode) 
-        '''
-        #getVars = {'code': 'abcdefgh','state': session['state']}
-        #getVars = {'code': secureAuthCode,'state': session['state']}
-        '''
-        getVars = {'grant_type':'fb_exchange_token','client_id':self.consumer_id,
-                    'client_secret':self.consumer_secret,'fb_exchange_token': secureAuthCode}
-        '''
-        '''
-        getVars = {'grant_type':'client_credentials','client_id':self.consumer_id,
-                    'client_secret':self.consumer_secret}
-        '''
-        getVars = {'code': session['facebook_code'],'client_id':self.consumer_id,
-                    'client_secret':self.consumer_secret, 'redirect_uri': self.get_callback_url()}
-        callbackURI = 'https://graph.facebook.com/oauth/access_token' + '?' + urllib.parse.urlencode(getVars)
-        print("the callback uri is::"+ callbackURI)
-        # Getting the token
-        try:
-            #tokenReq = urllib.request.Request(callbackURI)
-            #tokenResponse = urlopen(tokenReq).read()
-            tokenResponse = urlopen(callbackURI)
-            token_params = json.load(tokenResponse)
-            print("The token response in getCallbackURI" + str(token_params))
-            print('callback uri is::'+callbackURI)
-            access_token = token_params['access_token']
-            expires_in = token_params['expires_in']
-
-            #Exchanging for long term access token
-            longLivedTokenVars = {'grant_type': 'fb_exchange_token', 'client_id':self.consumer_id,
-                    'client_secret':self.consumer_secret, 'fb_exchange_token': access_token  }
-
-            longLivedCallbackURI = 'https://graph.facebook.com/oauth/access_token' + '?' + urllib.parse.urlencode(longLivedTokenVars)
-
-            longLivedTokenResponse = urlopen(longLivedCallbackURI)
-            long_lived_token_params = json.load(longLivedTokenResponse)
-            print("The long lived token response in getCallbackURI" + str(long_lived_token_params))
-            print('long lived callback uri is::'+longLivedCallbackURI)
-            long_lived_access_token = long_lived_token_params['access_token']
-            long_lived_expires_in = long_lived_token_params['expires_in']
-
-            #Adding to db and posting on fb
-            self.addFBAccessTokenToDB(long_lived_access_token, long_lived_expires_in, session['fbEmail'], session['profile_id'])
-            self.postMessageToFB(long_lived_access_token, session['profile_id'], "Because my weekends are for chilling at home!!!")
-            
-
-        except urllib.error.HTTPError as error:
-            contents = error.read()
-            print("error contents are::" + str(contents))
-        '''
-        #Posting to wall
-        
-        #temp adding access_token
-        #access_token = 'EAAcK4oLnAeUBALcgdQEbRJecZA6DzpZB1DSlBFZAiVwsJEJQpGXD43lhu1TQHG0uoyF3YZA4gtZBakmEGYblFdnQZBk0sQQlZCDZCn3gybXFVLxNIrgEhRYrO2wr1IMSGHyPISdZBKHLvlNyyypZB8LtqtHZAZAODsDXpYKZBzPZAtRCVdnwZDZD'
-        graph = GraphAPI(access_token)
-        #og_path = "%d/feed" %session['profile_id']
-        og_path = session['profile_id'] + "/feed" 
-
-        graph.post( path = og_path, message = "Because office parties rarely disappoint!!!!" )
-        '''
+        callbackURI = self.getFBCallbackURI(secureAuthCode)
         print("Adding comment")
-        #return callbackURI
-        return self.getFBUserFeedURL()
+        return callbackURI
 
-
-    def postMessageToFB(self, accessToken, profileID, message):
-        graph = GraphAPI(accessToken)
-        #og_path = "%d/feed" %session['profile_id']
-        og_path = profileID + "/feed" 
-
-        graph.post( path = og_path, message = message)
-
-    def getFBUserFeedURL(self):
-        return 'https://www.facebook.com/'
-
+    def getFBCallbackURI(self, code):
+        getVars = {'code': code}
+        callbackURI = session['redirect_uri'] + '?' + urllib.parse.urlencode(getVars)
+        print('callback uri is::'+callbackURI)
+        return callbackURI
 
 
     def generateSecretToken(self):
@@ -495,30 +458,7 @@ class FacebookSignIn(OAuthSignIn):
                             'userId': email,'clientId': 'facebook',
                             'expiresAt': expiryTime})
 
-    '''
-    Returns False if does not have token in db or if expired
-    '''
-    def hasFBAccessToken(self):
-        print("Inside has FBAccess Token")
-        tokens = mongo.db.tokens
-        existing_token = tokens.find_one({'userId': session['google_email'],'clientId': 'facebook','type' : 'ACCESS'})
-
-        if not existing_token:
-            return False
-
-        dbDateTime = existing_token['expiresAt']
-        dbAccessToken = existing_token['_id']
-        dbFBEmail = existing_token['fbEmail']
-        dbProfileID = existing_token['profileID']
-
-        if self.compareDateAndTime(self.getStrCurrentDateAndTime(), dbDateTime) == True:
-            return {
-                'dbAccessToken': dbAccessToken,
-                'dbFBEmail': dbFBEmail,
-                'dbProfileID': dbProfileID
-            }
-        else:
-            return False
+    
 
     def addFBAccessTokenToDB(self, accessToken, secondsForExpiry, fbEmail, profileID):
         tokenCodes = mongo.db.tokens
