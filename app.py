@@ -33,6 +33,7 @@ import secrets
 from facepy import GraphAPI
 import pyperclip
 from custom_list import List
+from user_data import UserDataModel
 
 try:
     import apiai
