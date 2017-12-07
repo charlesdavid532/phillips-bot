@@ -512,7 +512,7 @@ class FacebookSignIn(OAuthSignIn):
             psid_params = json.load(psidResponse)
             print("The psid response in getCallbackURI" + str(psid_params))
             psid = psid_params['recipient']
-            print("The psid is::" + psid)
+            print("The psid is::" + str(psid))
 
             return psid
 
