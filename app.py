@@ -491,7 +491,7 @@ class FacebookSignIn(OAuthSignIn):
             print("The page token is::" + pageToken)
 
             #Adding to db and posting on fb
-            self.addFBPageAccessToken(long_lived_access_token, session['fbEmail'], session['profile_id'])
+            self.addFBPageAccessToken(pageToken, session['fbEmail'], session['profile_id'])
 
             return pageToken
 
