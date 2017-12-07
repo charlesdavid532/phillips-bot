@@ -532,8 +532,10 @@ class FacebookSignIn(OAuthSignIn):
         return callbackURI
 
     def getFBCallbackURI(self, code):
-        getVars = {'authorization_code': code}
-        callbackURI = session['redirect_uri'] + '?' + urllib.parse.urlencode(getVars)
+        #getVars = {'authorization_code': code}
+        #callbackURI = session['redirect_uri'] + '?' + urllib.parse.urlencode(getVars)
+        getVars = {'account_linking_token': session['account_linking_token'],'authorization_code': code}
+        callbackURI = 'https://www.facebook.com/messenger_platform/account_linking' + '?' + urllib.parse.urlencode(getVars)
         print('callback uri is::'+callbackURI)
         return callbackURI
 
