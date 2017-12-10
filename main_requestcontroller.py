@@ -13,11 +13,12 @@ from fb_share_dialog_controller import FBShareDialogController
 from daily_update_permission_controller import DailyUpdatePermissionController
 class MainRequestController(object):
 	"""Handles the request from api.ai"""
-	def __init__(self, data, mongo):
+	def __init__(self, data, mongo, userDataObj):
 		super(MainRequestController, self).__init__()
 		self.requestData = data
 		self.responseData = None
 		self.mongo = mongo
+		self.userDataObj = userDataObj
 		self.setSourceAsGoogle()
 
 
@@ -143,8 +144,10 @@ class MainRequestController(object):
 			mySuggestionChipResponse.addLinkOutSuggestion("Share on Facebook", "https://flobots.herokuapp.com/facebook/share")
 			'''
 			mySuggestionChip.addLinkOutSuggestion("Share on Facebook", FBShareDialogURI)			
-
-			mySuggestionChip.addLoginBtn("https://phillipsbot.herokuapp.com/authorize/facebook")
+			#This is meant only for facebook
+			if self.isSourceFacebook() == True:
+				if self.userDataObj.hasFBUserLoggedIn(self.requestData.get("originalRequest").get("data").get("sender").get("id")) != True:
+					mySuggestionChip.addLoginBtn("https://phillipsbot.herokuapp.com/authorize/facebook")
 
 			self.responseData = mySuggestionChip.getSuggestionChipResponse()
    

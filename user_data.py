@@ -7,6 +7,7 @@ class UserDataModel(object):
 		self.accessToken = None
 		self.email = None
 		self.username = None
+		self.isFbUserLoggedIn = False
 
 	def checkAndInsertGoogleData(self, email, username):
 		if self.checkIfGoogleEmailExists(email) == False:
@@ -159,3 +160,13 @@ class UserDataModel(object):
 			else:
 				self.username = None
 				return False
+
+
+	def hasFBUserLoggedIn(self, psid):
+		if self.isFbUserLoggedIn != True:
+			if self.checkIfFacebookPSIDExists(psid) == False:
+				self.isFbUserLoggedIn = False
+			else:
+				self.isFbUserLoggedIn = True
+			return self.isFbUserLoggedIn
+		return True

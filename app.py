@@ -925,7 +925,8 @@ def handle_message():
     oauth = OAuthSignIn.get_provider("facebook")
     oauth.authorize()
     '''
-    
+    #Creating userdata object and setting the access token
+    userDataObj = UserDataModel(mongo)
     #Checking if the token exists and if expired
     if isFacebookRequest(data) == False:
         if hasTokenExpired(data) == True:
@@ -939,11 +940,11 @@ def handle_message():
         #Getting the email and storing it in the session variable
         dbGoogleEmail = getGoogleEmailFromDB(data)
         session['google_email'] = dbGoogleEmail
-        mainRequestControllerObj = MainRequestController(data, mongo)
+        mainRequestControllerObj = MainRequestController(data, mongo, userDataObj)
         #res = processRequest(data)
         res = mainRequestControllerObj.processRequest()
     else:
-        mainRequestControllerObj = MainRequestController(data, mongo)
+        mainRequestControllerObj = MainRequestController(data, mongo, userDataObj)
         mainRequestControllerObj.setSourceAsFacebook()
         res = mainRequestControllerObj.processRequest()
 
