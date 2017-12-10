@@ -7,10 +7,16 @@ class SuggestionList(object):
 		self.titleList = titleList
 		#return self.getSuggestionListResponse()
 
+	def setSource(self, source):
+		self.source = source
+
 	def getSuggestionListResponse(self):
 		suggestionList = []
+		
 		for index in range(0, len(self.titleList)):
-			mySuggestion = Suggestion(self.titleList[index])
+			#mySuggestion = Suggestion(self.titleList[index])
+			Suggestion.set_provider_none()
+			mySuggestion = Suggestion.get_provider(self.source, self.titleList[index])
 			suggestionList.append(mySuggestion.getSuggestionResponse())
 
 		return suggestionList

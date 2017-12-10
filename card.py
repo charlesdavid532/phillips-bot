@@ -1,10 +1,12 @@
 from suggestion_list import SuggestionList
 
 class Card(object):
+	providers = None
 	"""creates and returns a JSON response for Card"""
-	def __init__(self, simpleResponse, formattedText, imgURL, imgAccText):
+	def __init__(self, provider_name, simpleResponse, formattedText, imgURL, imgAccText):
 		super(Card, self).__init__()
 		print("In Card Class")
+		self.provider_name = provider_name
 		self.simpleResponse = simpleResponse
 		self.formattedText = formattedText
 		self.imgURL = imgURL
@@ -57,6 +59,30 @@ class Card(object):
 
 
 	def getCardResponse(self):
+		pass
+
+	@classmethod
+	def set_provider_none(self):
+		self.providers = None
+
+	@classmethod
+	def get_provider(self, provider_name, simpleResponse, formattedText, imgURL, imgAccText):
+		if self.providers is None:
+			self.providers={}
+			for provider_class in self.__subclasses__():
+				provider = provider_class(simpleResponse, formattedText, imgURL, imgAccText)
+				self.providers[provider.provider_name] = provider
+		return self.providers[provider_name]
+
+
+class GoogleCard(Card):
+	"""docstring for GoogleCard"""
+	def __init__(self, simpleResponse, formattedText, imgURL, imgAccText):
+		super(GoogleCard, self).__init__('google', simpleResponse, formattedText, imgURL, imgAccText)
+		
+		
+
+	def getCardResponse(self):
 		cardResponse = {}
 		itemsDict = {}
 		itemsDict["simpleResponse"] = {}
@@ -104,6 +130,7 @@ class Card(object):
 
 		if self.sugTitles != "" and self.sugTitles != None:
 			mySuggestionList = SuggestionList(self.sugTitles)
+			mySuggestionList.setSource(self.provider_name)
 			richResponseDict["suggestions"] = mySuggestionList.getSuggestionListResponse()
 
 
@@ -154,4 +181,111 @@ class Card(object):
 
 		return btnDict
 
-		
+
+
+
+
+class FacebookCard(Card):
+	"""docstring for FacebookCard"""
+	def __init__(self, simpleResponse, formattedText, imgURL, imgAccText):
+		super(FacebookCard, self).__init__('facebook', simpleResponse, formattedText, imgURL, imgAccText)
+
+
+	def getCardResponse(self):
+		cardResponse = {}
+
+
+		cardResponse["data"] = {}
+		cardResponse["source"] = "phillips-bot"
+		cardResponse["speech"] = self.simpleResponse[0]
+		cardResponse["displayText"] = self.simpleResponse[0]
+
+		#Adding context
+		if self.outputContext == None or self.outputContext == "":
+			outputContext = []
+		else:
+			outputContext = self.outputContext
+			print("The length of context list in card response is:"+str(len(outputContext)))
+
+		cardResponse["contextOut"] = outputContext
+
+		dataDict = cardResponse["data"]
+		dataDict["facebook"] = {}
+		facebookDict = dataDict["facebook"]
+
+
+		#facebookDict["message"] = {}
+
+		#messageFacebook = facebookDict["message"]
+		#messageFacebook["attachment"] = {}
+		facebookDict["attachment"] = {}
+
+		#attachmentMessage = messageFacebook["attachment"]
+		attachmentMessage = facebookDict["attachment"]
+		attachmentMessage["type"] = "template"
+		attachmentMessage["payload"] = {}
+
+		payload = attachmentMessage["payload"]
+		payload["template_type"] = "generic"
+		payload["elements"] = []
+
+		elementsPayload = payload["elements"]
+		elementsPayload.append(self.getInteriorCardResponse())
+
+
+
+
+		if self.sugTitles != "" and self.sugTitles != None:
+			mySuggestionList = SuggestionList(self.sugTitles)
+			mySuggestionList.setSource(self.provider_name)
+			#messageFacebook["quick_replies"] = mySuggestionList.getSuggestionListResponse()
+			facebookDict["quick_replies"] = mySuggestionList.getSuggestionListResponse()
+
+
+
+		return cardResponse
+
+
+
+	def getInteriorCardResponse(self):
+		basicCard = {}
+
+		if self.title != "" and self.title != None:
+			basicCard["title"] = self.title
+
+		'''
+		if self.hasText == True:
+			basicCard["formattedText"] = self.formattedText
+		'''
+
+		#Note: Added the formatted text to the subtitle
+		if self.subtitle != "" and self.subtitle != None and self.hasText == True:
+			basicCard["subtitle"] = self.subtitle + '' + self.formattedText
+		elif self.hasText == True:
+			basicCard["subtitle"] = self.formattedText
+		elif self.subtitle != "" and self.subtitle != None:
+			basicCard["subtitle"] = self.subtitle
+
+		if self.hasImage == True:
+			basicCard["image_url"] = self.imgURL			
+
+
+		if self.linkTitle != '' and self.linkTitle != None and self.linkTitle != []:
+			basicCard["buttons"] = []
+
+			buttonsList = basicCard["buttons"]
+			buttonsList.append(self.getButtonResponse())
+
+		return basicCard
+
+
+
+	def getButtonResponse(self):
+		btnDict = {}
+
+		#Note: By Default added the button as web_url. This can also be a postback button
+		btnDict["type"] = "web_url"
+		btnDict["title"] = self.linkTitle
+		btnDict["url"] = self.linkUrl
+
+		return btnDict

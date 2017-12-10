@@ -5,6 +5,7 @@ class WelcomeResponse(object):
 	def __init__(self, requestData):
 		super(WelcomeResponse, self).__init__()
 		self.requestData = requestData
+		self.source = None
 
 
 	def getWelcomeResponse(self):
@@ -23,7 +24,9 @@ class WelcomeResponse(object):
 		imgAccText = "Default accessibility text"
 
 
-		myCard = Card(simpleResponse, formattedText, imgURL, imgAccText)
+		#myCard = Card(simpleResponse, formattedText, imgURL, imgAccText)
+		Card.set_provider_none()
+		myCard = Card.get_provider(self.source, simpleResponse, formattedText, imgURL, imgAccText)
 		myCard.addTitle(title)
 		myCard.addSugTitles(sugList)
 		myCard.addExpectedUserResponse()
@@ -31,3 +34,5 @@ class WelcomeResponse(object):
 
 		return myCard.getCardResponse()
 		
+	def setSource(self, source):
+		self.source = source
