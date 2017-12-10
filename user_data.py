@@ -163,9 +163,9 @@ class UserDataModel(object):
 
 
 	def hasFBUserLoggedIn(self, psid):
-		print("in hasFBUserLoggedIn::" + self.isFbUserLoggedIn)
+		print("in hasFBUserLoggedIn::" + str(self.isFbUserLoggedIn))
 		if self.isFbUserLoggedIn != True:
-			print("in checkIfFacebookPSIDExists::" + self.isFbUserLoggedIn)
+			print("in checkIfFacebookPSIDExists::" + str(self.isFbUserLoggedIn))
 			if self.checkIfFacebookPSIDExists(psid) == False:
 				self.isFbUserLoggedIn = False
 			else:
