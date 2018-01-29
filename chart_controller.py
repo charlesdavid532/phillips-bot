@@ -20,6 +20,10 @@ class ChartController(object):
 		self.chartType = None
 		self.mainChartFeature = None
 		self.mongo = mongo
+		self.source = None
+
+	def setSource(self, source):
+		self.source = source
 		
 	def setIsContext(self, contextName):
 		self.isContext = True
@@ -69,7 +73,9 @@ class ChartController(object):
 		imgURL = self.awsImageFileName
 		imgAccText = "Default accessibility text"
 
-		myCard = Card(simpleResponse, formattedText, imgURL, imgAccText)
+		#myCard = Card(simpleResponse, formattedText, imgURL, imgAccText)
+		Card.set_provider_none()
+		myCard = Card.get_provider(self.source, simpleResponse, formattedText, imgURL, imgAccText)
 		myCard.addTitle(title)
 		myCard.addSugTitles(sugList)
 		myCard.addOutputContext(contextResponseMainList.getContextJSONResponse())

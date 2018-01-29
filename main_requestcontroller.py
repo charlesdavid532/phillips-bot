@@ -1,3 +1,4 @@
+
 from welcome import WelcomeResponse
 from sales_requestcontroller import SalesRequestController
 from constants import Constants
@@ -71,6 +72,7 @@ class MainRequestController(object):
 			#self.responseData = parseContextGenerateProductChartController(self.requestData.get("result"))
 		elif self.requestData.get("result").get("action") == "convert.chart":
 			chartController = ChartController(self.requestData, self.mongo)
+			chartController.setSource(self.source)
 			chartController.setIsContext(Constants.getStrDrawChartContext())
 			self.responseData = chartController.getChartResponse()
 			#self.responseData = convertTextToProductChartController(self.requestData.get("result"))
